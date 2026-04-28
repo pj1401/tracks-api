@@ -297,6 +297,12 @@ class DatabaseLoader:
                 WHERE a2.artist_name = a.artist_name
                 AND a2.artist_id = ta_table.artist_id
             )
+            AND NOT EXISTS (                            -- Check if the relationship already exists.
+                SELECT 1
+                FROM tracks_artists ta2
+                WHERE ta2.track_id = ta_table.track_id
+                AND ta2.artist_id = a.new_artist_id
+            )
             AND ta_table.artist_id != a.new_artist_id;
         """)
         ]
@@ -315,6 +321,12 @@ class DatabaseLoader:
                 FROM artists a2
                 WHERE a2.artist_name = a.artist_name
                 AND a2.artist_id = aa_table.artist_id
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM artists_albums aa2
+                WHERE aa2.artist_id = a.new_artist_id
+                AND aa2.album_id = aa_table.album_id
             )
             AND aa_table.artist_id != a.new_artist_id;
         """)
@@ -337,6 +349,12 @@ class DatabaseLoader:
                 WHERE a2.old_album_id = a.old_album_id
                 AND a2.album_id = ta_table.album_id
             )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM tracks_albums ta2
+                WHERE ta2.track_id = ta_table.track_id
+                AND ta2.album_id = a.new_album_id
+            )
             AND ta_table.album_id != a.new_album_id;
         """)
         ]
@@ -355,6 +373,12 @@ class DatabaseLoader:
                 FROM albums a2
                 WHERE a2.old_album_id = a.old_album_id
                 AND a2.album_id = aa_table.album_id
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM artists_albums aa2
+                WHERE aa2.artist_id = aa_table.artist_id
+                AND aa2.album_id = a.new_album_id
             )
             AND aa_table.album_id != a.new_album_id;
         """)
