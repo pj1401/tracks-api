@@ -111,11 +111,7 @@ class DatabaseLoader:
             """
             cursor.execute(
                 query,
-                (
-                    row["album_name"],
-                    row["album_id"],
-                    row["old_album_id"]
-                ),
+                (row["album_name"], row["album_id"], row["old_album_id"]),
             )
         self.conn.commit()
         cursor.close()
@@ -260,23 +256,34 @@ class DatabaseLoader:
         if fetched is not None:
             max_id = fetched[0]
         return max_id
-    
-    def drop_duplicates(self) -> None:
-        self.update_relationships()
-        queries = self.get_drop_duplicates_queries()
+
+    def create_indexes(self) -> None:
+        """Create indexes for artists and albums."""
+        queries = [
+            sql.SQL(
+                "CREATE INDEX IF NOT EXISTS idx_artist_name ON artists(artist_name);"
+            ),
+            sql.SQL(
+                "CREATE INDEX IF NOT EXISTS idx_album_old_id ON albums(old_album_id);"
+            ),
+        ]
         self.execute_queries(queries)
-        print("Dropped duplicates.")
+        print("Created indexes for artists and albums.")
 
     def update_relationships(self) -> None:
         queries = self.get_update_relationship_queries()
         self.execute_queries(queries)
         print("Updated relationships.")
-    
+
     def get_update_relationship_queries(self) -> list[sql.SQL]:
-        return self.get_update_artists_relationships() + self.get_update_albums_relationships()
+        return (
+            self.get_update_artists_relationships()
+            + self.get_update_albums_relationships()
+        )
 
     def get_update_artists_relationships(self) -> list[sql.SQL]:
-        queries = [sql.SQL("""
+        queries = [
+            sql.SQL("""
             UPDATE tracks_artists ta_table
             SET artist_id = a.new_artist_id
             FROM (
@@ -284,14 +291,18 @@ class DatabaseLoader:
                 FROM artists
                 GROUP BY artist_name
             ) a
-            WHERE ta_table.artist_id IN (
-                SELECT artist_id
-                FROM artists
-                WHERE artist_name = a.artist_name
-            );
-        """)]
+            WHERE EXISTS (
+                SELECT 1
+                FROM artists a2
+                WHERE a2.artist_name = a.artist_name
+                AND a2.artist_id = ta_table.artist_id
+            )
+            AND ta_table.artist_id != a.new_artist_id;
+        """)
+        ]
 
-        queries.append(sql.SQL("""
+        queries.append(
+            sql.SQL("""
             UPDATE artists_albums aa_table
             SET artist_id = a.new_artist_id
             FROM (
@@ -299,16 +310,20 @@ class DatabaseLoader:
                 FROM artists
                 GROUP BY artist_name
             ) a
-            WHERE aa_table.artist_id IN (
-                SELECT artist_id
-                FROM artists
-                WHERE artist_name = a.artist_name
-            );
-        """))
+            WHERE EXISTS (
+                SELECT 1
+                FROM artists a2
+                WHERE a2.artist_name = a.artist_name
+                AND a2.artist_id = aa_table.artist_id
+            )
+            AND aa_table.artist_id != a.new_artist_id;
+        """)
+        )
         return queries
-    
+
     def get_update_albums_relationships(self) -> list[sql.SQL]:
-        queries = [sql.SQL("""
+        queries = [
+            sql.SQL("""
             UPDATE tracks_albums ta_table
             SET album_id = a.new_album_id
             FROM (
@@ -316,48 +331,64 @@ class DatabaseLoader:
                 FROM albums
                 GROUP BY old_album_id
             ) a
-            WHERE ta_table.album_id IN (
-                SELECT album_id
-                FROM albums
-                WHERE old_album_id = a.old_album_id
-            );
-        """)]
+            WHERE EXISTS (
+                SELECT 1
+                FROM albums a2
+                WHERE a2.old_album_id = a.old_album_id
+                AND a2.album_id = ta_table.album_id
+            )
+            AND ta_table.album_id != a.new_album_id;
+        """)
+        ]
 
-        queries.append(sql.SQL("""
-            UPDATE artists_albums aa
+        queries.append(
+            sql.SQL("""
+            UPDATE artists_albums aa_table
             SET album_id = a.new_album_id
             FROM (
                 SELECT old_album_id, MIN(album_id) AS new_album_id
                 FROM albums
                 GROUP BY old_album_id
             ) a
-            WHERE aa.album_id IN (
-                SELECT album_id
-                FROM albums
-                WHERE old_album_id = a.old_album_id
-            );
-        """))
+            WHERE EXISTS (
+                SELECT 1
+                FROM albums a2
+                WHERE a2.old_album_id = a.old_album_id
+                AND a2.album_id = aa_table.album_id
+            )
+            AND aa_table.album_id != a.new_album_id;
+        """)
+        )
         return queries
-    
+
+    def drop_duplicates(self) -> None:
+        queries = self.get_drop_duplicates_queries()
+        self.execute_queries(queries)
+        print("Dropped duplicates.")
+
     def get_drop_duplicates_queries(self) -> list[sql.SQL]:
-        queries = [sql.SQL("""
+        queries = [
+            sql.SQL("""
                 DELETE FROM artists
                 WHERE artist_id NOT IN (
                     SELECT MIN(artist_id)
                     FROM artists
                     GROUP BY artist_name
                 );
-            """)]
-        queries.append(sql.SQL("""
+            """)
+        ]
+        queries.append(
+            sql.SQL("""
                 DELETE FROM albums
                 WHERE album_id NOT IN (
                     SELECT MIN(album_id)
                     FROM albums
                     GROUP BY old_album_id
                 );
-            """))
+            """)
+        )
         return queries
-    
+
     def remove_temp_cols(self):
         query = sql.SQL("""
                         ALTER TABLE albums
