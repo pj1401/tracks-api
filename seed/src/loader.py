@@ -3,6 +3,8 @@ Loader module for seeding the database.
 module: src/loader.py
 """
 
+from typing import Any
+
 import bcrypt
 from psycopg2 import sql
 import pandas as pd
@@ -273,18 +275,42 @@ class DatabaseLoader:
         print(f"Seeded {len(artists_albums_data)} artist-album relationships.")
 
     def get_max_ids(self) -> dict[str, int]:
-        """Fetch the current max ids from the database."""
+        """
+        Fetch the current max ids from the database.
+
+        :param self: This instance.
+        :return: A dictionary with the max ids.
+        :rtype: dict[str, int]
+        """
         cursor = self.conn.cursor()
         max_ids: dict[str, int] = {}
 
         cursor.execute("SELECT MAX(artist_id) FROM artists;")
-        max_ids["artist_id"] = cursor.fetchone()[0] or 0
+        fetched = cursor.fetchone()
+        max_ids["artist_id"] = self.check_max_id(fetched)
 
         cursor.execute("SELECT MAX(album_id) FROM albums;")
-        max_ids["album_id"] = cursor.fetchone()[0] or 0
+        fetched = cursor.fetchone()
+        max_ids["album_id"] = self.check_max_id(fetched)
 
         cursor.execute("SELECT MAX(track_id) FROM tracks;")
-        max_ids["track_id"] = cursor.fetchone()[0] or 0
+        fetched = cursor.fetchone()
+        max_ids["track_id"] = self.check_max_id(fetched)
 
         cursor.close()
         return max_ids
+
+    def check_max_id(self, fetched: tuple[Any] | None) -> int:
+        """
+        Get the max id if the fetched tuple is not None.
+
+        :param self: This instance.
+        :param fetched: The fetched tuple to check.
+        :type fetched: tuple[Any] | None
+        :return: The max id or 0.
+        :rtype: int
+        """
+        max_id = 0
+        if fetched is not None:
+            max_id = fetched[0]
+        return max_id

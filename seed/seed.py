@@ -78,6 +78,7 @@ def main():
         loader.seed_database(combined_data)
         max_ids = loader.get_max_ids()
 
+    # TODO: Drop duplicate artists and albums, and update relationships.
     conn.close()
     print("Disconnected")
 
