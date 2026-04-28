@@ -27,6 +27,7 @@ CSV_PATH = os.getenv("CSV_PATH")
 HDF5_PATH = os.getenv("HDF5_PATH")
 CSV_LISTENING_HISTORY_PATH = os.getenv("CSV_LISTENING_HISTORY_PATH")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 5000))
+NO_OF_CHUNKS = 5
 
 admin_username = str(os.getenv("ADMIN_USERNAME"))
 admin_email = str(os.getenv("ADMIN_EMAIL"))
@@ -71,14 +72,18 @@ def main():
 
     # Transform
     total_playcount = transform_playcount_data(playcount_data)
-    for chunk in csv_data:
+    for i, chunk in enumerate(csv_data):
+        if i >= NO_OF_CHUNKS:
+            break
+
         combined_data = transform(chunk, hdf5_data, total_playcount, max_ids)
 
         # Seed database
         loader.seed_database(combined_data)
         max_ids = loader.get_max_ids()
 
-    # TODO: Drop duplicate artists and albums, and update relationships.
+    loader.create_indexes()
+    loader.update_relationships()
     loader.drop_duplicates()
     loader.remove_temp_cols()
     conn.close()
