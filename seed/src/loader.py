@@ -16,105 +16,26 @@ from src.util.user import User
 
 class DatabaseLoader:
     def __init__(self, conn: connection) -> None:
+        """
+        Initialise an instance.
+
+        :param self: This instance.
+        :param conn: The database connection object.
+        :type conn: connection
+        """
         self.conn = conn
         self.tables = TableQuery()
 
     def create_tables(self):
-        self.create_tracks_table()
-        self.create_artists_table()
-        self.create_tracks_artists_table()
-        self.create_albums_table()
-        self.create_tracks_albums_table()
-        self.create_artists_albums_table()
-        self.create_users_table()
+        """
+        Run queries for creating tables.
 
-    def create_tracks_table(self):
-        query = self.tables.get_create_tracks_query()
-        self.run_query(query)
-        print("Created table: 'tracks'")
-
-    def create_artists_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS artists (
-                artist_id SERIAL PRIMARY KEY,
-                artist_name VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'artists'")
-
-    def create_tracks_artists_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS tracks_artists (
-                track_id INTEGER,
-                artist_id INTEGER,
-                PRIMARY KEY (track_id, artist_id),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (track_id) REFERENCES tracks(track_id),
-                FOREIGN KEY (artist_id) REFERENCES artists(artist_id)
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'tracks_artists'")
-
-    def create_albums_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS albums (
-                album_id SERIAL PRIMARY KEY,
-                album_name VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'albums'")
-
-    def create_tracks_albums_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS tracks_albums (
-                track_id INTEGER,
-                album_id INTEGER,
-                PRIMARY KEY (track_id, album_id),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (track_id) REFERENCES tracks(track_id),
-                FOREIGN KEY (album_id) REFERENCES albums(album_id)
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'tracks_albums'")
-
-    def create_artists_albums_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS artists_albums (
-                artist_id INTEGER,
-                album_id INTEGER,
-                PRIMARY KEY (artist_id, album_id),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (artist_id) REFERENCES artists(artist_id),
-                FOREIGN KEY (album_id) REFERENCES albums(album_id)
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'artists_albums'")
-
-    def create_users_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS users (
-                user_id SERIAL PRIMARY KEY,
-                username VARCHAR(255) UNIQUE NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password_hash VARCHAR(255) NOT NULL,
-                permission_level INTEGER NOT NULL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """)
-        self.run_query(query)
-        print("Created table: 'users'")
-
-    def run_query(self, query: str | sql.SQL) -> None:
-        """Run a query with no value placeholders and no return value."""
+        :param self: This instance.
+        """
+        queries = self.tables.get_queries()
         cursor = self.conn.cursor()
-        cursor.execute(query)
+        for query in queries:
+            cursor.execute(query)
         self.conn.commit()
         cursor.close()
 
@@ -152,9 +73,11 @@ class DatabaseLoader:
             VALUES (%s, %s, %s, %s)
             ON CONFLICT (username) DO NOTHING;
         """
+        # Create a password hash before storing.
         admin_password_hash = bcrypt.hashpw(
             admin.password.encode("utf-8"), bcrypt.gensalt()
         ).decode("utf-8")
+
         cursor.execute(query, (admin.username, admin.email, admin_password_hash, 1))
         self.conn.commit()
         cursor.close()
