@@ -80,12 +80,13 @@ class TableQuery:
 
     def get_create_albums_query(self) -> sql.SQL:
         return sql.SQL("""
-            CREATE TABLE IF NOT EXISTS albums (
-                album_id SERIAL PRIMARY KEY,
-                album_name VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """)
+                    CREATE TABLE IF NOT EXISTS albums (
+                        album_id SERIAL PRIMARY KEY,
+                        album_name VARCHAR(255),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        old_album_id VARCHAR(50)
+                    );
+                    """)
 
     def get_create_tracks_albums_query(self) -> sql.SQL:
         return sql.SQL("""

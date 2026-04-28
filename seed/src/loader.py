@@ -33,16 +33,36 @@ class DatabaseLoader:
         :param self: This instance.
         """
         queries = self.tables.get_queries()
+        self.execute_queries(queries)
+
+    def execute_queries(self, queries: list[sql.SQL]) -> None:
         cursor = self.conn.cursor()
         for query in queries:
             cursor.execute(query)
         self.conn.commit()
         cursor.close()
 
+    def seed_admin_user(self, admin: User):
+        cursor = self.conn.cursor()
+        query = """
+            INSERT INTO users (username, email, password_hash, permission_level)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (username) DO NOTHING;
+        """
+        # Create a password hash before storing.
+        admin_password_hash = bcrypt.hashpw(
+            admin.password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
+
+        cursor.execute(query, (admin.username, admin.email, admin_password_hash, 1))
+        self.conn.commit()
+        cursor.close()
+        print("Seeded admin user.")
+
     def seed_database(self, data: pd.DataFrame):
         """Seed the data into the PostgreSQL database."""
         self.seed_artists(data[["artist_id", "artist_name"]])
-        self.seed_albums(data[["album_id", "album_name"]])
+        self.seed_albums(data[["album_id", "album_name", "old_album_id"]])
         self.seed_tracks(
             data[
                 [
@@ -66,23 +86,6 @@ class DatabaseLoader:
         self.seed_tracks_albums(data[["track_id", "album_id"]])
         self.seed_artists_albums(data[["artist_id", "album_id"]])
 
-    def seed_admin_user(self, admin: User):
-        cursor = self.conn.cursor()
-        query = """
-            INSERT INTO users (username, email, password_hash, permission_level)
-            VALUES (%s, %s, %s, %s)
-            ON CONFLICT (username) DO NOTHING;
-        """
-        # Create a password hash before storing.
-        admin_password_hash = bcrypt.hashpw(
-            admin.password.encode("utf-8"), bcrypt.gensalt()
-        ).decode("utf-8")
-
-        cursor.execute(query, (admin.username, admin.email, admin_password_hash, 1))
-        self.conn.commit()
-        cursor.close()
-        print("Seeded admin user.")
-
     def seed_artists(self, artists_data: pd.DataFrame):
         cursor = self.conn.cursor()
         for _, row in artists_data.drop_duplicates(subset=["artist_id"]).iterrows():
@@ -102,8 +105,8 @@ class DatabaseLoader:
         cursor = self.conn.cursor()
         for _, row in albums_data.drop_duplicates(subset=["album_id"]).iterrows():
             query = """
-                INSERT INTO albums (album_name, album_id)
-                VALUES (%s, %s)
+                INSERT INTO albums (album_name, album_id, old_album_id)
+                VALUES (%s, %s, %s)
                 ON CONFLICT (album_id) DO NOTHING;
             """
             cursor.execute(
@@ -111,6 +114,7 @@ class DatabaseLoader:
                 (
                     row["album_name"],
                     row["album_id"],
+                    row["old_album_id"]
                 ),
             )
         self.conn.commit()
@@ -256,3 +260,110 @@ class DatabaseLoader:
         if fetched is not None:
             max_id = fetched[0]
         return max_id
+    
+    def drop_duplicates(self) -> None:
+        self.update_relationships()
+        queries = self.get_drop_duplicates_queries()
+        self.execute_queries(queries)
+        print("Dropped duplicates.")
+
+    def update_relationships(self) -> None:
+        queries = self.get_update_relationship_queries()
+        self.execute_queries(queries)
+        print("Updated relationships.")
+    
+    def get_update_relationship_queries(self) -> list[sql.SQL]:
+        return self.get_update_artists_relationships() + self.get_update_albums_relationships()
+
+    def get_update_artists_relationships(self) -> list[sql.SQL]:
+        queries = [sql.SQL("""
+            UPDATE tracks_artists ta_table
+            SET artist_id = a.new_artist_id
+            FROM (
+                SELECT artist_name, MIN(artist_id) AS new_artist_id
+                FROM artists
+                GROUP BY artist_name
+            ) a
+            WHERE ta_table.artist_id IN (
+                SELECT artist_id
+                FROM artists
+                WHERE artist_name = a.artist_name
+            );
+        """)]
+
+        queries.append(sql.SQL("""
+            UPDATE artists_albums aa_table
+            SET artist_id = a.new_artist_id
+            FROM (
+                SELECT artist_name, MIN(artist_id) AS new_artist_id
+                FROM artists
+                GROUP BY artist_name
+            ) a
+            WHERE aa_table.artist_id IN (
+                SELECT artist_id
+                FROM artists
+                WHERE artist_name = a.artist_name
+            );
+        """))
+        return queries
+    
+    def get_update_albums_relationships(self) -> list[sql.SQL]:
+        queries = [sql.SQL("""
+            UPDATE tracks_albums ta_table
+            SET album_id = a.new_album_id
+            FROM (
+                SELECT old_album_id, MIN(album_id) AS new_album_id
+                FROM albums
+                GROUP BY old_album_id
+            ) a
+            WHERE ta_table.album_id IN (
+                SELECT album_id
+                FROM albums
+                WHERE old_album_id = a.old_album_id
+            );
+        """)]
+
+        queries.append(sql.SQL("""
+            UPDATE artists_albums aa
+            SET album_id = a.new_album_id
+            FROM (
+                SELECT old_album_id, MIN(album_id) AS new_album_id
+                FROM albums
+                GROUP BY old_album_id
+            ) a
+            WHERE aa.album_id IN (
+                SELECT album_id
+                FROM albums
+                WHERE old_album_id = a.old_album_id
+            );
+        """))
+        return queries
+    
+    def get_drop_duplicates_queries(self) -> list[sql.SQL]:
+        queries = [sql.SQL("""
+                DELETE FROM artists
+                WHERE artist_id NOT IN (
+                    SELECT MIN(artist_id)
+                    FROM artists
+                    GROUP BY artist_name
+                );
+            """)]
+        queries.append(sql.SQL("""
+                DELETE FROM albums
+                WHERE album_id NOT IN (
+                    SELECT MIN(album_id)
+                    FROM albums
+                    GROUP BY old_album_id
+                );
+            """))
+        return queries
+    
+    def remove_temp_cols(self):
+        query = sql.SQL("""
+                        ALTER TABLE albums
+                        DROP COLUMN old_album_id;
+                        """)
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        self.conn.commit()
+        cursor.close()

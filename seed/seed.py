@@ -79,6 +79,8 @@ def main():
         max_ids = loader.get_max_ids()
 
     # TODO: Drop duplicate artists and albums, and update relationships.
+    loader.drop_duplicates()
+    loader.remove_temp_cols()
     conn.close()
     print("Disconnected")
 
