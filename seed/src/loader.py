@@ -3,7 +3,6 @@ Loader module for seeding the database.
 module: src/loader.py
 """
 
-from typing import Any
 import bcrypt
 from psycopg2 import sql
 import pandas as pd
@@ -36,6 +35,13 @@ class DatabaseLoader:
         self.execute_queries(queries)
 
     def execute_queries(self, queries: list[sql.SQL]) -> None:
+        """
+        Execute a list of queries.
+
+        :param self: This instance.
+        :param queries: A list of queries.
+        :type queries: list[sql.SQL]
+        """
         cursor = self.conn.cursor()
         for query in queries:
             cursor.execute(query)
@@ -62,7 +68,7 @@ class DatabaseLoader:
     def seed_database(self, data: pd.DataFrame):
         """Seed the data into the PostgreSQL database."""
         self.seed_artists(data[["artist_id", "artist_name"]])
-        self.seed_albums(data[["album_id", "album_name", "old_album_id"]])
+        self.seed_albums(data[["album_id", "album_name"]])
         self.seed_tracks(
             data[
                 [
@@ -105,13 +111,13 @@ class DatabaseLoader:
         cursor = self.conn.cursor()
         for _, row in albums_data.drop_duplicates(subset=["album_id"]).iterrows():
             query = """
-                INSERT INTO albums (album_name, album_id, old_album_id)
-                VALUES (%s, %s, %s)
+                INSERT INTO albums (album_name, album_id)
+                VALUES (%s, %s)
                 ON CONFLICT (album_id) DO NOTHING;
             """
             cursor.execute(
                 query,
-                (row["album_name"], row["album_id"], row["old_album_id"]),
+                (row["album_name"], row["album_id"]),
             )
         self.conn.commit()
         cursor.close()
@@ -215,210 +221,3 @@ class DatabaseLoader:
             right_col=sql.Identifier(relationship.right_col),
         )
         cursor.execute(query, (ids.left_id, ids.right_id))
-
-    def get_max_ids(self) -> dict[str, int]:
-        """
-        Fetch the current max ids from the database.
-
-        :param self: This instance.
-        :return: A dictionary with the max ids.
-        :rtype: dict[str, int]
-        """
-        cursor = self.conn.cursor()
-        max_ids: dict[str, int] = {}
-
-        cursor.execute("SELECT MAX(artist_id) FROM artists;")
-        fetched = cursor.fetchone()
-        max_ids["artist_id"] = self.check_max_id(fetched)
-
-        cursor.execute("SELECT MAX(album_id) FROM albums;")
-        fetched = cursor.fetchone()
-        max_ids["album_id"] = self.check_max_id(fetched)
-
-        cursor.execute("SELECT MAX(track_id) FROM tracks;")
-        fetched = cursor.fetchone()
-        max_ids["track_id"] = self.check_max_id(fetched)
-
-        cursor.close()
-        return max_ids
-
-    def check_max_id(self, fetched: tuple[Any] | None) -> int:
-        """
-        Get the max id if the fetched tuple is not None.
-
-        :param self: This instance.
-        :param fetched: The fetched tuple to check.
-        :type fetched: tuple[Any] | None
-        :return: The max id or 0.
-        :rtype: int
-        """
-        max_id = 0
-        if fetched is not None:
-            max_id = fetched[0]
-        return max_id
-
-    def create_indexes(self) -> None:
-        """Create indexes for artists and albums."""
-        queries = [
-            sql.SQL(
-                "CREATE INDEX IF NOT EXISTS idx_artist_name ON artists(artist_name);"
-            ),
-            sql.SQL(
-                "CREATE INDEX IF NOT EXISTS idx_album_old_id ON albums(old_album_id);"
-            ),
-        ]
-        self.execute_queries(queries)
-        print("Created indexes for artists and albums.")
-
-    def update_relationships(self) -> None:
-        queries = self.get_update_relationship_queries()
-        self.execute_queries(queries)
-        print("Updated relationships.")
-
-    def get_update_relationship_queries(self) -> list[sql.SQL]:
-        return (
-            self.get_update_artists_relationships()
-            + self.get_update_albums_relationships()
-        )
-
-    def get_update_artists_relationships(self) -> list[sql.SQL]:
-        queries = [
-            sql.SQL("""
-            UPDATE tracks_artists ta_table
-            SET artist_id = a.new_artist_id
-            FROM (
-                SELECT artist_name, MIN(artist_id) AS new_artist_id
-                FROM artists
-                GROUP BY artist_name
-            ) a
-            WHERE EXISTS (
-                SELECT 1
-                FROM artists a2
-                WHERE a2.artist_name = a.artist_name
-                AND a2.artist_id = ta_table.artist_id
-            )
-            AND NOT EXISTS (                            -- Check if the relationship already exists.
-                SELECT 1
-                FROM tracks_artists ta2
-                WHERE ta2.track_id = ta_table.track_id
-                AND ta2.artist_id = a.new_artist_id
-            )
-            AND ta_table.artist_id != a.new_artist_id;
-        """)
-        ]
-
-        queries.append(
-            sql.SQL("""
-            UPDATE artists_albums aa_table
-            SET artist_id = a.new_artist_id
-            FROM (
-                SELECT artist_name, MIN(artist_id) AS new_artist_id
-                FROM artists
-                GROUP BY artist_name
-            ) a
-            WHERE EXISTS (
-                SELECT 1
-                FROM artists a2
-                WHERE a2.artist_name = a.artist_name
-                AND a2.artist_id = aa_table.artist_id
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM artists_albums aa2
-                WHERE aa2.artist_id = a.new_artist_id
-                AND aa2.album_id = aa_table.album_id
-            )
-            AND aa_table.artist_id != a.new_artist_id;
-        """)
-        )
-        return queries
-
-    def get_update_albums_relationships(self) -> list[sql.SQL]:
-        queries = [
-            sql.SQL("""
-            UPDATE tracks_albums ta_table
-            SET album_id = a.new_album_id
-            FROM (
-                SELECT old_album_id, MIN(album_id) AS new_album_id
-                FROM albums
-                GROUP BY old_album_id
-            ) a
-            WHERE EXISTS (
-                SELECT 1
-                FROM albums a2
-                WHERE a2.old_album_id = a.old_album_id
-                AND a2.album_id = ta_table.album_id
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM tracks_albums ta2
-                WHERE ta2.track_id = ta_table.track_id
-                AND ta2.album_id = a.new_album_id
-            )
-            AND ta_table.album_id != a.new_album_id;
-        """)
-        ]
-
-        queries.append(
-            sql.SQL("""
-            UPDATE artists_albums aa_table
-            SET album_id = a.new_album_id
-            FROM (
-                SELECT old_album_id, MIN(album_id) AS new_album_id
-                FROM albums
-                GROUP BY old_album_id
-            ) a
-            WHERE EXISTS (
-                SELECT 1
-                FROM albums a2
-                WHERE a2.old_album_id = a.old_album_id
-                AND a2.album_id = aa_table.album_id
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM artists_albums aa2
-                WHERE aa2.artist_id = aa_table.artist_id
-                AND aa2.album_id = a.new_album_id
-            )
-            AND aa_table.album_id != a.new_album_id;
-        """)
-        )
-        return queries
-
-    def drop_duplicates(self) -> None:
-        queries = self.get_drop_duplicates_queries()
-        self.execute_queries(queries)
-        print("Dropped duplicates.")
-
-    def get_drop_duplicates_queries(self) -> list[sql.SQL]:
-        queries = [
-            sql.SQL("""
-                DELETE FROM artists
-                WHERE artist_id NOT IN (
-                    SELECT MIN(artist_id)
-                    FROM artists
-                    GROUP BY artist_name
-                );
-            """)
-        ]
-        queries.append(
-            sql.SQL("""
-                DELETE FROM albums
-                WHERE album_id NOT IN (
-                    SELECT MIN(album_id)
-                    FROM albums
-                    GROUP BY old_album_id
-                );
-            """)
-        )
-        return queries
-
-    def remove_temp_cols(self):
-        query = sql.SQL("""
-                        ALTER TABLE albums
-                        DROP COLUMN old_album_id;
-                        """)
-        cursor = self.conn.cursor()
-        cursor.execute(query)
-        self.conn.commit()
-        cursor.close()

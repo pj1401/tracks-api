@@ -83,8 +83,7 @@ class TableQuery:
                     CREATE TABLE IF NOT EXISTS albums (
                         album_id SERIAL PRIMARY KEY,
                         album_name VARCHAR(255),
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        old_album_id VARCHAR(50)
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                     """)
 

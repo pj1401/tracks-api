@@ -27,7 +27,7 @@ CSV_PATH = os.getenv("CSV_PATH")
 HDF5_PATH = os.getenv("HDF5_PATH")
 CSV_LISTENING_HISTORY_PATH = os.getenv("CSV_LISTENING_HISTORY_PATH")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 5000))
-NO_OF_CHUNKS = 2
+NO_OF_CHUNKS = int(os.getenv("NO_OF_CHUNKS", 3))
 
 admin_username = str(os.getenv("ADMIN_USERNAME"))
 admin_email = str(os.getenv("ADMIN_EMAIL"))
@@ -60,13 +60,6 @@ def main():
     hdf5_data = read_hdf5_data(str(HDF5_PATH))
     playcount_data = read_playcount_data(str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE)
 
-    # Connect to database
-    conn = connect_to_db()
-
-    loader = DatabaseLoader(conn)
-    loader.create_tables()
-    loader.seed_admin_user(User(admin_username, admin_email, admin_password))
-
     # Transform
     total_playcount = transform_playcount_data(playcount_data)
     csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
@@ -74,8 +67,15 @@ def main():
     # Merge with hdf5
     combined_data = transform(csv_df, hdf5_data, total_playcount)
 
+    # Connect to database
+    conn = connect_to_db()
+    loader = DatabaseLoader(conn)
+
+    loader.create_tables()
+    loader.seed_admin_user(User(admin_username, admin_email, admin_password))
     loader.seed_database(combined_data)
     conn.close()
+
     print("Disconnected")
 
 
