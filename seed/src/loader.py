@@ -9,7 +9,8 @@ import bcrypt
 from psycopg2 import sql
 import pandas as pd
 from psycopg2.extensions import connection, cursor
-from src.util.relationship_info import RelationshipInfo
+from src.util.relationship_ids import RelationshipIDs
+from src.util.relationship_query import RelationshipQuery
 from src.util.user import User
 
 
@@ -237,49 +238,64 @@ class DatabaseLoader:
         print(f"Seeded {len(tracks_data)} tracks.")
 
     def seed_tracks_artists(self, tracks_artists_data: pd.DataFrame):
+        self.seed_relationship_table(
+            tracks_artists_data,
+            RelationshipQuery("tracks_artists", "track_id", "artist_id"),
+        )
+        print(f"Seeded {len(tracks_artists_data)} track-artist relationships.")
+
+    def seed_tracks_albums(self, tracks_albums_data: pd.DataFrame):
+        self.seed_relationship_table(
+            tracks_albums_data,
+            RelationshipQuery("tracks_albums", "track_id", "album_id"),
+        )
+        print(f"Seeded {len(tracks_albums_data)} track-album relationships.")
+
+    def seed_artists_albums(self, artists_albums_data: pd.DataFrame):
+        self.seed_relationship_table(
+            artists_albums_data,
+            RelationshipQuery("artists_albums", "artist_id", "album_id"),
+        )
+        print(f"Seeded {len(artists_albums_data)} artist-album relationships.")
+
+    def seed_relationship_table(
+        self, data: pd.DataFrame, relationship: RelationshipQuery
+    ):
+        """
+        Iterate over relationship data and seed the relationship table.
+
+        :param self: This instance.
+        :param data: The DataFrame with the relationship data.
+        :type data: pd.DataFrame
+        :param relationship: Relationship info for the query string.
+        :type relationship: RelationshipQuery
+        """
         cursor = self.conn.cursor()
-        for _, row in tracks_artists_data.iterrows():
-            self.seed_relationship_table(
+        for _, row in data.iterrows():
+            self.execute_relationship_query(
                 cursor,
-                RelationshipInfo(
-                    "tracks_artists",
-                    "track_id",
-                    "artist_id",
-                    int(row["track_id"]),
-                    int(row["artist_id"]),
+                relationship,
+                RelationshipIDs(
+                    int(row[relationship.left_col]), int(row[relationship.right_col])
                 ),
             )
         self.conn.commit()
         cursor.close()
-        print(f"Seeded {len(tracks_artists_data)} track-artist relationships.")
 
-    def seed_tracks_albums(self, tracks_albums_data: pd.DataFrame):
-        cursor = self.conn.cursor()
-        for _, row in tracks_albums_data.iterrows():
-            query = """
-                INSERT INTO tracks_albums (track_id, album_id)
-                VALUES (%s, %s)
-                ON CONFLICT (track_id, album_id) DO NOTHING;
-            """
-            cursor.execute(query, (int(row["track_id"]), int(row["album_id"])))
-        self.conn.commit()
-        cursor.close()
-        print(f"Seeded {len(tracks_albums_data)} track-album relationships.")
+    def execute_relationship_query(
+        self, cursor: cursor, relationship: RelationshipQuery, ids: RelationshipIDs
+    ):
+        """
+        Execute a query for seeding a relationship table.
 
-    def seed_artists_albums(self, artists_albums_data: pd.DataFrame):
-        cursor = self.conn.cursor()
-        for _, row in artists_albums_data.iterrows():
-            query = """
-                INSERT INTO artists_albums (artist_id, album_id)
-                VALUES (%s, %s)
-                ON CONFLICT (artist_id, album_id) DO NOTHING;
-            """
-            cursor.execute(query, (int(row["artist_id"]), int(row["album_id"])))
-        self.conn.commit()
-        cursor.close()
-        print(f"Seeded {len(artists_albums_data)} artist-album relationships.")
-
-    def seed_relationship_table(self, cursor: cursor, relationship: RelationshipInfo):
+        :param self: This instance.
+        :param cursor: The cursor from the connection.
+        :type cursor: cursor
+        :param relationship: Relationship info for the query string.
+        :type relationship: RelationshipQuery
+        :param ids: The id values.
+        :type ids: RelationshipIDs
+        """
         query = sql.SQL("""
             INSERT INTO {table} ({left_col}, {right_col})
             VALUES (%s, %s)
@@ -289,7 +305,7 @@ class DatabaseLoader:
             left_col=sql.Identifier(relationship.left_col),
             right_col=sql.Identifier(relationship.right_col),
         )
-        cursor.execute(query, (relationship.left_id, relationship.right_id))
+        cursor.execute(query, (ids.left_id, ids.right_id))
 
     def get_max_ids(self) -> dict[str, int]:
         """
