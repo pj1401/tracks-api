@@ -8,8 +8,9 @@ from typing import Any
 import bcrypt
 from psycopg2 import sql
 import pandas as pd
-from psycopg2.extensions import connection
-from .user import User
+from psycopg2.extensions import connection, cursor
+from src.util.relationship_info import RelationshipInfo
+from src.util.user import User
 
 
 class DatabaseLoader:
@@ -238,12 +239,16 @@ class DatabaseLoader:
     def seed_tracks_artists(self, tracks_artists_data: pd.DataFrame):
         cursor = self.conn.cursor()
         for _, row in tracks_artists_data.iterrows():
-            query = """
-                INSERT INTO tracks_artists (track_id, artist_id)
-                VALUES (%s, %s)
-                ON CONFLICT (track_id, artist_id) DO NOTHING;
-            """
-            cursor.execute(query, (int(row["track_id"]), int(row["artist_id"])))
+            self.seed_relationship_table(
+                cursor,
+                RelationshipInfo(
+                    "tracks_artists",
+                    "track_id",
+                    "artist_id",
+                    int(row["track_id"]),
+                    int(row["artist_id"]),
+                ),
+            )
         self.conn.commit()
         cursor.close()
         print(f"Seeded {len(tracks_artists_data)} track-artist relationships.")
@@ -273,6 +278,18 @@ class DatabaseLoader:
         self.conn.commit()
         cursor.close()
         print(f"Seeded {len(artists_albums_data)} artist-album relationships.")
+
+    def seed_relationship_table(self, cursor: cursor, relationship: RelationshipInfo):
+        query = sql.SQL("""
+            INSERT INTO {table} ({left_col}, {right_col})
+            VALUES (%s, %s)
+            ON CONFLICT ({left_col}, {right_col}) DO NOTHING;
+        """).format(
+            table=sql.Identifier(relationship.table_name),
+            left_col=sql.Identifier(relationship.left_col),
+            right_col=sql.Identifier(relationship.right_col),
+        )
+        cursor.execute(query, (relationship.left_id, relationship.right_id))
 
     def get_max_ids(self) -> dict[str, int]:
         """

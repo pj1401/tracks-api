@@ -7,7 +7,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 
-from src.user import User
+from src.util.user import User
 from src.loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
 from src.transformer import transform, transform_playcount_data
