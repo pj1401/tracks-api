@@ -4,11 +4,11 @@ module: src/loader.py
 """
 
 from typing import Any
-
 import bcrypt
 from psycopg2 import sql
 import pandas as pd
 from psycopg2.extensions import connection, cursor
+from src.tables import TableQuery
 from src.util.relationship_ids import RelationshipIDs
 from src.util.relationship_query import RelationshipQuery
 from src.util.user import User
@@ -17,6 +17,7 @@ from src.util.user import User
 class DatabaseLoader:
     def __init__(self, conn: connection) -> None:
         self.conn = conn
+        self.tables = TableQuery()
 
     def create_tables(self):
         self.create_tracks_table()
@@ -28,22 +29,7 @@ class DatabaseLoader:
         self.create_users_table()
 
     def create_tracks_table(self):
-        query = sql.SQL("""
-            CREATE TABLE IF NOT EXISTS tracks (
-                track_id SERIAL PRIMARY KEY,
-                name VARCHAR(511),
-                total_playcount BIGINT DEFAULT 0,
-                spotify_id VARCHAR(255),
-                tags VARCHAR(511),
-                genre VARCHAR(255),
-                year INT,
-                duration_ms INT,
-                danceability FLOAT,
-                mode INT,
-                valence FLOAT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """)
+        query = self.tables.get_create_tracks_query()
         self.run_query(query)
         print("Created table: 'tracks'")
 
