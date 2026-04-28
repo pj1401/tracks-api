@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from src.util.user import User
 from src.loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
-from src.transformer import transform, transform_playcount_data
+from src.transformer import transform, transform_csv_data, transform_playcount_data
 
 # Load environment variables
 load_dotenv()
@@ -27,7 +27,7 @@ CSV_PATH = os.getenv("CSV_PATH")
 HDF5_PATH = os.getenv("HDF5_PATH")
 CSV_LISTENING_HISTORY_PATH = os.getenv("CSV_LISTENING_HISTORY_PATH")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 5000))
-NO_OF_CHUNKS = 5
+NO_OF_CHUNKS = 2
 
 admin_username = str(os.getenv("ADMIN_USERNAME"))
 admin_email = str(os.getenv("ADMIN_EMAIL"))
@@ -67,25 +67,14 @@ def main():
     loader.create_tables()
     loader.seed_admin_user(User(admin_username, admin_email, admin_password))
 
-    # Initialise max ids
-    max_ids = {"artist_id": 0, "album_id": 0, "track_id": 0}
-
     # Transform
     total_playcount = transform_playcount_data(playcount_data)
-    for i, chunk in enumerate(csv_data):
-        if i >= NO_OF_CHUNKS:
-            break
+    csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
 
-        combined_data = transform(chunk, hdf5_data, total_playcount, max_ids)
+    # Merge with hdf5
+    combined_data = transform(csv_df, hdf5_data, total_playcount)
 
-        # Seed database
-        loader.seed_database(combined_data)
-        max_ids = loader.get_max_ids()
-
-    loader.create_indexes()
-    loader.update_relationships()
-    loader.drop_duplicates()
-    loader.remove_temp_cols()
+    loader.seed_database(combined_data)
     conn.close()
     print("Disconnected")
 
