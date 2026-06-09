@@ -12,9 +12,7 @@ class Artist(BaseModel):
     __tablename__ = "artists"
     name = Column(String(255), nullable=False)
     tracks = relationship("Track", secondary="artists_tracks", back_populates="artists")
-    albums = relationship(
-        "Albums", secondary="artists_albums", back_populates="artists"
-    )
+    albums = relationship("Album", secondary="artists_albums", back_populates="artists")
 
 
 artists_tracks_table = Table(

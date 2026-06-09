@@ -55,9 +55,44 @@ class DatabaseLoader:
         self.seed_artists(artists_df)
         self.seed_albums(albums_df)
         self.seed_tracks(tracks_df)
-        self.seed_artists_albums(tracks_df)
-        self.seed_artists_tracks(tracks_df)
-        self.seed_tracks_albums(tracks_df)
+        # self.seed_artists_albums(tracks_df)
+        # self.seed_artists_tracks(tracks_df)
+        # self.seed_tracks_albums(tracks_df)
+
+    def seed_artists(self, data: pd.DataFrame) -> None:
+        """Seed the artists table."""
+        artists = [
+            Artist(name=row["artist_name"], id=row["artist_id"])
+            for _, row in data.iterrows()
+        ]
+        self.load_table("artists", artists, Artist)
+
+    def seed_albums(self, data: pd.DataFrame) -> None:
+        """Seed the albums table."""
+        albums = [
+            Album(name=row["album_name"], id=row["album_id"])
+            for _, row in data.iterrows()
+        ]
+        self.load_table("albums", albums, Album)
+
+    def seed_tracks(self, data: pd.DataFrame) -> None:
+        """Seed the tracks table."""
+        tracks = [
+            Track(
+                name=row["name"],
+                total_playcount=int(row["total_playcount"]),
+                spotify_id=row["spotify_id"],
+                tags=row["tags"],
+                genre=row["genre"],
+                year=row["year"],
+                duration_ms=row["duration_ms"],
+                danceability=row["danceability"],
+                mode=row["mode"],
+                valence=row["valence"],
+            )
+            for _, row in data.iterrows()
+        ]
+        self.load_table("tracks", tracks, Track)
 
     def load_table(self, table_name: str, data: List[M], model: Type[M]) -> None:
         """Load seed data from a DataFrame into a table."""
