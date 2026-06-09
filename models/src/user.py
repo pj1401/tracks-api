@@ -1,6 +1,6 @@
 """
 The User model.
-module: src/util/models/user.py
+module: src/user.py
 """
 
 from sqlalchemy import Column, Integer, String
