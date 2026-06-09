@@ -180,7 +180,7 @@ wheels = [
 [[package]]
 name = "models"
 version = "0.1.0"
-source = { directory = "../models" }
+source = { editable = "../models" }
 dependencies = [
     { name = "sqlalchemy" },
 ]
@@ -408,6 +408,7 @@ dependencies = [
     { name = "pandas" },
     { name = "psycopg2" },
     { name = "python-dotenv" },
+    { name = "sqlalchemy" },
 ]
 
 [package.dev-dependencies]
@@ -421,10 +422,11 @@ requires-dist = [
     { name = "bcrypt", specifier = ">=5.0.0" },
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "h5py", specifier = ">=3.15.1" },
-    { name = "models", directory = "../models" },
+    { name = "models", editable = "../models" },
     { name = "pandas", specifier = ">=3.0.1" },
     { name = "psycopg2", specifier = ">=2.9.11" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "sqlalchemy", specifier = ">=2.0.50" },
 ]
 
 [package.metadata.requires-dev]

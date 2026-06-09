@@ -10,6 +10,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "bcrypt>=5.0.0",
     "models",
+    "sqlalchemy>=2.0.50",
 ]
 
 [dependency-groups]
@@ -19,7 +20,7 @@ dev = [
 ]
 
 [tool.uv.sources]
-models = { path = "../models" }
+models = { path = "../models", editable = true }
 
 [tool.pyright]
 include = ["src"]
