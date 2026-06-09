@@ -10,6 +10,7 @@ import pandas as pd
 from sqlalchemy import Table, create_engine, inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError
+from src.util.user import User
 
 from models import (
     Album,
