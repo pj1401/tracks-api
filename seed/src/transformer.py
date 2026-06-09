@@ -1,5 +1,6 @@
 """
 Transformer module for cleaning and joining data.
+module: src/transformer.py
 """
 
 from collections.abc import Iterator
@@ -21,9 +22,23 @@ def transform_playcount_data(playcount_data: Iterator[pd.DataFrame]) -> pd.DataF
     return total_playcount
 
 
+def transform_csv_data(
+    csv_data: Iterator[pd.DataFrame], no_of_chunks: int
+) -> pd.DataFrame:
+    csv_df = pd.DataFrame()
+    for i, chunk in enumerate(csv_data):
+        if i >= no_of_chunks:
+            break
+        chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
+        chunk = normalize_columns(chunk)
+        csv_df = pd.concat([csv_df, chunk])
+    return csv_df
+
+
 def merge(
     df: pd.DataFrame, hdf5_df: pd.DataFrame, total_playcount: pd.DataFrame
 ) -> pd.DataFrame:
+    """Merge csv, hdf and playcount data."""
     # Normalise track_id
     df["track_id"] = df["track_id"].astype("str").str.strip().str.upper()
     hdf5_df["track_id"] = hdf5_df["track_id"].astype("str").str.strip().str.upper()
@@ -40,8 +55,6 @@ def merge(
 
 def normalize(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    # Strip whitespaces and set column names to lowercase.
-    df.columns = [col.strip().lower() for col in df.columns]
 
     # Normalise values from the hdf5 data.
     df["song_id"] = df["song_id"].astype("str").str.strip()
@@ -51,11 +64,20 @@ def normalize(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Lowercase column names and strip surrounding whitespace."""
+    df = df.copy()
+    df.columns = [col.strip().lower() for col in df.columns]
+    return df
+
+
 def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
+    df = df.rename(columns={"track_id": "old_track_id"})
     df = df.rename(columns={"artist": "artist_name"})
+    df = df.rename(columns={"artist_id": "old_artist_id"})
     df = df.rename(columns={"release": "album_name"})
-    df = df.rename(columns={"release_7digitalid": "album_id"})
+    df = df.rename(columns={"release_7digitalid": "old_album_id"})
     df = df.rename(columns={"playcount": "total_playcount"})
     return df
 
@@ -67,12 +89,56 @@ def replace_NaN(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def transform_artists(df: pd.DataFrame) -> pd.DataFrame:
+    artists_df = pd.DataFrame(
+        df[["artist_name"]].drop_duplicates().reset_index(drop=True)
+    )
+    artists_df["artist_id"] = artists_df.index + 1
+    return normalize_columns(artists_df)
+
+
+def transform_albums(df: pd.DataFrame) -> pd.DataFrame:
+    albums_df = pd.DataFrame(df[["album_name", "old_album_id"]].reset_index(drop=True))
+    albums_df = albums_df.drop_duplicates(subset=["old_album_id"], keep="first")
+    albums_df["album_id"] = albums_df.index + 1
+    return normalize_columns(albums_df)
+
+
+def transform_tracks(df: pd.DataFrame) -> pd.DataFrame:
+    """Generate new track_ids and drop duplicates based on old_track_id."""
+    df.copy()
+    tracks_df = pd.DataFrame(df[["old_track_id", "name"]].reset_index(drop=True))
+    tracks_df = tracks_df.drop_duplicates(subset=["old_track_id"], keep="first")
+    tracks_df["track_id"] = tracks_df.index + 1
+    tracks_df = normalize_columns(tracks_df)
+    df = df.drop(columns=["name"])
+    return df.merge(tracks_df, on="old_track_id", how="left")
+
+
+def replace_ids(
+    artists_df: pd.DataFrame, albums_df: pd.DataFrame, tracks_df: pd.DataFrame
+) -> pd.DataFrame:
+    """Replace old artist ids and album ids."""
+    # Create a mappings
+    artist_mapping = dict(zip(artists_df["artist_name"], artists_df["artist_id"]))
+    album_mapping = dict(zip(albums_df["old_album_id"], albums_df["album_id"]))
+
+    # Replace old ids with new ids
+    tracks_df["artist_id"] = tracks_df["artist_name"].map(artist_mapping)
+    tracks_df["album_id"] = tracks_df["old_album_id"].map(album_mapping)
+
+    return tracks_df
+
+
 def transform(
-    csv_df: Iterator[pd.DataFrame],
-    hdf5_df: pd.DataFrame,
-    total_playcount: Iterator[pd.DataFrame],
+    csv_df: pd.DataFrame, hdf5_df: pd.DataFrame, total_playcount: pd.DataFrame
 ):
     merged = merge(csv_df, hdf5_df, total_playcount)
     normalized = normalize(merged)
     renamed = rename_columns(normalized)
-    return replace_NaN(renamed)
+    cleaned = replace_NaN(renamed)
+    artists_df = transform_artists(cleaned)
+    albums_df = transform_albums(cleaned)
+    tracks_df = transform_tracks(cleaned)
+    combined_df = replace_ids(artists_df, albums_df, tracks_df)
+    return combined_df

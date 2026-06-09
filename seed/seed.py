@@ -1,11 +1,16 @@
+"""
+The starting point of the seed script.
+module: seed.py
+"""
+
 import os
 import psycopg2
 from dotenv import load_dotenv
 
-from src.user import User
-from src.loader import create_tables, seed_admin_user, seed_database
+from src.util.user import User
+from src.loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
-from src.transformer import transform, transform_playcount_data
+from src.transformer import transform, transform_csv_data, transform_playcount_data
 
 # Load environment variables
 load_dotenv()
@@ -21,12 +26,19 @@ SQL_TABLE = os.getenv("SQL_TABLE")
 CSV_PATH = os.getenv("CSV_PATH")
 HDF5_PATH = os.getenv("HDF5_PATH")
 CSV_LISTENING_HISTORY_PATH = os.getenv("CSV_LISTENING_HISTORY_PATH")
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 5000))
+NO_OF_CHUNKS = int(os.getenv("NO_OF_CHUNKS", 3))
+
+admin_username = str(os.getenv("ADMIN_USERNAME"))
+admin_email = str(os.getenv("ADMIN_EMAIL"))
+admin_password = str(os.getenv("ADMIN_PASSWORD"))
 
 # Read secrets from files
-ADMIN_USERNAME = open("/run/secrets/admin_username", "r").read().strip()
-ADMIN_EMAIL = open("/run/secrets/admin_email", "r").read().strip()
-ADMIN_PASSWORD = open("/run/secrets/admin_password", "r").read().strip()
+ENVIRONMENT = str(os.getenv("ENVIRONMENT", "production"))
+if ENVIRONMENT == "production":
+    admin_username = open("/run/secrets/admin_username", "r").read().strip()
+    admin_email = open("/run/secrets/admin_email", "r").read().strip()
+    admin_password = open("/run/secrets/admin_password", "r").read().strip()
 
 
 def connect_to_db():
@@ -44,25 +56,26 @@ def connect_to_db():
 
 def main():
     # Read data
-    csv_data = read_csv_data(CSV_PATH, CHUNK_SIZE)
-    hdf5_data = read_hdf5_data(HDF5_PATH)
-    playcount_data = read_playcount_data(CSV_LISTENING_HISTORY_PATH, CHUNK_SIZE)
-
-    # Connect to database
-    conn = connect_to_db()
-
-    create_tables(conn)
-    seed_admin_user(conn, User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD))
+    csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
+    hdf5_data = read_hdf5_data(str(HDF5_PATH))
+    playcount_data = read_playcount_data(str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE)
 
     # Transform
     total_playcount = transform_playcount_data(playcount_data)
-    for chunk in csv_data:
-        combined_data = transform(chunk, hdf5_data, total_playcount)
+    csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
 
-        # Seed database
-        seed_database(conn, combined_data)
+    # Merge with hdf5
+    combined_data = transform(csv_df, hdf5_data, total_playcount)
 
+    # Connect to database
+    conn = connect_to_db()
+    loader = DatabaseLoader(conn)
+
+    loader.create_tables()
+    loader.seed_admin_user(User(admin_username, admin_email, admin_password))
+    loader.seed_database(combined_data)
     conn.close()
+
     print("Disconnected")
 
 
