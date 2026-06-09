@@ -9,9 +9,13 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "dotenv>=0.9.9",
     "bcrypt>=5.0.0",
+    "models",
 ]
 
 [dependency-groups]
 dev = [
     "ruff>=0.15.4",
 ]
+
+[tool.uv.sources]
+models = { path = "../models" }
