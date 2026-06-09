@@ -72,10 +72,10 @@ def main():
         csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
 
         # Merge with hdf5
-        combined_data = transform(csv_df, hdf5_data, total_playcount)
+        transoformed_data = transform(csv_df, hdf5_data, total_playcount)
 
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
-        db_loader.seed_database(combined_data)
+        db_loader.seed_database(transoformed_data)
 
         print("Disconnected")
     else:

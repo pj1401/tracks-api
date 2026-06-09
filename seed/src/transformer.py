@@ -140,5 +140,6 @@ def transform(
     artists_df = transform_artists(cleaned)
     albums_df = transform_albums(cleaned)
     tracks_df = transform_tracks(cleaned)
-    combined_df = replace_ids(artists_df, albums_df, tracks_df)
-    return combined_df
+    tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+    print(tracks_df.head(10))
+    return tracks_df, artists_df, albums_df

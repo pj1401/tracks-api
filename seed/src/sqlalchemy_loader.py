@@ -10,7 +10,7 @@ import pandas as pd
 from sqlalchemy import Table, create_engine, inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError
-from src.util.user import User
+from src.util.user import User as UserSchema
 
 from models import (
     Album,
@@ -47,6 +47,18 @@ class DatabaseLoader:
         finally:
             session.close()
 
+    def seed_database(
+        self, data: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
+    ) -> None:
+        """Seed the database."""
+        tracks_df, artists_df, albums_df = data
+        self.seed_artists(artists_df)
+        self.seed_albums(albums_df)
+        self.seed_tracks(tracks_df)
+        self.seed_artists_albums(tracks_df)
+        self.seed_artists_tracks(tracks_df)
+        self.seed_tracks_albums(tracks_df)
+
     def load_table(self, table_name: str, data: List[M], model: Type[M]) -> None:
         """Load seed data from a DataFrame into a table."""
         session = self.session_factory()
@@ -80,7 +92,7 @@ class DatabaseLoader:
         finally:
             session.close()
 
-    def seed_admin_user(self, admin: User):
+    def seed_admin_user(self, admin: UserSchema):
         session = self.session_factory()
 
         # Create a password hash before storing.
