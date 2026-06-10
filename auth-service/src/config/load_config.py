@@ -66,7 +66,7 @@ def load_config(app: Flask) -> None:
             "DB_PORT": _get_env_or_secret("POSTGRES_PORT", "5432"),
             "FLASK_DEBUG": _get_env_or_secret("FLASK_DEBUG", "False"),
             "FLASK_HOST": _get_env_or_secret("FLASK_HOST", "127.0.0.1"),
-            "FLASK_PORT": _get_env_or_secret("FLASK_PORT", 5000),
+            "FLASK_PORT": _get_env_or_secret("FLASK_PORT", 5010),
             "SECRET_KEY": _get_env_or_secret("FLASK_SECRET_KEY"),
             "JWT_PRIVATE_KEY": _get_env_or_secret("JWT_PRIVATE_KEY"),
             "JWT_PUBLIC_KEY": _get_env_or_secret("JWT_PUBLIC_KEY"),

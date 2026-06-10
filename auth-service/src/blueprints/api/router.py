@@ -21,7 +21,7 @@ def before_request():
 def get():
     base_url = cast(str, current_app.config["BASE_URL"])
     response = {
-        "message": "Welcome to Tracks API!",
+        "message": "Welcome to Auth API!",
         "version 1": f"{base_url}/api/v1",
     }
     return jsonify(response)

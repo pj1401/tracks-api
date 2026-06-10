@@ -20,6 +20,7 @@ dependencies = [
     { name = "dotenv" },
     { name = "flask" },
     { name = "flask-jwt-extended" },
+    { name = "flask-swagger-ui" },
     { name = "gunicorn" },
     { name = "models" },
     { name = "psycopg2-binary" },
@@ -40,6 +41,7 @@ requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "flask", specifier = ">=3.1.3" },
     { name = "flask-jwt-extended", specifier = ">=4.7.4" },
+    { name = "flask-swagger-ui", specifier = ">=5.32.6" },
     { name = "gunicorn", specifier = ">=26.0.0" },
     { name = "models", editable = "../models" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
@@ -212,6 +214,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/20/bf/75189cf38cd391dddeb097001be3bc9ec24a8cae5a5a3698cd0a3fcaa182/flask_jwt_extended-4.7.4.tar.gz", hash = "sha256:78fd0f460317facf3a0084a6457ffaf2f1dda9eefbd576f94cea35b0eadd5531", size = 34672, upload-time = "2026-05-13T15:23:17.664Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/76/38/547a19f8ed0460e8c67c5b9e56ad72002fb06a1862fb786ef071ff03b9df/flask_jwt_extended-4.7.4-py2.py3-none-any.whl", hash = "sha256:daad1981117f4972d63c363d013f290de307aad781a935921b603b714817393c", size = 22699, upload-time = "2026-05-13T15:23:16.503Z" },
+]
+
+[[package]]
+name = "flask-swagger-ui"
+version = "5.32.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c8/db/06cd2b77fff6c115c37dc8ec4db04ee6e5119799a27c7e19410f0f303c0e/flask_swagger_ui-5.32.6.tar.gz", hash = "sha256:38730cb566e5f1d70deb8bb1035ef1565b35dc50cdfd2a9e507779a751d46930", size = 613730, upload-time = "2026-05-18T10:31:09.328Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/9f/a0510e3c648f2e6b58bbf5dc7db23668ec0ad5db90e1d84afb466a1f778f/flask_swagger_ui-5.32.6-py3-none-any.whl", hash = "sha256:83ec82f2b1da3628d89bc2eaa4836fdba7194353ff09d3d5c7d1e6892f345336", size = 618735, upload-time = "2026-05-18T10:31:07.034Z" },
 ]
 
 [[package]]
