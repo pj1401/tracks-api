@@ -4,7 +4,6 @@ module: seed.py
 """
 
 import os
-import psycopg2
 from dotenv import load_dotenv
 from models import BaseModel
 
@@ -16,43 +15,11 @@ from src.transformer import transform, transform_csv_data, transform_playcount_d
 # Load environment variables
 load_dotenv()
 
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-
-SQL_TABLE = os.getenv("SQL_TABLE")
-
 CSV_PATH = os.getenv("CSV_PATH")
 HDF5_PATH = os.getenv("HDF5_PATH")
 CSV_LISTENING_HISTORY_PATH = os.getenv("CSV_LISTENING_HISTORY_PATH")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 5000))
 NO_OF_CHUNKS = int(os.getenv("NO_OF_CHUNKS", 3))
-
-admin_username = str(os.getenv("ADMIN_USERNAME"))
-admin_email = str(os.getenv("ADMIN_EMAIL"))
-admin_password = str(os.getenv("ADMIN_PASSWORD"))
-
-# Read secrets from files
-ENVIRONMENT = str(os.getenv("ENVIRONMENT", "production"))
-if ENVIRONMENT == "production":
-    admin_username = open("/run/secrets/admin_username", "r").read().strip()
-    admin_email = open("/run/secrets/admin_email", "r").read().strip()
-    admin_password = open("/run/secrets/admin_password", "r").read().strip()
-
-
-def connect_to_db():
-    """Connect to PostgreSQL database."""
-    conn = psycopg2.connect(
-        dbname=POSTGRES_DB,
-        user=POSTGRES_USER,
-        password=POSTGRES_PASSWORD,
-        host=POSTGRES_HOST,
-        port=POSTGRES_PORT,
-    )
-    print("Connected to database")
-    return conn
 
 
 def main():
@@ -74,6 +41,10 @@ def main():
         # Merge with hdf5
         transoformed_data = transform(csv_df, hdf5_data, total_playcount)
 
+        admin_username = _get_env_or_secret("ADMIN_USERNAME")
+        admin_email = _get_env_or_secret("ADMIN_EMAIL")
+        admin_password = _get_env_or_secret("ADMIN_PASSWORD")
+
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
         db_loader.seed_database(transoformed_data)
 
@@ -83,6 +54,31 @@ def main():
     return
 
 
+def _get_env_or_secret(
+    env_var: str, default: str | int | None = None
+) -> str | int | None:
+    """
+    Get the value of an environment variable or read it from a file if it ends with _FILE.
+
+    :param env_var: The variable name.
+    :type env_var: str
+    :param default: The default value of the variable.
+    :type default: str | int | None
+    :return: The variable value from the file or environment variable.
+    :rtype: str | int | None
+    """
+    file_var = f"{env_var}_FILE"
+    value = None
+    if file_var in os.environ:
+        # Read from file
+        with open(os.environ[file_var], "r") as f:
+            value = f.read().strip()
+    else:
+        # Read from environment variable
+        value = os.getenv(env_var, default)
+    return value
+
+
 def get_db_uri() -> str:
     """
     Get the formatted db uri.
@@ -90,6 +86,11 @@ def get_db_uri() -> str:
     :return: The database URI.
     :rtype: str
     """
+    POSTGRES_USER = _get_env_or_secret("POSTGRES_USER")
+    POSTGRES_PASSWORD = _get_env_or_secret("POSTGRES_PASSWORD")
+    POSTGRES_HOST = _get_env_or_secret("POSTGRES_HOST")
+    POSTGRES_PORT = _get_env_or_secret("POSTGRES_PORT", "5432")
+    POSTGRES_DB = _get_env_or_secret("POSTGRES_DB")
     return f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 

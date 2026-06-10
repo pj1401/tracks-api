@@ -1,0 +1,414 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Auth API v1",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "auth"
+    },
+    {
+      "name": "users"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Log in a user",
+        "deprecated": false,
+        "description": "Log in to get a generated JWT.",
+        "tags": [
+          "auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 255
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
+              },
+              "example": {
+                "username": "en999zz",
+                "password": "M1IKDd68aZje6SJ"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "default": 200,
+                      "minimum": 0,
+                      "maximum": 999
+                    },
+                    "access_token": {
+                      "type": "string",
+                      "description": "JWT"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "access_token"
+                  ]
+                },
+                "example": {
+                  "status": 200,
+                  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.ey..."
+                }
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Register a new account",
+        "deprecated": false,
+        "description": "Register a new account.",
+        "tags": [
+          "auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 255
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "username",
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "username": "en999zz",
+                "email": "en999zz2@student.lnu.se",
+                "password": "M1IKDd68aZje6SJ"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "title": ""
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "The ID of the resource",
+                      "minimum": 0
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "The user's username."
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The user's email address."
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "username",
+                    "email",
+                    "id"
+                  ]
+                },
+                "example": {
+                  "status": 201,
+                  "id": 3,
+                  "username": "en999zz",
+                  "email": "en999zz2@student.lnu.se"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad Request",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/users/{id}": {
+      "delete": {
+        "summary": "Delete a user",
+        "deprecated": false,
+        "description": "Delete a user by ID. Requires authentication.  \nReading logs owned by the user will also be deleted.",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "The ID of the user",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The server successfully processed the request and is not returning any content.",
+            "headers": {}
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": ""
+          },
+          "404": {
+            "$ref": "#/components/responses/Not Found",
+            "description": ""
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "responses": {
+      "Bad Request": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "description": "HTTP status code",
+                  "minimum": 0,
+                  "maximum": 999,
+                  "default": 400
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            },
+            "examples": {
+              "Default": {
+                "summary": "Default",
+                "value": {
+                  "status": 400,
+                  "message": "The request cannot or will not be processed due to something that is perceived to be a client error (for example validation error)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "description": "HTTP status code",
+                  "default": 401,
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "message": {
+                  "type": "string",
+                  "title": "",
+                  "description": "Description"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            },
+            "examples": {
+              "Default": {
+                "summary": "Default",
+                "value": {
+                  "status": 401,
+                  "message": "Credentials invalid or not provided."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Internal Server Error": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "description": "HTTP status code",
+                  "default": 500,
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Description"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            },
+            "examples": {
+              "Default": {
+                "summary": "Default",
+                "value": {
+                  "status": 500,
+                  "message": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Not Found": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "description": "HTTP status code",
+                  "default": 404,
+                  "minimum": 1,
+                  "maximum": 999
+                },
+                "message": {
+                  "type": "string",
+                  "title": "",
+                  "description": "Description"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            },
+            "examples": {
+              "Default": {
+                "summary": "Default",
+                "value": {
+                  "status": 404,
+                  "message": "The requested resource was not found."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://patriciaj.se/tracks-api/auth/api/v1",
+      "description": "Prod Env"
+    }
+  ],
+  "security": []
+}
