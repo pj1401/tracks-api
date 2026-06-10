@@ -7,6 +7,7 @@ WORKDIR /app
 COPY seed/requirements.txt .
 COPY seed/uv.lock .
 COPY seed/pyproject.toml .
+COPY ../models /models
 
 # Install system dependencies required for building Python packages
 RUN apk update && apk add --no-cache \

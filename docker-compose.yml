@@ -2,9 +2,13 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: tracks-api-postgres
-      POSTGRES_USER: etl_user
-      POSTGRES_PASSWORD: etl_pass
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
     ports:
       - "5432:5432"
     volumes:
@@ -18,16 +22,22 @@ services:
   seed:
     build:
       context: .
-      dockerfile: seed/Dockerfile
-    env_file:
-      - .env
+      dockerfile: seed/dockerfile
     environment:
-      POSTGRES_DB: tracks-api-postgres
-      POSTGRES_USER: etl_user
-      POSTGRES_PASSWORD: etl_pass
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+      CSV_PATH: data/Music Info.csv
+      CSV_LISTENING_HISTORY_PATH: data/User Listening History.csv
+      HDF5_PATH: data/msd_summary_file.h5
+      CHUNK_SIZE: 5000
+      NO_OF_CHUNKS: 2
     secrets:
+      - db_name
+      - db_user
+      - db_password
       - admin_username
       - admin_email
       - admin_password
@@ -35,6 +45,7 @@ services:
       db:
         condition: service_healthy
     volumes:
+      - ./models:/models
       - ./seed/data:/app/data
 
   api:
@@ -42,16 +53,52 @@ services:
       context: .
       dockerfile: api/Dockerfile
     environment:
-      POSTGRES_DB: tracks-api-postgres
-      POSTGRES_USER: etl_user
-      POSTGRES_PASSWORD: etl_pass
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+    secrets:
+      - db_name
+      - db_user
+      - db_password
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
+  
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/dockerfile
+    environment:
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5010
+      FLASK_DEBUG: True
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      BASE_URL: http://localhost:5010
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      FLASK_SECRET_KEY_FILE: /run/secrets/flask_secret_key
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - flask_secret_key
+      - jwt_private_key
+      - jwt_public_key
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5010:5010"
+    volumes:
+      - ./models:/models
 
 secrets:
   admin_username:
@@ -60,6 +107,18 @@ secrets:
     file: ./secrets/admin_email.txt
   admin_password:
     file: ./secrets/admin_password.txt
+  db_name:
+    file: ./secrets/db_name.txt
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  flask_secret_key:
+    file: ./secrets/flask_secret_key.txt
+  jwt_private_key:
+    file: ./secrets/tracks-api-jwt-key
+  jwt_public_key:
+    file: ./secrets/tracks-api-jwt-key.pub
 
 volumes:
   postgres_data:

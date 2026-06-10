@@ -7,6 +7,8 @@ WORKDIR /app
 COPY auth-service/requirements.txt .
 COPY auth-service/uv.lock .
 COPY auth-service/pyproject.toml .
+COPY ../models /models
+COPY auth-service/README.md .
 
 RUN apk update && apk add --no-cache \
     postgresql-dev \
@@ -22,4 +24,4 @@ RUN uv sync --frozen --no-dev
 
 COPY auth-service/ .
 
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "src.main:app"]
+CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:5010", "--workers", "2", "src.main:app"]
