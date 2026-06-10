@@ -6,9 +6,10 @@ module: seed.py
 import os
 import psycopg2
 from dotenv import load_dotenv
+from models import BaseModel
 
 from src.util.user import User
-from src.loader import DatabaseLoader
+from src.sqlalchemy_loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
 from src.transformer import transform, transform_csv_data, transform_playcount_data
 
@@ -55,28 +56,41 @@ def connect_to_db():
 
 
 def main():
-    # Read data
-    csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
-    hdf5_data = read_hdf5_data(str(HDF5_PATH))
-    playcount_data = read_playcount_data(str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE)
+    db_loader = DatabaseLoader(get_db_uri(), BaseModel)
 
-    # Transform
-    total_playcount = transform_playcount_data(playcount_data)
-    csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
+    # Check if data already exists.
+    if not db_loader.database_is_populated():
+        # Read data
+        csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
+        hdf5_data = read_hdf5_data(str(HDF5_PATH))
+        playcount_data = read_playcount_data(
+            str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE
+        )
 
-    # Merge with hdf5
-    combined_data = transform(csv_df, hdf5_data, total_playcount)
+        # Transform
+        total_playcount = transform_playcount_data(playcount_data)
+        csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
 
-    # Connect to database
-    conn = connect_to_db()
-    loader = DatabaseLoader(conn)
+        # Merge with hdf5
+        transoformed_data = transform(csv_df, hdf5_data, total_playcount)
 
-    loader.create_tables()
-    loader.seed_admin_user(User(admin_username, admin_email, admin_password))
-    loader.seed_database(combined_data)
-    conn.close()
+        db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
+        db_loader.seed_database(transoformed_data)
 
-    print("Disconnected")
+        print("Disconnected")
+    else:
+        print("Database already populated. Skipping seed.")
+    return
+
+
+def get_db_uri() -> str:
+    """
+    Get the formatted db uri.
+
+    :return: The database URI.
+    :rtype: str
+    """
+    return f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 
 if __name__ == "__main__":

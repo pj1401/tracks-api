@@ -9,9 +9,20 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "dotenv>=0.9.9",
     "bcrypt>=5.0.0",
+    "models",
+    "sqlalchemy>=2.0.50",
 ]
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.410",
     "ruff>=0.15.4",
 ]
+
+[tool.uv.sources]
+models = { path = "../models", editable = true }
+
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"

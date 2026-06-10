@@ -6,6 +6,7 @@ module: src/transformer.py
 from collections.abc import Iterator
 
 import pandas as pd
+import json
 
 
 def transform_playcount_data(playcount_data: Iterator[pd.DataFrame]) -> pd.DataFrame:
@@ -30,6 +31,10 @@ def transform_csv_data(
         if i >= no_of_chunks:
             break
         chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
+        chunk["tags"] = chunk["tags"].astype("str").str.strip()
+        chunk["tags"] = chunk["tags"].apply(json.dumps)
+        chunk["genre"] = chunk["genre"].astype("str").str.strip()
+        chunk["genre"] = chunk["genre"].apply(json.dumps)
         chunk = normalize_columns(chunk)
         csv_df = pd.concat([csv_df, chunk])
     return csv_df
@@ -140,5 +145,5 @@ def transform(
     artists_df = transform_artists(cleaned)
     albums_df = transform_albums(cleaned)
     tracks_df = transform_tracks(cleaned)
-    combined_df = replace_ids(artists_df, albums_df, tracks_df)
-    return combined_df
+    tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+    return tracks_df, artists_df, albums_df
