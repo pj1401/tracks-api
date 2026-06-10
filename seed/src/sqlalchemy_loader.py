@@ -17,6 +17,7 @@ from models import (
     Artist,
     Track,
     User,
+    artists_albums_table,
     artists_tracks_table,
     tracks_albums_table,
 )
@@ -55,9 +56,10 @@ class DatabaseLoader:
         self.seed_artists(artists_df)
         self.seed_albums(albums_df)
         self.seed_tracks(tracks_df)
-        # self.seed_artists_albums(tracks_df)
-        # self.seed_artists_tracks(tracks_df)
-        # self.seed_tracks_albums(tracks_df)
+        print(tracks_df.head())
+        self.seed_artists_albums(tracks_df)
+        self.seed_artists_tracks(tracks_df)
+        self.seed_tracks_albums(tracks_df)
 
     def seed_artists(self, data: pd.DataFrame) -> None:
         """Seed the artists table."""
@@ -108,6 +110,72 @@ class DatabaseLoader:
             raise err
         finally:
             session.close()
+
+    def seed_artists_albums(self, tracks_data: pd.DataFrame) -> None:
+        """Seed the artists_albums relationship table."""
+        relationships: List[Dict[str, int]] = []
+
+        # To filter existing relationships
+        seen: set[tuple[int, int]] = set()
+
+        for _, row in tracks_data.iterrows():
+            rel_tuple = (row["artist_id"], cast(int, row["album_id"]))
+            if rel_tuple not in seen:
+                seen.add(rel_tuple)
+                relationships.append(
+                    {
+                        "artist_id": row["artist_id"],
+                        "album_id": row["album_id"],
+                    }
+                )
+        if relationships:
+            self.seed_relationship_table(
+                relationships, artists_albums_table, "artist-album"
+            )
+
+    def seed_artists_tracks(self, tracks_data: pd.DataFrame) -> None:
+        """Seed the artists_tracks relationship table."""
+        relationships: List[Dict[str, int]] = []
+
+        # To filter existing relationships
+        seen: set[tuple[int, int]] = set()
+
+        for _, row in tracks_data.iterrows():
+            rel_tuple = (row["artist_id"], cast(int, row["track_id"]))
+            if rel_tuple not in seen:
+                seen.add(rel_tuple)
+                relationships.append(
+                    {
+                        "artist_id": row["artist_id"],
+                        "track_id": row["track_id"],
+                    }
+                )
+        if relationships:
+            self.seed_relationship_table(
+                relationships, artists_tracks_table, "artist-track"
+            )
+
+    def seed_tracks_albums(self, tracks_data: pd.DataFrame) -> None:
+        """Seed the tracks_albums relationship table."""
+        relationships: List[Dict[str, int]] = []
+
+        # To filter existing relationships
+        seen: set[tuple[int, int]] = set()
+
+        for _, row in tracks_data.iterrows():
+            rel_tuple = (row["album_id"], cast(int, row["track_id"]))
+            if rel_tuple not in seen:
+                seen.add(rel_tuple)
+                relationships.append(
+                    {
+                        "track_id": row["track_id"],
+                        "album_id": row["album_id"],
+                    }
+                )
+        if relationships:
+            self.seed_relationship_table(
+                relationships, tracks_albums_table, "track-album"
+            )
 
     def seed_relationship_table(
         self, relationships: List[Dict[str, int]], table: Table, relationship_name: str
