@@ -3,13 +3,13 @@ DatabaseLoader class.
 module: src/sqlalchemy_loader.py
 """
 
-from typing import Dict, Iterator, List, Optional, Type, TypeVar, cast
+from typing import Dict, List, Type, TypeVar, cast
 import bcrypt
-import numpy as np
 import pandas as pd
 from sqlalchemy import Table, create_engine, inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError
+from src.util.relationship_table import RelationshipTable
 from src.util.user import User as UserSchema
 
 from models import (
@@ -56,7 +56,6 @@ class DatabaseLoader:
         self.seed_artists(artists_df)
         self.seed_albums(albums_df)
         self.seed_tracks(tracks_df)
-        print(tracks_df.head())
         self.seed_artists_albums(tracks_df)
         self.seed_artists_tracks(tracks_df)
         self.seed_tracks_albums(tracks_df)
@@ -82,7 +81,7 @@ class DatabaseLoader:
         tracks = [
             Track(
                 name=row["name"],
-                total_playcount=int(row["total_playcount"]),
+                total_playcount=cast(int, row["total_playcount"]),
                 spotify_id=row["spotify_id"],
                 tags=row["tags"],
                 genre=row["genre"],
@@ -113,87 +112,83 @@ class DatabaseLoader:
 
     def seed_artists_albums(self, tracks_data: pd.DataFrame) -> None:
         """Seed the artists_albums relationship table."""
-        relationships: List[Dict[str, int]] = []
-
-        # To filter existing relationships
-        seen: set[tuple[int, int]] = set()
-
-        for _, row in tracks_data.iterrows():
-            rel_tuple = (row["artist_id"], cast(int, row["album_id"]))
-            if rel_tuple not in seen:
-                seen.add(rel_tuple)
-                relationships.append(
-                    {
-                        "artist_id": row["artist_id"],
-                        "album_id": row["album_id"],
-                    }
-                )
-        if relationships:
-            self.seed_relationship_table(
-                relationships, artists_albums_table, "artist-album"
-            )
+        self.load_relationship_table(
+            tracks_data,
+            artists_albums_table,
+            RelationshipTable("artists_albums", "artist_id", "album_id"),
+        )
 
     def seed_artists_tracks(self, tracks_data: pd.DataFrame) -> None:
         """Seed the artists_tracks relationship table."""
-        relationships: List[Dict[str, int]] = []
-
-        # To filter existing relationships
-        seen: set[tuple[int, int]] = set()
-
-        for _, row in tracks_data.iterrows():
-            rel_tuple = (row["artist_id"], cast(int, row["track_id"]))
-            if rel_tuple not in seen:
-                seen.add(rel_tuple)
-                relationships.append(
-                    {
-                        "artist_id": row["artist_id"],
-                        "track_id": row["track_id"],
-                    }
-                )
-        if relationships:
-            self.seed_relationship_table(
-                relationships, artists_tracks_table, "artist-track"
-            )
+        self.load_relationship_table(
+            tracks_data,
+            artists_tracks_table,
+            RelationshipTable("artists_tracks", "artist_id", "track_id"),
+        )
 
     def seed_tracks_albums(self, tracks_data: pd.DataFrame) -> None:
         """Seed the tracks_albums relationship table."""
-        relationships: List[Dict[str, int]] = []
+        self.load_relationship_table(
+            tracks_data,
+            tracks_albums_table,
+            RelationshipTable("tracks_albums", "track_id", "album_id"),
+        )
 
-        # To filter existing relationships
-        seen: set[tuple[int, int]] = set()
-
-        for _, row in tracks_data.iterrows():
-            rel_tuple = (row["album_id"], cast(int, row["track_id"]))
-            if rel_tuple not in seen:
-                seen.add(rel_tuple)
-                relationships.append(
-                    {
-                        "track_id": row["track_id"],
-                        "album_id": row["album_id"],
-                    }
-                )
-        if relationships:
-            self.seed_relationship_table(
-                relationships, tracks_albums_table, "track-album"
-            )
-
-    def seed_relationship_table(
-        self, relationships: List[Dict[str, int]], table: Table, relationship_name: str
+    def load_relationship_table(
+        self, data: pd.DataFrame, table: Table, relationship: RelationshipTable
     ) -> None:
         """Seed a relationship table."""
+        relationships = self.get_relationship_data(data, relationship)
         session = self.session_factory()
         try:
             session.query(table).delete()
             session.execute(table.insert(), relationships)
             session.commit()
             print(
-                f"Successfully seeded {len(relationships)} {relationship_name} relationships."
+                f"Successfully seeded {len(relationships)} {relationship.table_name} relationships."
             )
         except SQLAlchemyError as err:
             session.rollback()
             raise err
         finally:
             session.close()
+
+    def get_relationship_data(
+        self, data: pd.DataFrame, relationship: RelationshipTable
+    ) -> List[Dict[str, int]]:
+        """
+        Get a list of dictionaries representing the relationships.
+
+        :param data: The data as a DataFrame
+        :type data: pd.DataFrame
+        :param relationship: The relationship object that contains the column names and table name.
+        :type relationship: RelationshipTable
+        :return: A list of dictionaries representing the relationships.
+        :rtype: List[Dict[str, int]]
+        """
+        relationships: List[Dict[str, int]] = []
+
+        # To filter existing relationships
+        seen: set[tuple[int, int]] = set()
+
+        for _, row in data.iterrows():
+            rel_tuple = (
+                cast(int, row[relationship.left_col]),
+                cast(int, row[relationship.right_col]),
+            )
+            if rel_tuple not in seen:
+                seen.add(rel_tuple)
+                relationships.append(
+                    {
+                        f"{relationship.left_col}": cast(
+                            int, row[relationship.left_col]
+                        ),
+                        f"{relationship.right_col}": cast(
+                            int, row[relationship.right_col]
+                        ),
+                    }
+                )
+        return relationships
 
     def seed_admin_user(self, admin: UserSchema):
         session = self.session_factory()

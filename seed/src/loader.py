@@ -9,7 +9,7 @@ import pandas as pd
 from psycopg2.extensions import connection, cursor
 from src.tables import TableQuery
 from src.util.relationship_ids import RelationshipIDs
-from src.util.relationship_query import RelationshipQuery
+from src.util.relationship_table import RelationshipTable
 from src.util.user import User
 
 
@@ -155,26 +155,26 @@ class DatabaseLoader:
     def seed_tracks_artists(self, tracks_artists_data: pd.DataFrame):
         self.seed_relationship_table(
             tracks_artists_data,
-            RelationshipQuery("tracks_artists", "track_id", "artist_id"),
+            RelationshipTable("tracks_artists", "track_id", "artist_id"),
         )
         print(f"Seeded {len(tracks_artists_data)} track-artist relationships.")
 
     def seed_tracks_albums(self, tracks_albums_data: pd.DataFrame):
         self.seed_relationship_table(
             tracks_albums_data,
-            RelationshipQuery("tracks_albums", "track_id", "album_id"),
+            RelationshipTable("tracks_albums", "track_id", "album_id"),
         )
         print(f"Seeded {len(tracks_albums_data)} track-album relationships.")
 
     def seed_artists_albums(self, artists_albums_data: pd.DataFrame):
         self.seed_relationship_table(
             artists_albums_data,
-            RelationshipQuery("artists_albums", "artist_id", "album_id"),
+            RelationshipTable("artists_albums", "artist_id", "album_id"),
         )
         print(f"Seeded {len(artists_albums_data)} artist-album relationships.")
 
     def seed_relationship_table(
-        self, data: pd.DataFrame, relationship: RelationshipQuery
+        self, data: pd.DataFrame, relationship: RelationshipTable
     ):
         """
         Iterate over relationship data and seed the relationship table.
@@ -198,7 +198,7 @@ class DatabaseLoader:
         cursor.close()
 
     def execute_relationship_query(
-        self, cursor: cursor, relationship: RelationshipQuery, ids: RelationshipIDs
+        self, cursor: cursor, relationship: RelationshipTable, ids: RelationshipIDs
     ):
         """
         Execute a query for seeding a relationship table.

@@ -1,10 +1,10 @@
 """
-The RelationshipQuery helper class.
-module: src/util/relationship_query.py
+The RelationshipTable helper class.
+module: src/util/relationship_table.py
 """
 
 
-class RelationshipQuery:
+class RelationshipTable:
     """
     Helper class for loading a relationship table.
     """
