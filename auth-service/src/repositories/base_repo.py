@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from src.util.filters.base_filters import BaseFilters
 from src.db.connection_manager import DatabaseConnectionManager
 from src.util.errors.error import NotFoundError
-from src.util.models.base import BaseModel
+from models import BaseModel
 
 TModel = TypeVar("TModel", bound=BaseModel)
 TFilters = TypeVar("TFilters", bound=BaseFilters)

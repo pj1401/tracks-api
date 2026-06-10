@@ -7,7 +7,7 @@ from typing import TypeVar
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from src.config.db_config import DbConfig
-from src.util.models.base import BaseModel
+from models import BaseModel
 
 TModel = TypeVar("TModel", bound=BaseModel)
 

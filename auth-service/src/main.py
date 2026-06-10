@@ -6,8 +6,8 @@ module: src/main.py
 from typing import cast
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from models import BaseModel
 from src.config.reverse_proxied import ReverseProxied
-from src.util.models.base import BaseModel
 from src.config.logger_config import configure_logger
 from src.decorators.logging import setup_logging_decorators
 from src.decorators.exception_handlers import setup_exception_handlers

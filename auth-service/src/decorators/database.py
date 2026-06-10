@@ -7,7 +7,9 @@ from flask import Flask, g
 from src.db.connection_manager import DatabaseConnectionManager
 
 
-def setup_database_decorators(app: Flask, db_manager: DatabaseConnectionManager) -> None:
+def setup_database_decorators(
+    app: Flask, db_manager: DatabaseConnectionManager
+) -> None:
     """Add db_manager to the application context, so it can be accessed during a request."""
 
     @app.before_request
