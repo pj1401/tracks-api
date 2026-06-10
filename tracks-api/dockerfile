@@ -11,8 +11,7 @@ COPY tracks-api/pyproject.toml .
 COPY tracks-api/README.md .
 COPY ../models /models
 
-RUN apk update && apk add --no-cache \
-    curl
+RUN apt-get -y update; apt-get -y install curl
 
 RUN uv sync --frozen --no-dev
 
