@@ -5,7 +5,7 @@ module: src/sqlalchemy_loader.py
 
 from typing import Dict, List, Type, TypeVar, cast
 import bcrypt
-import pandas as pd
+import pandas as pd  # type: ignore
 from sqlalchemy import Table, create_engine, inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError

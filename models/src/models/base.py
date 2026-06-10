@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any
 from sqlalchemy import Column, DateTime, Integer
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
 Base = declarative_base()
 
@@ -18,10 +18,12 @@ class BaseModel(Base):
     see: https://docs.sqlalchemy.org/en/21/orm/inheritance.html#abstract-concrete-classes
     """
 
-    __abstract__ = True
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(
+    __abstract__: bool = True
+    id: Mapped[Column[int]] = mapped_column(Integer, primary_key=True)
+    created_at: Mapped[Column[datetime]] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[Column[datetime]] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
