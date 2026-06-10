@@ -5,14 +5,14 @@ module: src/sqlalchemy_loader.py
 
 from typing import Dict, List, Type, TypeVar, cast
 import bcrypt
-import pandas as pd
+import pandas as pd  # type: ignore
 from sqlalchemy import Table, create_engine, inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError
 from src.util.relationship_table import RelationshipTable
 from src.util.user import User as UserSchema
 
-from models import (
+from models import (  # type: ignore
     Album,
     Artist,
     Track,
