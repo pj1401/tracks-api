@@ -1,6 +1,7 @@
 [project]
 name = "songs-to-postgres"
 version = "2026.0.0"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "h5py>=3.15.1",

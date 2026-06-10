@@ -10,6 +10,7 @@ name = "auth-service"
 version = "0.1.0"
 description = "An auth service API"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "bcrypt>=5.0.0",
