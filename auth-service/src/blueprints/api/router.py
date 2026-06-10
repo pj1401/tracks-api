@@ -8,7 +8,7 @@ from flask import Blueprint, jsonify, g, current_app
 from src.blueprints.api.v1.router import router_v1_bp
 
 router_api_bp = Blueprint("/", __name__)
-router_api_bp.register_blueprint(router_v1_bp, url_prefix="/api/v1")
+router_api_bp.register_blueprint(router_v1_bp, url_prefix="/v1")
 
 
 @router_api_bp.before_request
