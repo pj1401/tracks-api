@@ -12,7 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.util.relationship_table import RelationshipTable
 from src.util.user import User as UserSchema
 
-from models import (  # type: ignore
+from models import (
     Album,
     Artist,
     Track,
