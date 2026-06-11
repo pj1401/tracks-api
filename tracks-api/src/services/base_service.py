@@ -5,7 +5,7 @@ module: src/services/base_service.py
 
 from typing import Any, Dict, Generic, Type, TypeVar
 from pydantic import BaseModel as PydanticBaseModel
-from src.util.errors.error import ForbiddenError
+from src.util.error import ForbiddenError
 from models.filters import BaseFilters
 from models.schemas import BaseQueryParams
 from src.repositories.base_repo import BaseRepository
@@ -32,7 +32,7 @@ class BaseService(Generic[TRepository, TQueryParams]):
         self.repository = repository
         self.schema = schema
 
-    def get(self, params: TQueryParams) -> list[Dict[str, Any]]:
+    async def get(self, params: TQueryParams) -> list[Dict[str, Any]]:
         """
         Get a list of records using optional query parameters.
 
@@ -43,7 +43,7 @@ class BaseService(Generic[TRepository, TQueryParams]):
         """
         try:
             filters = self._get_filters(params)
-            results = self.repository.get(filters)
+            results = await self.repository.get(filters)
             return [self.schema.model_validate(item).model_dump() for item in results]
         except Exception as err:
             raise err

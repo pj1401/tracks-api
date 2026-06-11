@@ -42,7 +42,7 @@ class WritableService(
         """
         pass
 
-    def update(self, id: int, arguments: TArgs):
+    async def update(self, id: int, arguments: TArgs):
         """
         Update a resource. Uses JWT to authorize.
 
@@ -54,11 +54,11 @@ class WritableService(
         try:
             # resource = self.repository.get_by_id(id)
             # self.authorize(resource["user"]["id"], int(get_jwt_identity()))
-            self.repository.update(id, arguments)
+            await self.repository.update(id, arguments)
         except Exception as err:
             raise err
 
-    def delete(self, id: int):
+    async def delete(self, id: int):
         """
         Delete a resource. Uses JWT to authorize.
 
@@ -68,6 +68,6 @@ class WritableService(
         try:
             # resource = self.repository.get_by_id(id)
             # self.authorize(resource["user"]["id"], int(get_jwt_identity()))
-            self.repository.delete(id)
+            await self.repository.delete(id)
         except Exception as err:
             raise err
