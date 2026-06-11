@@ -6,6 +6,11 @@ from ..db.async_connection_manager import AsyncDatabaseConnectionManager
 _db_manager: AsyncDatabaseConnectionManager | None = None
 
 
+def init_db_manager(manager: AsyncDatabaseConnectionManager) -> None:
+    global _db_manager
+    _db_manager = manager
+
+
 def get_db_manager() -> AsyncDatabaseConnectionManager:
     if _db_manager is None:
         raise RuntimeError("Database not initialised")

@@ -11,4 +11,4 @@ class DbConfig:
         self.dbname = dbname
         self.user = user
         self.password = password
-        self.uri = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        self.uri = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{dbname}"

@@ -9,8 +9,7 @@ from models import BaseModel
 from .routers.api.api_router import api_router
 from .db.async_connection_manager import AsyncDatabaseConnectionManager
 from .config import DbConfig
-from .dependencies import get_settings
-import src.dependencies.db as db_deps
+from .dependencies import init_db_manager, get_settings
 
 
 @asynccontextmanager
@@ -26,11 +25,10 @@ async def lifespan(app: FastAPI):
         settings.db_user,
         settings.db_password,
     )
-    db_deps._db_manager = await AsyncDatabaseConnectionManager.create(
-        db_config.uri, BaseModel
-    )
+    db_manager = await AsyncDatabaseConnectionManager.create(db_config.uri, BaseModel)
+    init_db_manager(db_manager)
     yield
-    await db_deps._db_manager.dispose()
+    await db_manager.dispose()
 
 
 def create_app() -> FastAPI:
