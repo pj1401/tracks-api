@@ -19,6 +19,7 @@ dependencies = [
     "models",
     "pydantic>=2.13.4",
     "python-dotenv>=1.2.2",
+    "sqlalchemy[asyncio]>=2.0.50",
     "uvicorn>=0.49.0",
 ]
 
