@@ -3,40 +3,14 @@ The starting point of the API.
 module: src/main.py
 """
 
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
-from functools import lru_cache
 from fastapi import FastAPI
 from models import BaseModel
 from .routers.api.api_router import api_router
 from .db.async_connection_manager import AsyncDatabaseConnectionManager
-from .config import DbConfig, Settings
-
-
-@lru_cache
-def get_settings() -> Settings:
-    """
-    Get the Settings object containing the environment variables.
-
-    :return: The Settings object.
-    :rtype: Settings
-    """
-    return Settings()
-
-
-_db_manager: AsyncDatabaseConnectionManager | None = None
-
-
-def get_db_manager() -> AsyncDatabaseConnectionManager:
-    if _db_manager is None:
-        raise RuntimeError("Database not initialised")
-    return _db_manager
-
-
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async for session in get_db_manager().get_session():
-        yield session
+from .config import DbConfig
+from .dependencies import get_settings
+import src.dependencies.db as db_deps
 
 
 @asynccontextmanager
@@ -52,8 +26,11 @@ async def lifespan(app: FastAPI):
         settings.db_user,
         settings.db_password,
     )
-    _db_manager = AsyncDatabaseConnectionManager(db_config.uri, BaseModel)
+    db_deps._db_manager = await AsyncDatabaseConnectionManager.create(
+        db_config.uri, BaseModel
+    )
     yield
+    await db_deps._db_manager.dispose()
 
 
 def create_app() -> FastAPI:
