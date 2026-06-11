@@ -1,13 +1,12 @@
+"""
+The starting point of the API.
+module: src/main.py
+"""
+
 from fastapi import FastAPI
+from .routers.api.api_router import api_router
 
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello from Tracks API!"}
-
-
-@app.get("/api/v1/health")
-async def health():
-    return {"status": 200, "message": "OK"}
+app.include_router(api_router, prefix="/api")
