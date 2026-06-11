@@ -4,9 +4,11 @@ module: src/routers/api/v1/v1_router.py
 """
 
 from fastapi import APIRouter
+from .track_router import track_router
 
 
 v1_router = APIRouter()
+v1_router.include_router(track_router, prefix="/tracks")
 
 
 @v1_router.get("")
