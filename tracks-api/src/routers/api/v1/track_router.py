@@ -3,13 +3,35 @@ Defines the track paths.
 module: src.routers.api.v1.track_router
 """
 
-from fastapi import APIRouter, Depends
+from typing import Annotated
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.dependencies import get_session
+from models import Track
+from models.schemas import BaseResourceSchema
+from src.dependencies import get_session, get_settings
+from src.repositories.track_repo import TrackRepository
+from src.services.track_service import TrackService
+from src.controllers.track_controller import TrackController
 
 track_router = APIRouter(tags=["tracks"])
 
 
-@track_router.get("")
+async def get_controller(session: AsyncSession = Depends(get_session)):
+    settings = get_settings()
+    track_repo = TrackRepository(session, Track, settings.base_url)
+    track_service = TrackService(track_repo, BaseResourceSchema)
+    return TrackController(track_service)
+
+
+@track_router.get("", status_code=status.HTTP_200_OK)
 async def get_tracks(session: AsyncSession = Depends(get_session)):
     pass
+
+
+@track_router.get("/{id}", status_code=status.HTTP_200_OK)
+async def get_track_by_id(
+    id: int,
+    response: Response,
+    controller: Annotated[TrackController, Depends(get_controller)],
+):
+    controller.get_by_id(id, response)
