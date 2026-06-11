@@ -5,10 +5,9 @@ module: src/repositories/base_repo.py
 
 from typing import Any, Dict, Generic, TypeVar
 from sqlalchemy import Select, select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from models.filters import BaseFilters
-from src.db.async_connection_manager import DatabaseConnectionManager
-from src.util.errors.error import NotFoundError
+from src.util.error import NotFoundError
 from models import BaseModel
 
 TModel = TypeVar("TModel", bound=BaseModel)
@@ -25,24 +24,23 @@ class BaseRepository(Generic[TModel, TFilters]):
     """
 
     def __init__(
-        self, db_manager: DatabaseConnectionManager, model: type[TModel], base_url: str
+        self, session: AsyncSession, model: type[TModel], base_url: str
     ) -> None:
         """
-        Initialise the repository with a database connection manager.
+        Initialise the repository.
 
-        :param db_manager: Provides scoped SQLAlchemy sessions backed by
-            the application's configured database engine.
-        :type db_manager: DatabaseConnectionManager
+        :param session: The session used for the database transaction.
+        :type session: AsyncSession
         :param model: The SQLAlchemy model used for data-access.
         :type model: type[TModel]
         :param base_url: The base URL of the application.
         :type base_url: str
         """
-        self.db_manager = db_manager
+        self.session = session
         self.model = model
         self.base_url = base_url
 
-    def get(self, filters: TFilters) -> list[Dict[str, Any]]:
+    async def get(self, filters: TFilters) -> list[Dict[str, Any]]:
         """
         Get a list of records by using filters to match the result.
 
@@ -51,23 +49,14 @@ class BaseRepository(Generic[TModel, TFilters]):
         :return: A list of dictionaries representing the records.
         :rtype: list[Dict[str, Any]]
         """
-        session: Session | None = None
         try:
-            session = self.db_manager.get_session()
             stmt = self._get_stmt(filters)
-            result = session.scalars(stmt.offset(filters.offset)).fetchmany(
-                filters.limit
-            )
-            dicts = [self.model_to_dict(row) for row in result]
-            session.commit()
-            return dicts
-        except Exception as err:
-            if session is not None:
-                session.rollback()
-            raise err
-        finally:
-            if session is not None:
-                session.close()
+            result = await self.session.scalars(stmt.offset(filters.offset))
+            rows = result.fetchmany(filters.limit)
+            return [self.model_to_dict(row) for row in rows]
+        except Exception:
+            await self.session.rollback()
+            raise
 
     def _get_stmt(self, filters: TFilters) -> Select[Any]:
         """
@@ -93,7 +82,7 @@ class BaseRepository(Generic[TModel, TFilters]):
         """
         return stmt
 
-    def get_by_id(self, id: int | str) -> Dict[str, Any]:
+    async def get_by_id(self, id: int | str) -> Dict[str, Any]:
         """
         Fetch one record by matching ID.
 
@@ -102,26 +91,18 @@ class BaseRepository(Generic[TModel, TFilters]):
         :return: The dictionary representing the record if a match is found.
         :rtype: Dict[str, Any]
         """
-        session: Session | None = None
         try:
-            session = self.db_manager.get_session()
             stmt = select(self.model).where(self.model.id == id)
-            result = session.scalars(stmt).first()
-            if result is None:
+            result = await self.session.scalars(stmt)
+            row = result.first()
+            if row is None:
                 raise NotFoundError()
 
-            # Get a dictionary representing the fetched record.
-            dict = self.model_to_dict(result)
-
-            session.commit()
-            return dict
-        except Exception as err:
-            if session is not None:
-                session.rollback()
-            raise err
-        finally:
-            if session is not None:
-                session.close()
+            # Return a dictionary representing the fetched record.
+            return self.model_to_dict(row)
+        except Exception:
+            await self.session.rollback()
+            raise
 
     def model_to_dict(self, model: TModel) -> Dict[str, Any]:
         """
