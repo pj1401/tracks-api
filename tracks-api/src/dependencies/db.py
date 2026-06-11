@@ -1,3 +1,8 @@
+"""
+Dependency managing database connection.
+module: src/dependencies/db.py
+"""
+
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..db.async_connection_manager import AsyncDatabaseConnectionManager

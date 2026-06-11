@@ -1,3 +1,8 @@
+"""
+Settings dependency
+module: src/dependencies/settings.py
+"""
+
 from functools import lru_cache
 from ..config import Settings
 
@@ -10,4 +15,4 @@ def get_settings() -> Settings:
     :return: The Settings object.
     :rtype: Settings
     """
-    return Settings()
+    return Settings()  # type: ignore
