@@ -545,11 +545,15 @@ name = "models"
 version = "0.1.0"
 source = { editable = "../models" }
 dependencies = [
+    { name = "pydantic" },
     { name = "sqlalchemy" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "sqlalchemy", specifier = ">=2.0.50" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.13.4" },
+    { name = "sqlalchemy", specifier = ">=2.0.50" },
+]
 
 [package.metadata.requires-dev]
 dev = [
