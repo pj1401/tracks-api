@@ -3,9 +3,8 @@ The Settings class.
 module: src/config/settings.py
 """
 
-from typing import cast
-from pydantic_settings import BaseSettings
-from .load_env import get_env_or_secret
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -13,8 +12,15 @@ class Settings(BaseSettings):
     Manage environment variables.
     """
 
-    db_host: str = str(get_env_or_secret("POSTGRES_HOST"))
-    db_port: int = cast(int, get_env_or_secret("POSTGRES_PORT", 5432))
-    db_name: str = str(get_env_or_secret("POSTGRES_DB"))
-    db_user: str = str(get_env_or_secret("POSTGRES_USER"))
-    db_password: str = str(get_env_or_secret("POSTGRES_PASSWORD"))
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        secrets_dir="/run/secrets",
+        env_ignore_empty=True,
+    )
+
+    db_host: str = Field(validation_alias="POSTGRES_HOST")
+    db_port: int = Field(default=5432, validation_alias="POSTGRES_PORT")
+    db_name: str = Field(validation_alias="POSTGRES_DB")
+    db_user: str = Field(validation_alias="POSTGRES_USER")
+    db_password: str = Field(validation_alias="POSTGRES_PASSWORD")
