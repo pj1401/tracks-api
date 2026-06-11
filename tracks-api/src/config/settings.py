@@ -24,3 +24,4 @@ class Settings(BaseSettings):
     db_name: str = Field(validation_alias="POSTGRES_DB")
     db_user: str = Field(validation_alias="POSTGRES_USER")
     db_password: str = Field(validation_alias="POSTGRES_PASSWORD")
+    base_url: str = Field(validation_alias="BASE_URL")
