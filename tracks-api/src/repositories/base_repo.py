@@ -92,7 +92,7 @@ class BaseRepository(Generic[TModel, TFilters]):
         :rtype: Dict[str, Any]
         """
         try:
-            stmt = select(self.model).where(self.model.id == id)
+            stmt = self._get_by_id_stmt(id)
             result = (await self.session.scalars(stmt)).first()
             if result is None:
                 raise NotFoundError()
@@ -102,6 +102,15 @@ class BaseRepository(Generic[TModel, TFilters]):
         except Exception:
             await self.session.rollback()
             raise
+
+    def _get_by_id_stmt(self, id: int | str) -> Select[Any]:
+        """
+        Get the statement for fetching a record by ID.
+
+        :return: The statement using the ID to find the record.
+        :rtype: Select[Any]
+        """
+        return select(self.model).where(self.model.id == id)
 
     def model_to_dict(self, model: TModel) -> Dict[str, Any]:
         """

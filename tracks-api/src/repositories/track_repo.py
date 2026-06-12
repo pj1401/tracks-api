@@ -4,6 +4,8 @@ module: src/repositories/track_repo.py
 """
 
 from typing import Any, Dict
+from sqlalchemy import Select, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.repositories.writable_repo import WritableRepository
 from models import Track
@@ -23,6 +25,18 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
         base_url: str,
     ):
         super().__init__(session, track_model, base_url)
+
+    def _get_stmt(self, filters: TrackFilters) -> Select[Any]:
+        return select(Track).options(
+            selectinload(Track.artists), selectinload(Track.albums)
+        )
+
+    def _get_by_id_stmt(self, id: int | str) -> Select[Any]:
+        return (
+            select(Track)
+            .where(Track.id == id)
+            .options(selectinload(Track.artists), selectinload(Track.albums))
+        )
 
     def model_to_dict(self, model: Track) -> Dict[str, Any]:
         data = model.to_dict()

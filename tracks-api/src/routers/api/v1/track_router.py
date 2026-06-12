@@ -34,4 +34,4 @@ async def get_track_by_id(
     response: Response,
     controller: Annotated[TrackController, Depends(get_controller)],
 ):
-    await controller.get_by_id(id, response)
+    return await controller.get_by_id(id, response)
