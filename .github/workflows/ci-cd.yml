@@ -1,0 +1,173 @@
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+
+  # --- Lint ---
+
+  lint:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: pip install uv
+      
+      - name: Install auth-service dependencies
+        working-directory: auth-service
+        run: uv sync --group dev
+
+      - name: Run pyright in auth-service
+        working-directory: auth-service
+        run: uv run pyright
+
+      - name: Run ruff in auth-service
+        working-directory: auth-service
+        run: |
+          uv run ruff check src
+          uv run ruff format --diff
+
+      - name: Install tracks-api dependencies
+        working-directory: tracks-api
+        run: uv sync --group dev
+
+      - name: Run pyright in tracks-api
+        working-directory: tracks-api
+        run: uv run pyright
+
+      - name: Run ruff in tracks-api
+        working-directory: tracks-api
+        run: |
+          uv run ruff check src
+          uv run ruff format --diff
+
+  # --- Build ---
+
+  build-tracks-api:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
+    runs-on: self-hosted
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build and push tracks-api image
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker compose -f docker-compose.prod.yml build tracks-api
+          docker compose -f docker-compose.prod.yml push tracks-api
+
+  build-auth-service:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
+    runs-on: self-hosted
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build and push auth-service image
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker compose -f docker-compose.prod.yml build auth-service
+          docker compose -f docker-compose.prod.yml push auth-service
+
+  build-seed:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
+    runs-on: self-hosted
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build and push seed image
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker compose -f docker-compose.prod.yml build seed
+          docker compose -f docker-compose.prod.yml push seed
+
+  # --- API tests ---
+
+  api-tests:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
+    needs: [build-tracks-api, build-auth-service, build-seed]
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build test images
+        run: |
+          docker logout ghcr.io
+          docker compose -p tracks-test -f docker-compose.test.yml up -d --build --wait
+
+      - name: Run API tests
+        run: newman run ./tests/tracks-api.postman_collection.json -e ./tests/testing-env.postman_environment.json -r cli,json,emojitrain --reporter-json-export newman-reports
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: newman-reports
+          path: ./newman-reports/
+          retention-days: 1
+
+      - name: Tear down test stack
+        if: always()
+        run: docker compose -p tracks-test -f docker-compose.test.yml down -v
+
+  # --- Release ---
+
+  release:
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [lint, api-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+
+  # --- Deploy ---
+
+  deploy:
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [release]
+    runs-on: self-hosted
+    environment:
+      name: production
+      url: https://patriciaj.se/tracks-api/
+    permissions:
+      packages: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Pull images and restart containers
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d

@@ -1,0 +1,8 @@
+# Default owner for everything in the repo.
+* @pj1401
+
+# Owner of `.github/` directory
+/.github/ @pj1401
+
+# Owner of `.github/workflows` directory
+/.github/workflows @pj1401

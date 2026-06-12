@@ -92,7 +92,7 @@ class WritableRepository(
         """
         try:
             stmt = select(self.model).where(self.model.id == id)
-            result = self.session.scalars(stmt).first()
+            result = (await self.session.scalars(stmt)).first()
             if result is None:
                 raise NotFoundError()
             await self.session.delete(result)
