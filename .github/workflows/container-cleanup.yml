@@ -1,0 +1,23 @@
+name: Container retention policy
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 6 * * *"  # 06:30 every day
+      timezone: "Europe/Stockholm"
+
+jobs:
+  clean:
+    permissions:
+      packages: write
+    runs-on: ubuntu-latest
+    name: Delete old untagged images
+    steps:
+      - name: Container Retention Policy
+        uses: snok/container-retention-policy@v3.1.0
+        with:
+          account: user
+          token: ${{ secrets.PACKAGE_CLEANUP_TOKEN }}
+          image-names: "tracks-api*"
+          image-tags: "!latest"            # Don't target latest images
+          cut-off: 60min
