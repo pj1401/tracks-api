@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_test_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_user) -d $$(cat /run/secrets/db_name)"]
       interval: 5s
@@ -51,7 +51,7 @@ services:
       - ./models:/models
       - /srv/tracks-api/data:/app/data
     restart: "no"
-
+  
   auth-service:
     build:
       context: .
@@ -62,7 +62,7 @@ services:
       FLASK_DEBUG: True
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      BASE_URL: http://localhost:5021
+      BASE_URL: https://patriciaj.se/tracks-api/auth
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
@@ -82,7 +82,7 @@ services:
       seed:
         condition: service_completed_successfully
     ports:
-      - "5021:5020"
+      - "5020:5020"
     volumes:
       - ./models:/models
     healthcheck:
@@ -91,7 +91,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    restart: "no"
+    restart: unless-stopped
 
   tracks-api:
     build:
@@ -100,7 +100,7 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      BASE_URL: http://localhost:5011
+      BASE_URL: https://patriciaj.se/tracks-api
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
@@ -114,7 +114,7 @@ services:
       seed:
         condition: service_completed_successfully
     ports:
-      - "5011:5010"
+      - "5010:5010"
     volumes:
       - ./models:/models
     healthcheck:
@@ -123,27 +123,27 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    restart: "no"
+    restart: unless-stopped
 
 secrets:
   admin_username:
-    file: /srv/tracks-api/secrets/testing-env/admin_username.txt
+    file: /srv/tracks-api/secrets/admin_username.txt
   admin_email:
-    file: /srv/tracks-api/secrets/testing-env/admin_email.txt
+    file: /srv/tracks-api/secrets/admin_email.txt
   admin_password:
-    file: /srv/tracks-api/secrets/testing-env/admin_password.txt
+    file: /srv/tracks-api/secrets/admin_password.txt
   db_name:
-    file: /srv/tracks-api/secrets/testing-env/db_name.txt
+    file: /srv/tracks-api/secrets/db_name.txt
   db_user:
-    file: /srv/tracks-api/secrets/testing-env/db_user.txt
+    file: /srv/tracks-api/secrets/db_user.txt
   db_password:
-    file: /srv/tracks-api/secrets/testing-env/db_password.txt
+    file: /srv/tracks-api/secrets/db_password.txt
   flask_secret_key:
-    file: /srv/tracks-api/secrets/testing-env/flask_secret_key.txt
+    file: /srv/tracks-api/secrets/flask_secret_key.txt
   jwt_private_key:
-    file: /srv/tracks-api/secrets/testing-env/tracks-api-jwt-key
+    file: /srv/tracks-api/secrets/tracks-api-jwt-key
   jwt_public_key:
-    file: /srv/tracks-api/secrets/testing-env/tracks-api-jwt-key.pub
+    file: /srv/tracks-api/secrets/tracks-api-jwt-key.pub
 
 volumes:
-  postgres_test_data:
+  postgres_data:
