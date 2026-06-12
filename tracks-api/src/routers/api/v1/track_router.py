@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
-from models.schemas import BaseResourceSchema
+from models.schemas.tracks import TrackSchema
 from src.dependencies import get_session, get_settings
 from src.repositories.track_repo import TrackRepository
 from src.services.track_service import TrackService
@@ -19,7 +19,7 @@ track_router = APIRouter(tags=["tracks"])
 async def get_controller(session: AsyncSession = Depends(get_session)):
     settings = get_settings()
     track_repo = TrackRepository(session, Track, settings.base_url)
-    track_service = TrackService(track_repo, BaseResourceSchema)
+    track_service = TrackService(track_repo, TrackSchema)
     return TrackController(track_service)
 
 
@@ -34,4 +34,4 @@ async def get_track_by_id(
     response: Response,
     controller: Annotated[TrackController, Depends(get_controller)],
 ):
-    controller.get_by_id(id, response)
+    await controller.get_by_id(id, response)
