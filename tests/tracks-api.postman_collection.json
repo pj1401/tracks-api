@@ -1,0 +1,777 @@
+{
+  "info": {
+    "_postman_id": "c187a33b-78fb-41ad-83ae-d080b3b7059b",
+    "name": "Tracks API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31357091",
+    "_collection_link": "https://go.postman.co/collection/31357091-c187a33b-78fb-41ad-83ae-d080b3b7059b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth API v1",
+      "item": [
+        {
+          "name": "rest",
+          "item": [
+            {
+              "name": "auth",
+              "item": [
+                {
+                  "name": "register",
+                  "item": [
+                    {
+                      "name": "Register a new account (Register (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "const requestBody = pm.request.body.toJSON();\r",
+                              "const variables = JSON.parse(requestBody.raw);\r",
+                              "\r",
+                              "pm.collectionVariables.set('password', variables.password);\r",
+                              "const correctStatusCode = 201\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('email', 'username', 'id', 'status');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('id is a number', () => {\r",
+                              "    pm.expect(responseJson.id).to.be.a('number');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('Password is not returned', () => {\r",
+                              "    pm.expect(responseJson).to.not.have.any.keys('password');\r",
+                              "})\r",
+                              "\r",
+                              "// Set variables\r",
+                              "pm.collectionVariables.set('username', responseJson.username);\r",
+                              "pm.collectionVariables.set('user_id', responseJson.id);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"eabf1732-2108-4dff-b627-43478a8b0646\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/register",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "register"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Register duplicate (failure)",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"aa3c85d1-f322-401c-a073-0a3e21c3b946\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/register",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "register"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Register with missing field (failure)",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"7741617e-39a9-45a9-a780-c79bd6810146\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/register",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "register"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Register second user (success)",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "const requestBody = pm.request.body.toJSON();\r",
+                              "const variables = JSON.parse(requestBody.raw);\r",
+                              "\r",
+                              "pm.collectionVariables.set('user2_password', variables.password);\r",
+                              "const correctStatusCode = 201\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('email', 'username', 'id', 'status');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('id is a number', () => {\r",
+                              "    pm.expect(responseJson.id).to.be.a('number');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('Password is not returned', () => {\r",
+                              "    pm.expect(responseJson).to.not.have.any.keys('password');\r",
+                              "})\r",
+                              "\r",
+                              "// Set variables\r",
+                              "pm.collectionVariables.set('user2_username', responseJson.username);\r",
+                              "pm.collectionVariables.set('user2_id', responseJson.id);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"7dff5e1e-21fd-4036-b70b-89ef4d43f37f\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/register",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "register"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "login",
+                  "item": [
+                    {
+                      "name": "Login wrong password (failure)",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 401\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"f78d1a78-cf5f-47f7-92f0-c82c7fae3fe5\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/login",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "login"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Log in a user (Login (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'access_token');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('A token is returned', () => {\r",
+                              "    pm.expect(responseJson.access_token).to.not.be.undefined;\r",
+                              "})\r",
+                              "\r",
+                              "// Set variables\r",
+                              "pm.collectionVariables.set('access_token', responseJson.access_token);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"6c981a93-b91b-499b-a386-3b4c3e00a55e\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/login",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "login"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Log in a user (Login second user (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'access_token');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('A token is returned', () => {\r",
+                              "    pm.expect(responseJson.access_token).to.not.be.undefined;\r",
+                              "})\r",
+                              "\r",
+                              "// Set variables\r",
+                              "pm.collectionVariables.set('user2_access_token', responseJson.access_token);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"7be78e46-1feb-4664-9c6d-5af9c2fc8037\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {
+                          "content-type": true
+                        }
+                      },
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"username\": \"{{user2_username}}\",\r\n    \"password\": \"{{user2_password}}\"\r\n}\r\n"
+                        },
+                        "url": {
+                          "raw": "{{authUrl}}/login",
+                          "host": [
+                            "{{authUrl}}"
+                          ],
+                          "path": [
+                            "login"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "users",
+              "item": [
+                {
+                  "name": "Delete a user (Delete user (success))",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const correctStatusCode = 204\r",
+                          "\r",
+                          "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                          "  pm.response.to.have.status(correctStatusCode);\r",
+                          "});\r",
+                          "\r",
+                          "pm.execution.setNextRequest(\"1a2de819-83fe-46b0-9799-2f44e088cca7\");\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{authUrl}}/users/:id",
+                      "host": [
+                        "{{authUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{user_id}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete a user (Delete second user (success))",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const correctStatusCode = 204\r",
+                          "\r",
+                          "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                          "  pm.response.to.have.status(correctStatusCode);\r",
+                          "});\r",
+                          "\r",
+                          "pm.execution.setNextRequest(null);\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{user2_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{authUrl}}/users/:id",
+                      "host": [
+                        "{{authUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{user2_id}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "{{access_token}}",
+                    "type": "string"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {},
+                    "exec": [
+                      ""
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {},
+                    "exec": [
+                      ""
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tracks API v1",
+      "item": [
+        {
+          "name": "rest",
+          "item": [
+            {
+              "name": "tracks",
+              "item": [
+                {
+                  "name": "Get a track by ID",
+                  "item": [
+                    {
+                      "name": "Get a track by ID (Not Found (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 404\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"e831629d-dc84-49a2-a105-3e8d10724e09\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get a track by ID (success)",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('Track has expected properties', () => {\r",
+                              "    pm.expect(responseJson.data).to.have.all.keys('id', 'href', 'created_at', 'updated_at', 'name', 'total_playcount', 'spotify_id', 'tags', 'genre', 'year', 'duration_ms', 'danceability', 'mode', 'valence', 'artists', 'albums');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"964baed7-1d4a-4dd7-8038-85a2d833b873\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "30"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "track-id",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "user2_password",
+      "value": ""
+    },
+    {
+      "key": "user2_username",
+      "value": ""
+    },
+    {
+      "key": "user2_id",
+      "value": ""
+    },
+    {
+      "key": "user2_access_token",
+      "value": ""
+    }
+  ]
+}
