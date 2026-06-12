@@ -25,7 +25,7 @@ class BaseController(Generic[TService]):
         """
         self.service = service
 
-    def get_by_id(
+    async def get_by_id(
         self, id: int | str, response: Response
     ) -> dict[str, int | Any | None]:
         """
@@ -37,7 +37,7 @@ class BaseController(Generic[TService]):
         :rtype: dict[str, int | Any | None]
         """
         try:
-            fetched = self.service.get_by_id(id)
+            fetched = await self.service.get_by_id(id)
             result: dict[str, int | Any | None] = {
                 "status": 200,
                 "data": fetched,

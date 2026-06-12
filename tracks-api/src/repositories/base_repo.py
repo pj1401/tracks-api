@@ -93,13 +93,12 @@ class BaseRepository(Generic[TModel, TFilters]):
         """
         try:
             stmt = select(self.model).where(self.model.id == id)
-            result = await self.session.scalars(stmt)
-            row = result.first()
-            if row is None:
+            result = (await self.session.scalars(stmt)).first()
+            if result is None:
                 raise NotFoundError()
 
             # Return a dictionary representing the fetched record.
-            return self.model_to_dict(row)
+            return self.model_to_dict(result)
         except Exception:
             await self.session.rollback()
             raise

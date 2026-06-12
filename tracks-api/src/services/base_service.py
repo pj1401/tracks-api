@@ -62,7 +62,7 @@ class BaseService(Generic[TRepository, TQueryParams]):
             offset=params.offset,
         )
 
-    def get_by_id(self, id: int | str) -> Dict[str, Any]:
+    async def get_by_id(self, id: int | str) -> Dict[str, Any]:
         """
         Fetch one record's data by matching ID.
 
@@ -72,7 +72,7 @@ class BaseService(Generic[TRepository, TQueryParams]):
         :rtype: Dict[str, Any]
         """
         try:
-            data = self.repository.get_by_id(id)
+            data = await self.repository.get_by_id(id)
             return self.schema.model_validate(data).model_dump()
         except Exception as err:
             raise err
