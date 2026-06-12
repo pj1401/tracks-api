@@ -1,0 +1,148 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_user) -d $$(cat /run/secrets/db_name)"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seed:
+    build:
+      context: .
+      dockerfile: seed/dockerfile
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      ADMIN_USERNAME_FILE: /run/secrets/admin_username
+      ADMIN_EMAIL_FILE: /run/secrets/admin_email
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      CSV_PATH: data/Music Info.csv
+      CSV_LISTENING_HISTORY_PATH: data/User Listening History.csv
+      HDF5_PATH: data/msd_summary_file.h5
+      CHUNK_SIZE: 5000
+      NO_OF_CHUNKS: 2
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - admin_username
+      - admin_email
+      - admin_password
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./models:/models
+      - ./seed/data:/app/data
+  
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/dockerfile
+    environment:
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5020
+      FLASK_DEBUG: True
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      BASE_URL: http://localhost:5021
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      FLASK_SECRET_KEY_FILE: /run/secrets/flask_secret_key
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - flask_secret_key
+      - jwt_private_key
+      - jwt_public_key
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "5021:5020"
+    volumes:
+      - ./models:/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5020/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: "no"
+
+  tracks-api:
+    build:
+      context: .
+      dockerfile: tracks-api/dockerfile
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      BASE_URL: http://localhost:5011
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "5011:5010"
+    volumes:
+      - ./models:/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: "no"
+
+secrets:
+  admin_username:
+    file: /srv/tracks-api/secrets/testing-env/admin_username.txt
+  admin_email:
+    file: /srv/tracks-api/secrets/testing-env/admin_email.txt
+  admin_password:
+    file: /srv/tracks-api/secrets/testing-env/admin_password.txt
+  db_name:
+    file: /srv/tracks-api/secrets/testing-env/db_name.txt
+  db_user:
+    file: /srv/tracks-api/secrets/testing-env/db_user.txt
+  db_password:
+    file: /srv/tracks-api/secrets/testing-env/db_password.txt
+  flask_secret_key:
+    file: /srv/tracks-api/secrets/testing-env/flask_secret_key.txt
+  jwt_private_key:
+    file: /srv/tracks-api/secrets/testing-env/tracks-api-jwt-key
+  jwt_public_key:
+    file: /srv/tracks-api/secrets/testing-env/tracks-api-jwt-key.pub
+
+volumes:
+  postgres_test_data:
