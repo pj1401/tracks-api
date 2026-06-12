@@ -53,7 +53,7 @@
                               "pm.collectionVariables.set('username', responseJson.username);\r",
                               "pm.collectionVariables.set('user_id', responseJson.id);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"eabf1732-2108-4dff-b627-43478a8b0646\");\r",
+                              "pm.execution.setNextRequest(\"Register duplicate (failure)\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -107,7 +107,7 @@
                               "  pm.response.to.have.status(correctStatusCode);\r",
                               "});\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"aa3c85d1-f322-401c-a073-0a3e21c3b946\");\r",
+                              "pm.execution.setNextRequest(\"Register with missing field (failure)\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -161,7 +161,7 @@
                               "  pm.response.to.have.status(correctStatusCode);\r",
                               "});\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"7741617e-39a9-45a9-a780-c79bd6810146\");\r",
+                              "pm.execution.setNextRequest(\"Register second user (success)\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -234,7 +234,7 @@
                               "pm.collectionVariables.set('user2_username', responseJson.username);\r",
                               "pm.collectionVariables.set('user2_id', responseJson.id);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"7dff5e1e-21fd-4036-b70b-89ef4d43f37f\");\r",
+                              "pm.execution.setNextRequest(\"Login wrong password (failure)\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -297,7 +297,7 @@
                               "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
                               "})\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"f78d1a78-cf5f-47f7-92f0-c82c7fae3fe5\");\r",
+                              "pm.execution.setNextRequest(\"Log in a user (Login (success))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -362,7 +362,7 @@
                               "// Set variables\r",
                               "pm.collectionVariables.set('access_token', responseJson.access_token);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"6c981a93-b91b-499b-a386-3b4c3e00a55e\");\r",
+                              "pm.execution.setNextRequest(\"Log in a user (Login second user (success))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -427,7 +427,7 @@
                               "// Set variables\r",
                               "pm.collectionVariables.set('user2_access_token', responseJson.access_token);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"7be78e46-1feb-4664-9c6d-5af9c2fc8037\");\r",
+                              "pm.execution.setNextRequest(\"Get a track by ID (Not Found (failure))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -486,7 +486,7 @@
                           "  pm.response.to.have.status(correctStatusCode);\r",
                           "});\r",
                           "\r",
-                          "pm.execution.setNextRequest(\"1a2de819-83fe-46b0-9799-2f44e088cca7\");\r",
+                          "pm.execution.setNextRequest(\"Delete a user (Delete second user (success))\");\r",
                           ""
                         ],
                         "type": "text/javascript",
@@ -642,7 +642,7 @@
                               "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
                               "})\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"e831629d-dc84-49a2-a105-3e8d10724e09\");\r",
+                              "pm.execution.setNextRequest(\"Get a track by ID (success)\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -696,7 +696,7 @@
                               "    pm.expect(responseJson.data).to.have.all.keys('id', 'href', 'created_at', 'updated_at', 'name', 'total_playcount', 'spotify_id', 'tags', 'genre', 'year', 'duration_ms', 'danceability', 'mode', 'valence', 'artists', 'albums');\r",
                               "})\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"964baed7-1d4a-4dd7-8038-85a2d833b873\");\r",
+                              "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
