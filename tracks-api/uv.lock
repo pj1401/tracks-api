@@ -545,14 +545,19 @@ name = "models"
 version = "0.1.0"
 source = { editable = "../models" }
 dependencies = [
+    { name = "pydantic" },
     { name = "sqlalchemy" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "sqlalchemy", specifier = ">=2.0.50" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.13.4" },
+    { name = "sqlalchemy", specifier = ">=2.0.50" },
+]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "datamodel-code-generator", extras = ["ruff"], specifier = ">=0.62.0" },
     { name = "hatchling", specifier = ">=1.29.0" },
     { name = "pyright", specifier = ">=1.1.409" },
     { name = "ruff", specifier = ">=0.15.4" },

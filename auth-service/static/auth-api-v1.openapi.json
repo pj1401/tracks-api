@@ -200,7 +200,7 @@
       "delete": {
         "summary": "Delete a user",
         "deprecated": false,
-        "description": "Delete a user by ID. Requires authentication.  \nReading logs owned by the user will also be deleted.",
+        "description": "Delete a user by ID. Requires authentication.",
         "tags": [
           "users"
         ],
