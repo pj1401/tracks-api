@@ -25,9 +25,8 @@ RUN uv sync --frozen --no-dev
 
 # Copy the src directory and seed.py
 COPY seed/src ./src
-COPY seed/seed.py .
 
 # Set PYTHONPATH to include /app
 ENV PYTHONPATH=/app
 
-CMD ["uv", "run", "python", "seed.py"]
+CMD ["uv", "run", "python", "src/main.py"]
