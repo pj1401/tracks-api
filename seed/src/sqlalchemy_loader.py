@@ -171,7 +171,6 @@ class DatabaseLoader:
         if relationships:
             session = self.session_factory()
             try:
-                session.query(table).delete()
                 session.execute(table.insert(), relationships)
                 session.commit()
                 print(
