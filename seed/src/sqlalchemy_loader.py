@@ -63,18 +63,6 @@ class DatabaseLoader:
         self.seed_artists_tracks(tracks_df)
         self.seed_tracks_albums(tracks_df)
 
-    # def seed_database(
-    #     self, data: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
-    # ) -> None:
-    #     """Seed the database."""
-    #     tracks_df, artists_df, albums_df = data
-    #     self.seed_artists(artists_df)
-    #     self.seed_albums(albums_df)
-    #     self.seed_tracks(tracks_df)
-    #     self.seed_artists_albums(tracks_df)
-    #     self.seed_artists_tracks(tracks_df)
-    #     self.seed_tracks_albums(tracks_df)
-
     def seed_artists(self, data: pd.DataFrame) -> None:
         """Seed the artists table."""
         artists = [
