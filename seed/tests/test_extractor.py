@@ -21,5 +21,5 @@ class TestReadHdf5Data:
     def test_correct_dict_keys(self, hdf5_path: str):
         hdf5_lookup = read_hdf5_data(hdf5_path)
         assert isinstance(hdf5_lookup, dict)
-        assert "release" in list(hdf5_lookup)[0]
-        assert "release_7digitalid" in hdf5_lookup[0]
+        assert "album_name" in list(hdf5_lookup.values())[0]
+        assert "old_album_id" in list(hdf5_lookup.values())[0]
