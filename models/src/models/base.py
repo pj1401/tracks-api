@@ -6,7 +6,7 @@ module: src/base.py
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any
-from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy import Column, DateTime, Integer, text
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
 Base = declarative_base()
@@ -21,12 +21,15 @@ class BaseModel(Base):
     __abstract__: bool = True
     id: Mapped[Column[int]] = mapped_column(Integer, primary_key=True)
     created_at: Mapped[Column[datetime]] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True),
+        server_default=text("now()"),
+        nullable=False,
     )
     updated_at: Mapped[Column[datetime]] = mapped_column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
+        DateTime(timezone=True),
+        server_default=text("now()"),
         onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     def to_dict(self) -> dict[str, int | float | str | list[str | int] | Any | None]:

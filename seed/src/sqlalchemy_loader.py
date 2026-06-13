@@ -95,6 +95,7 @@ class DatabaseLoader:
         """Seed the tracks table."""
         tracks = [
             Track(
+                id=row["track_id"],
                 name=row["name"],
                 total_playcount=cast(int, row["total_playcount"]),
                 spotify_id=row["spotify_id"],
@@ -114,11 +115,13 @@ class DatabaseLoader:
         """Load seed data from a DataFrame into a table."""
         if data:
             session = self.session_factory()
+            exclude = {"created_at", "updated_at"}
             try:
                 rows = [
                     {
                         c.key: getattr(obj, c.key)
                         for c in inspect(model).mapper.column_attrs
+                        if c.key not in exclude
                     }
                     for obj in data
                 ]
