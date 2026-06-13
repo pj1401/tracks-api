@@ -33,9 +33,9 @@ class DatabaseLoader:
         base_model.metadata.create_all(self.engine)
         self.session_factory = sessionmaker(bind=self.engine)
 
-        self.seen_artists_albums_relationships = set()
-        self.seen_artists_tracks_relationships = set()
-        self.seen_tracks_albums_relationships = set()
+        self.seen_artists_albums_relationships: set[tuple[int, int]] = set()
+        self.seen_artists_tracks_relationships: set[tuple[int, int]] = set()
+        self.seen_tracks_albums_relationships: set[tuple[int, int]] = set()
 
     def database_is_populated(self) -> bool:
         """
@@ -115,6 +115,8 @@ class DatabaseLoader:
         """Load seed data from a DataFrame into a table."""
         if data:
             session = self.session_factory()
+
+            # Exclude created_at and updated_at so the default values are used.
             exclude = {"created_at", "updated_at"}
             try:
                 rows = [
@@ -133,7 +135,6 @@ class DatabaseLoader:
                 raise err
             finally:
                 session.close()
-        return
 
     def seed_artists_albums(self, tracks_data: pd.DataFrame) -> None:
         """Seed the artists_albums relationship table."""
@@ -179,19 +180,20 @@ class DatabaseLoader:
     ) -> None:
         """Seed a relationship table."""
         relationships = self.get_relationship_data(data, relationship)
-        session = self.session_factory()
-        try:
-            session.query(table).delete()
-            session.execute(table.insert(), relationships)
-            session.commit()
-            print(
-                f"Successfully seeded {len(relationships)} {relationship.table_name} relationships."
-            )
-        except SQLAlchemyError as err:
-            session.rollback()
-            raise err
-        finally:
-            session.close()
+        if relationships:
+            session = self.session_factory()
+            try:
+                session.query(table).delete()
+                session.execute(table.insert(), relationships)
+                session.commit()
+                print(
+                    f"Successfully seeded {len(relationships)} {relationship.table_name} relationships."
+                )
+            except SQLAlchemyError as err:
+                session.rollback()
+                raise err
+            finally:
+                session.close()
 
     def get_relationship_data(
         self, data: pd.DataFrame, relationship: RelationshipTable
