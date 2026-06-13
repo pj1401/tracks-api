@@ -19,6 +19,7 @@ dependencies = [
     "bcrypt>=5.0.0",
     "models",
     "sqlalchemy>=2.0.50",
+    "numpy>=2.4.2",
 ]
 
 [dependency-groups]
