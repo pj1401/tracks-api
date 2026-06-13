@@ -20,6 +20,8 @@ class Transformer:
         self.max_artist_id = 1
         self.seen_albums = {}
         self.max_album_id = 1
+        self.seen_tracks = {}
+        self.max_track_id = 1
 
     def _build_playcount_lookup(
         self, playcount_data: Iterator[pd.DataFrame]
@@ -140,9 +142,18 @@ class Transformer:
         df["tags"] = df["tags"].apply(json.dumps)
         df["genre"] = df["genre"].astype("str").str.strip()
         df["genre"] = df["genre"].apply(json.dumps)
+
+        # Remove duplicate tracks
         tracks_df = pd.DataFrame(df[["old_track_id", "name"]].reset_index(drop=True))
         tracks_df = tracks_df.drop_duplicates(subset=["old_track_id"], keep="first")
-        tracks_df["track_id"] = tracks_df.index + 1
+
+        def get_track_id(old_track_id: str) -> int:
+            if old_track_id not in self.seen_tracks:
+                self.seen_tracks[old_track_id] = self.max_track_id
+                self.max_track_id += 1
+            return self.seen_tracks[old_track_id]
+
+        tracks_df["track_id"] = tracks_df["old_track_id"].map(get_track_id)
         tracks_df = self.normalize_columns(tracks_df)
         df = df.drop(columns=["name"])
         return df.merge(tracks_df, on="old_track_id", how="left")

@@ -34,11 +34,11 @@ services:
       ADMIN_PASSWORD_FILE: /run/secrets/admin_password
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      CSV_PATH: data/Music Info.csv
-      CSV_LISTENING_HISTORY_PATH: data/User Listening History.csv
-      HDF5_PATH: data/msd_summary_file.h5
-      CHUNK_SIZE: 200
-      NO_OF_CHUNKS: 2
+      CSV_PATH: data/music-info-subset-50.csv
+      CSV_LISTENING_HISTORY_PATH: data/listening-history-subset-50.csv
+      HDF5_PATH: data/msd-summary-subset-50.h5
+      CHUNK_SIZE: 20
+      NO_OF_CHUNKS: 3
       PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
@@ -52,7 +52,7 @@ services:
         condition: service_healthy
     volumes:
       - ./models:/models
-      - /srv/tracks-api/data:/app/data
+      - /srv/tracks-api/data-subset:/app/data
     restart: "no"
 
   auth-service:
