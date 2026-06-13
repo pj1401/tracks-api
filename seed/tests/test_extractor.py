@@ -5,7 +5,7 @@ from src.extractor import read_hdf5_data
 
 
 @pytest.fixture
-def mock_hdf5():
+def mock_hdf5() -> MagicMock:
     """
     Get a mock hdf5 file.
 
@@ -51,7 +51,7 @@ class TestReadHdf5Data:
     Test the read_hdf5_data function.
     """
 
-    def test_correct_dict_keys(self, mock_hdf5):
+    def test_correct_dict_keys(self, mock_hdf5: MagicMock):
         with patch("src.extractor.h5py.File", return_value=mock_hdf5):
             result = read_hdf5_data("fake/path.h5")
 
@@ -61,7 +61,7 @@ class TestReadHdf5Data:
         assert "album_name" in result[key]
         assert "old_album_id" in result[key]
 
-    def test_correct_values(self, mock_hdf5):
+    def test_correct_values(self, mock_hdf5: MagicMock):
         with patch("src.extractor.h5py.File", return_value=mock_hdf5):
             result = read_hdf5_data("fake/path.h5")
 
