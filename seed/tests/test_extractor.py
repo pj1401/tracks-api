@@ -6,6 +6,12 @@ from src.extractor import read_hdf5_data
 
 @pytest.fixture
 def mock_hdf5():
+    """
+    Get a mock hdf5 file.
+
+    :return: A mock of the hdf5 file
+    :rtype: MagicMock
+    """
     analysis_dtype = np.dtype([("track_id", "S18")])
     metadata_dtype = np.dtype(
         [
@@ -15,7 +21,7 @@ def mock_hdf5():
     )
 
     analysis_rows = np.array(
-        [(b"TRMZXEW128F9341FD5",), (b"TRIOREW128F424EAF0")],
+        [(b"TRMZXEW128F9341FD5",), (b"TRIOREW128F424EAF0",)],
         dtype=analysis_dtype,
     )
     metadata_rows = np.array(
@@ -23,15 +29,19 @@ def mock_hdf5():
         dtype=metadata_dtype,
     )
 
+    analysis_songs = MagicMock()
+    analysis_songs.__iter__ = MagicMock(return_value=iter(analysis_rows))
+
+    metadata_songs = MagicMock()
+    metadata_songs.__iter__ = MagicMock(return_value=iter(metadata_rows))
+
     mock_file = MagicMock()
     mock_file.__enter__ = lambda s: s
     mock_file.__exit__ = MagicMock(return_value=False)
-    mock_file["analysis"]["songs"].__iter__ = MagicMock(
-        return_value=iter(analysis_rows)
-    )
-    mock_file["metadata"]["songs"].__iter__ = MagicMock(
-        return_value=iter(metadata_rows)
-    )
+    mock_file.__getitem__.side_effect = lambda key: {
+        "analysis": {"songs": analysis_songs},
+        "metadata": {"songs": metadata_songs},
+    }[key]
 
     return mock_file
 

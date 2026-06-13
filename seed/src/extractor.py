@@ -29,10 +29,8 @@ def read_csv_data(file_path: str, chunk_size: int) -> Iterator[pd.DataFrame]:
 
 def read_hdf5_data(file_path: str) -> dict[str, tuple]:
     with h5py.File(file_path, "r") as f:
-        analysis_data = f["analysis"]["songs"][:]
-        metadata_data = f["metadata"]["songs"][:]
         result = {}
-        for a_row, m_row in zip(analysis_data, metadata_data):
+        for a_row, m_row in zip(f["analysis"]["songs"], f["metadata"]["songs"]):
             track_id = a_row["track_id"].decode("utf-8").strip().upper()
             result[track_id] = {
                 "album_name": m_row["release"].decode("utf-8").strip(),
