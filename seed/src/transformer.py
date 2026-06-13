@@ -4,6 +4,7 @@ module: src/transformer.py
 """
 
 from collections.abc import Iterator
+import json
 import pandas as pd  # type: ignore
 
 
@@ -49,9 +50,6 @@ class Transformer:
         merged = self.lookup_playcount(chunk_with_album_info)
         renamed = self.rename_columns(merged)
         cleaned = self.replace_NaN(renamed)
-
-        # TODO: Make sets of seen artists and albums to avoid duplicates.
-        # albums_df = self.transform_albums(cleaned)
         artists_df = self.transform_artists(cleaned)
         albums_df = self.transform_albums(cleaned)
         tracks_df = self.transform_tracks(cleaned)
@@ -137,6 +135,10 @@ class Transformer:
     def transform_tracks(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generate new track_ids and drop duplicates based on old_track_id."""
         df.copy()
+        df["tags"] = df["tags"].astype("str").str.strip()
+        df["tags"] = df["tags"].apply(json.dumps)
+        df["genre"] = df["genre"].astype("str").str.strip()
+        df["genre"] = df["genre"].apply(json.dumps)
         tracks_df = pd.DataFrame(df[["old_track_id", "name"]].reset_index(drop=True))
         tracks_df = tracks_df.drop_duplicates(subset=["old_track_id"], keep="first")
         tracks_df["track_id"] = tracks_df.index + 1
@@ -153,7 +155,7 @@ class Transformer:
     def replace_ids(
         self, artists_df: pd.DataFrame, albums_df: pd.DataFrame, tracks_df: pd.DataFrame
     ) -> pd.DataFrame:
-        """Replace old artist ids and album ids."""
+        """Replace old artist IDs and album IDs."""
         # Create a mappings
         artist_mapping = dict(zip(artists_df["artist_name"], artists_df["artist_id"]))
         album_mapping = dict(zip(albums_df["old_album_id"], albums_df["album_id"]))
