@@ -39,6 +39,7 @@ services:
       HDF5_PATH: data/msd_summary_file.h5
       CHUNK_SIZE: 200
       NO_OF_CHUNKS: 2
+      PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
       - db_user
@@ -71,6 +72,7 @@ services:
       FLASK_SECRET_KEY_FILE: /run/secrets/flask_secret_key
       JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
       JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+      PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
       - db_user
@@ -106,6 +108,7 @@ services:
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
       - db_user
