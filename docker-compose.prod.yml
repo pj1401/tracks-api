@@ -21,6 +21,10 @@ services:
 
   seed:
     image: $REGISTRY_IMAGE/seed:latest
+    deploy:
+      resources:
+        limits:
+          memory: 1800m
     build:
       context: .
       dockerfile: seed/dockerfile
