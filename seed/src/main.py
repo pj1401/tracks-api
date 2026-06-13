@@ -29,14 +29,20 @@ def main():
     # Check if data already exists.
     if not db_loader.database_is_populated():
         # Read data
+        print("Reading data...")
+        print("Reading Music Info...")
         csv_chunks = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
-        hdf5_lookup = read_hdf5_data(str(HDF5_PATH))
+        print("Reading Listening History...")
         playcount_data = read_playcount_data(
             str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE
         )
+        print("Reading hdf5...")
+        hdf5_lookup = read_hdf5_data(str(HDF5_PATH))
 
         # Transform and load one chunk at a time.
         transformer = Transformer(hdf5_lookup, playcount_data)
+
+        print("Loading database...")
         for i, chunk in enumerate(csv_chunks):
             if i >= NO_OF_CHUNKS:
                 break

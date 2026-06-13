@@ -31,12 +31,18 @@ def read_hdf5_data(file_path: str) -> dict[str, dict[str, str]]:
     with h5py.File(file_path, "r") as f:
         analysis_songs: h5py.Dataset = f["analysis"]["songs"]
         metadata_songs: h5py.Dataset = f["metadata"]["songs"]
+
+        # Slice only the columns that are going to be used.
+        track_ids = analysis_songs["track_id"][:]
+        releases = metadata_songs["release"][:]
+        release_ids = metadata_songs["release_7digitalid"][:]
+
         result = {}
-        for a_row, m_row in zip(analysis_songs, metadata_songs):
-            track_id = a_row["track_id"].decode("utf-8").strip().upper()
-            result[track_id] = {
-                "album_name": m_row["release"].decode("utf-8").strip(),
-                "old_album_id": str(m_row["release_7digitalid"]).strip(),
+        for track_id, release, release_id in zip(track_ids, releases, release_ids):
+            key = track_id.decode("utf-8").strip().upper()
+            result[key] = {
+                "album_name": release.decode("utf-8").strip(),
+                "old_album_id": str(release_id).strip(),
             }
         return result
 
