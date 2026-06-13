@@ -4,87 +4,66 @@ module: src/transformer.py
 """
 
 from collections.abc import Iterator
-
 import pandas as pd  # type: ignore
-import json
 
 
-def transform_playcount_data(playcount_data: Iterator[pd.DataFrame]) -> pd.DataFrame:
-    total_playcount = pd.DataFrame()
-    for chunk in playcount_data:
+class Transformer:
+    def __init__(
+        self,
+        hdf5_lookup: dict[str, dict[str, str]],
+        playcount_data: Iterator[pd.DataFrame],
+    ) -> None:
+        self.hdf5_lookup = hdf5_lookup
+        self.playcount_lookup = self._build_playcount_lookup(playcount_data)
+        self.seen_artists = set()
+        self.seen_albums = set()
+
+    def _build_playcount_lookup(
+        self, playcount_data: Iterator[pd.DataFrame]
+    ) -> dict[str, int]:
+        """
+        Build a dictionary with the total playcount values.
+
+        :param playcount_data: The Iterator with the playcount chunks.
+        :type playcount_data: Iterator[pd.DataFrame]
+        :return: A dictionary with track_id as keys, and the total playcount as values.
+        :rtype: dict[str, int]
+        """
+        totals: dict[str, int] = {}
+        for chunk in playcount_data:
+            chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
+            for _, row in chunk.iterrows():
+                tid = row["track_id"]
+
+                # Look up if track_id already exists as a key in the totals dictionary, add the track_id if it doesn't exist.
+                totals[tid] = totals.get(tid, 0) + int(row["playcount"])
+        return totals
+
+    def transform_chunk(
+        self, chunk: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | None:
         chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
-        chunk = chunk.groupby("track_id")["playcount"].sum().reset_index()
-        total_playcount = (
-            pd.concat([total_playcount, chunk])
-            .groupby("track_id")["playcount"]
-            .sum()
-            .reset_index()
-        )
-    return total_playcount
+        chunk_with_album_names = self.lookup_album_name(chunk)
+        merged = self.lookup_playcount(chunk_with_album_names)
+        normalized = normalize(merged)
+        renamed = rename_columns(normalized)
+        cleaned = replace_NaN(renamed)
 
+        # TODO: Make sets of seen artists and albums to avoid duplicates.
+        artists_df = transform_artists(cleaned)
+        albums_df = transform_albums(cleaned)
+        tracks_df = transform_tracks(cleaned)
+        tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+        return (tracks_df, artists_df, albums_df)
 
-def build_playcount_lookup(playcount_data: Iterator[pd.DataFrame]) -> dict[str, int]:
-    totals: dict[str, int] = {}
-    for chunk in playcount_data:
-        chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
-        for _, row in chunk.iterrows():
-            tid = row["track_id"]
-            totals[tid] = totals.get(tid, 0) + int(row["playcount"])
-    return totals
+    def lookup_album_name(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["album_name"] = df["track_id"].map(self.hdf5_lookup)
+        df["old_album_id"] = df["track_id"].map(self.hdf5_lookup)
+        return df
 
-
-def transform_chunk(
-    chunk: pd.DataFrame,
-    hdf5_lookup: dict[str, tuple],
-    playcount_lookup: dict[str, int],
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | None:
-    chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
-    merged = merge(chunk, hdf5_lookup, playcount_lookup)
-    normalized = normalize(merged)
-    renamed = rename_columns(normalized)
-    cleaned = replace_NaN(renamed)
-
-    # TODO: Make sets of seen artists and albums to avoid duplicates.
-    artists_df = transform_artists(cleaned)
-    albums_df = transform_albums(cleaned)
-    tracks_df = transform_tracks(cleaned)
-    tracks_df = replace_ids(artists_df, albums_df, tracks_df)
-    return (tracks_df, artists_df, albums_df)
-
-
-def transform_csv_data(
-    csv_data: Iterator[pd.DataFrame], no_of_chunks: int
-) -> pd.DataFrame:
-    csv_df = pd.DataFrame()
-    for i, chunk in enumerate(csv_data):
-        if i >= no_of_chunks:
-            break
-        chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
-        chunk["tags"] = chunk["tags"].astype("str").str.strip()
-        chunk["tags"] = chunk["tags"].apply(json.dumps)
-        chunk["genre"] = chunk["genre"].astype("str").str.strip()
-        chunk["genre"] = chunk["genre"].apply(json.dumps)
-        chunk = normalize_columns(chunk)
-        csv_df = pd.concat([csv_df, chunk])
-    return csv_df
-
-
-def merge(
-    df: pd.DataFrame, hdf5_df: pd.DataFrame, total_playcount: pd.DataFrame
-) -> pd.DataFrame:
-    """Merge csv, hdf and playcount data."""
-    # Normalise track_id
-    df["track_id"] = df["track_id"].astype("str").str.strip().str.upper()
-    hdf5_df["track_id"] = hdf5_df["track_id"].astype("str").str.strip().str.upper()
-    total_playcount["track_id"] = (
-        total_playcount["track_id"].astype("str").str.strip().str.upper()
-    )
-
-    # Merge
-    merged = df.merge(hdf5_df, on="track_id", how="inner")
-    merged = merged.merge(total_playcount, on="track_id", how="left")
-
-    return merged
+    def lookup_playcount(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["total_playcount"] = df["track_id"].map(self.playcount_lookup)
+        return df
 
 
 def normalize(df: pd.DataFrame) -> pd.DataFrame:
@@ -110,8 +89,6 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns={"track_id": "old_track_id"})
     df = df.rename(columns={"artist": "artist_name"})
     df = df.rename(columns={"artist_id": "old_artist_id"})
-    df = df.rename(columns={"release": "album_name"})
-    df = df.rename(columns={"release_7digitalid": "old_album_id"})
     df = df.rename(columns={"playcount": "total_playcount"})
     return df
 
