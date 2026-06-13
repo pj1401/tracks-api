@@ -40,6 +40,7 @@ def main():
         hdf5_lookup = read_hdf5_data(str(HDF5_PATH))
 
         # Transform and load one chunk at a time.
+        print("Transforming data...")
         transformer = Transformer(hdf5_lookup, playcount_data)
 
         print("Loading database...")

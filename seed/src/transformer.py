@@ -32,15 +32,17 @@ class Transformer:
         :return: A dictionary with track_id as keys, and the total playcount as values.
         :rtype: dict[str, int]
         """
-        totals: dict[str, int] = {}
+        total_playcount = pd.DataFrame()
         for chunk in playcount_data:
             chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
-            for _, row in chunk.iterrows():
-                tid = row["track_id"]
-
-                # Look up if track_id already exists as a key in the totals dictionary, add the track_id if it doesn't exist.
-                totals[tid] = totals.get(tid, 0) + int(row["playcount"])
-        return totals
+            chunk = chunk.groupby("track_id")["playcount"].sum().reset_index()
+            total_playcount = (
+                pd.concat([total_playcount, chunk])
+                .groupby("track_id")["playcount"]
+                .sum()
+                .reset_index()
+            )
+        return dict(zip(total_playcount["track_id"], total_playcount["playcount"]))
 
     def transform_chunk(
         self, chunk: pd.DataFrame
@@ -76,7 +78,6 @@ class Transformer:
         df = df.copy()
         df = df.rename(columns={"track_id": "old_track_id"})
         df = df.rename(columns={"artist": "artist_name"})
-        df = df.rename(columns={"playcount": "total_playcount"})
         return df
 
     def replace_NaN(self, df: pd.DataFrame) -> pd.DataFrame:
