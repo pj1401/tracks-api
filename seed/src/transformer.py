@@ -55,7 +55,7 @@ class Transformer:
         artists_df = self.transform_artists(cleaned)
         albums_df = self.transform_albums(cleaned)
         tracks_df = self.transform_tracks(cleaned)
-        # tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+        tracks_df = self.replace_ids(artists_df, albums_df, tracks_df)
         return (tracks_df, artists_df, albums_df)
 
     def lookup_album(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -92,11 +92,22 @@ class Transformer:
             df[["artist_name"]].drop_duplicates().reset_index(drop=True)
         )
 
-        # Use integers as IDs
-        # Add artist_name to seen_artists if they don't exist, and increment max_artist_id. Otherwise reuse artist_id from seen_artists.
-        artists_df["artist_id"] = artists_df["artist_name"].map(self.seen_artists)
-        artists_df["artist_id"] = artists_df["artist_id"].fillna(self.max_artist_id)
-        self.max_artist_id += 1
+        def get_artist_id(name: str) -> int:
+            """
+            Look up the artist ID in the seen_artists dictionary.
+            Add the artist to the dictionary if they aren't found, and increment max_artist_id.
+
+            :param name: The name of the artist.
+            :type name: str
+            :return: The artist ID.
+            :rtype: int
+            """
+            if name not in self.seen_artists:
+                self.seen_artists[name] = self.max_artist_id
+                self.max_artist_id += 1
+            return self.seen_artists[name]
+
+        artists_df["artist_id"] = artists_df["artist_name"].map(get_artist_id)
         return self.normalize_columns(artists_df)
 
     def transform_albums(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -105,8 +116,22 @@ class Transformer:
         )
         albums_df = albums_df.drop_duplicates(subset=["old_album_id"], keep="first")
 
-        self.seen_albums.update(albums_df["old_album_id"].to_numpy())
-        albums_df["album_id"] = albums_df.index + 1
+        def get_album_id(old_album_id: str) -> int:
+            """
+            Look up the old album ID in the seen_albums dictionary.
+            Add the album to the dictionary if it doesn't exist, and increment max_album_id.
+
+            :param old_album_id: The album ID from the dataset.
+            :type old_album_id: str
+            :return: The ID of the album.
+            :rtype: int
+            """
+            if old_album_id not in self.seen_albums:
+                self.seen_albums[old_album_id] = self.max_album_id
+                self.max_album_id += 1
+            return self.seen_albums[old_album_id]
+
+        albums_df["album_id"] = albums_df["old_album_id"].map(get_album_id)
         return self.normalize_columns(albums_df)
 
     def transform_tracks(self, df: pd.DataFrame) -> pd.DataFrame:
