@@ -273,3 +273,4 @@ data/
 secrets/
 api_spec/
 newman*/
+test-reports/

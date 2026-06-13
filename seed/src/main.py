@@ -10,7 +10,7 @@ from models import BaseModel
 from src.util.user import User
 from src.sqlalchemy_loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
-from src.transformer import transform, transform_csv_data, transform_playcount_data
+from src.transformer import Transformer
 
 # Load environment variables
 load_dotenv()
@@ -23,30 +23,38 @@ NO_OF_CHUNKS = int(os.getenv("NO_OF_CHUNKS", 3))
 
 
 def main():
+    print("Connecting to database...")
     db_loader = DatabaseLoader(get_db_uri(), BaseModel)
 
     # Check if data already exists.
     if not db_loader.database_is_populated():
         # Read data
-        csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
-        hdf5_data = read_hdf5_data(str(HDF5_PATH))
+        print("Reading data...")
+        print("Reading Music Info...")
+        csv_chunks = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
+        print("Reading Listening History...")
         playcount_data = read_playcount_data(
             str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE
         )
+        print("Reading hdf5...")
+        hdf5_lookup = read_hdf5_data(str(HDF5_PATH))
 
-        # Transform
-        total_playcount = transform_playcount_data(playcount_data)
-        csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
+        # Transform and load one chunk at a time.
+        print("Transforming data...")
+        transformer = Transformer(hdf5_lookup, playcount_data)
 
-        # Merge with hdf5
-        transoformed_data = transform(csv_df, hdf5_data, total_playcount)
+        print("Loading database...")
+        for i, chunk in enumerate(csv_chunks):
+            if i >= NO_OF_CHUNKS:
+                break
+            transoformed_data = transformer.transform_chunk(chunk)
+            db_loader.seed_chunk(transoformed_data)
 
         admin_username = _get_env_or_secret("ADMIN_USERNAME")
         admin_email = _get_env_or_secret("ADMIN_EMAIL")
         admin_password = _get_env_or_secret("ADMIN_PASSWORD")
 
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
-        db_loader.seed_database(transoformed_data)
 
         print("Disconnected")
     else:

@@ -1,6 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [project]
-name = "songs-to-postgres"
-version = "2026.0.0"
+name = "seed"
+version = "0.1.0"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
@@ -12,11 +19,14 @@ dependencies = [
     "bcrypt>=5.0.0",
     "models",
     "sqlalchemy>=2.0.50",
+    "numpy>=2.4.2",
 ]
 
 [dependency-groups]
 dev = [
+    "hatchling>=1.30.1",
     "pyright>=1.1.410",
+    "pytest>=9.0.3",
     "ruff>=0.15.4",
 ]
 
@@ -24,6 +34,11 @@ dev = [
 models = { path = "../models", editable = true }
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "tests"]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "--junitxml=test-reports/junit.xml"
