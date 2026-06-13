@@ -209,7 +209,7 @@ class DatabaseLoader:
             )
             session.add(user)
             session.commit()
-            print("Seeded admin user.")
+            print("Successfully loaded admin user.")
         except SQLAlchemyError as err:
             session.rollback()
             raise err

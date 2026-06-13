@@ -1,6 +1,6 @@
 [project]
-name = "songs-to-postgres"
-version = "2026.0.0"
+name = "seed"
+version = "0.1.0"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
@@ -24,6 +24,6 @@ dev = [
 models = { path = "../models", editable = true }
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "./seed.py"]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"

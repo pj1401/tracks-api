@@ -23,17 +23,20 @@ NO_OF_CHUNKS = int(os.getenv("NO_OF_CHUNKS", 3))
 
 
 def main():
+    print("Connecting to database...")
     db_loader = DatabaseLoader(get_db_uri(), BaseModel)
 
     # Check if data already exists.
     if not db_loader.database_is_populated():
         # Read data
+        print("Reading data...")
         csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
         hdf5_data = read_hdf5_data(str(HDF5_PATH))
         playcount_data = read_playcount_data(
             str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE
         )
 
+        print("Transforming data...")
         # Transform
         total_playcount = transform_playcount_data(playcount_data)
         csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
@@ -45,6 +48,7 @@ def main():
         admin_email = _get_env_or_secret("ADMIN_EMAIL")
         admin_password = _get_env_or_secret("ADMIN_PASSWORD")
 
+        print("Seeding database...")
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
         db_loader.seed_database(transoformed_data)
 

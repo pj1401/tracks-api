@@ -5,7 +5,7 @@ module: src/transformer.py
 
 from collections.abc import Iterator
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import json
 
 
