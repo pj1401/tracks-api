@@ -10,7 +10,12 @@ from models import BaseModel
 from src.util.user import User
 from src.sqlalchemy_loader import DatabaseLoader
 from src.extractor import read_csv_data, read_hdf5_data, read_playcount_data
-from src.transformer import transform, transform_csv_data, transform_playcount_data
+from src.transformer import (
+    build_playcount_lookup,
+    transform_chunk,
+    transform_csv_data,
+    transform_playcount_data,
+)
 
 # Load environment variables
 load_dotenv()
@@ -30,19 +35,27 @@ def main():
     if not db_loader.database_is_populated():
         # Read data
         print("Reading data...")
-        csv_data = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
-        hdf5_data = read_hdf5_data(str(HDF5_PATH))
+        csv_chunks = read_csv_data(str(CSV_PATH), CHUNK_SIZE)
+        hdf5_lookup = read_hdf5_data(str(HDF5_PATH))
         playcount_data = read_playcount_data(
             str(CSV_LISTENING_HISTORY_PATH), CHUNK_SIZE
         )
 
         print("Transforming data...")
         # Transform
-        total_playcount = transform_playcount_data(playcount_data)
-        csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
+        playcount_lookup = build_playcount_lookup(playcount_data)
+        for i, chunk in enumerate(csv_chunks):
+            if i >= NO_OF_CHUNKS:
+                break
+            tracks_df, artists_df, albums_df = transform_chunk(
+                chunk, hdf5_lookup, playcount_lookup
+            )
+            db_loader.seed_chunk(tracks_df, artists_df, albums_df)
+        # total_playcount = transform_playcount_data(playcount_data)
+        # csv_df = transform_csv_data(csv_data, NO_OF_CHUNKS)
 
         # Merge with hdf5
-        transoformed_data = transform(csv_df, hdf5_data, total_playcount)
+        # transoformed_data = transform(csv_df, hdf5_lookup, total_playcount)
 
         admin_username = _get_env_or_secret("ADMIN_USERNAME")
         admin_email = _get_env_or_secret("ADMIN_EMAIL")
@@ -50,7 +63,7 @@ def main():
 
         print("Seeding database...")
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
-        db_loader.seed_database(transoformed_data)
+        # db_loader.seed_database(transoformed_data)
 
         print("Disconnected")
     else:

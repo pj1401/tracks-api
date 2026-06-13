@@ -23,6 +23,35 @@ def transform_playcount_data(playcount_data: Iterator[pd.DataFrame]) -> pd.DataF
     return total_playcount
 
 
+def build_playcount_lookup(playcount_data: Iterator[pd.DataFrame]) -> dict[str, int]:
+    totals: dict[str, int] = {}
+    for chunk in playcount_data:
+        chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
+        for _, row in chunk.iterrows():
+            tid = row["track_id"]
+            totals[tid] = totals.get(tid, 0) + int(row["playcount"])
+    return totals
+
+
+def transform_chunk(
+    chunk: pd.DataFrame,
+    hdf5_lookup: dict[str, tuple],
+    playcount_lookup: dict[str, int],
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | None:
+    chunk["track_id"] = chunk["track_id"].astype("str").str.strip().str.upper()
+    merged = merge(chunk, hdf5_lookup, playcount_lookup)
+    normalized = normalize(merged)
+    renamed = rename_columns(normalized)
+    cleaned = replace_NaN(renamed)
+
+    # TODO: Make sets of seen artists and albums to avoid duplicates.
+    artists_df = transform_artists(cleaned)
+    albums_df = transform_albums(cleaned)
+    tracks_df = transform_tracks(cleaned)
+    tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+    return (tracks_df, artists_df, albums_df)
+
+
 def transform_csv_data(
     csv_data: Iterator[pd.DataFrame], no_of_chunks: int
 ) -> pd.DataFrame:
@@ -135,15 +164,15 @@ def replace_ids(
     return tracks_df
 
 
-def transform(
-    csv_df: pd.DataFrame, hdf5_df: pd.DataFrame, total_playcount: pd.DataFrame
-):
-    merged = merge(csv_df, hdf5_df, total_playcount)
-    normalized = normalize(merged)
-    renamed = rename_columns(normalized)
-    cleaned = replace_NaN(renamed)
-    artists_df = transform_artists(cleaned)
-    albums_df = transform_albums(cleaned)
-    tracks_df = transform_tracks(cleaned)
-    tracks_df = replace_ids(artists_df, albums_df, tracks_df)
-    return tracks_df, artists_df, albums_df
+# def transform(
+#     csv_df: pd.DataFrame, hdf5_df: pd.DataFrame, total_playcount: pd.DataFrame
+# ):
+#     merged = merge(csv_df, hdf5_df, total_playcount)
+#     normalized = normalize(merged)
+#     renamed = rename_columns(normalized)
+#     cleaned = replace_NaN(renamed)
+#     artists_df = transform_artists(cleaned)
+#     albums_df = transform_albums(cleaned)
+#     tracks_df = transform_tracks(cleaned)
+#     tracks_df = replace_ids(artists_df, albums_df, tracks_df)
+#     return tracks_df, artists_df, albums_df
