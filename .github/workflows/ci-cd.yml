@@ -203,3 +203,10 @@ jobs:
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           docker compose -f docker-compose.prod.yml pull
           docker compose -f docker-compose.prod.yml up -d
+
+      - name: Print service logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.prod.yml logs seed
+          docker compose -f docker-compose.prod.yml logs auth-service
+          docker compose -f docker-compose.prod.yml logs tracks-api
