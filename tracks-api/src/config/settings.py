@@ -3,7 +3,7 @@ The Settings class.
 module: src/config/settings.py
 """
 
-from pydantic import Field
+from pydantic import Field, AliasChoices
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,7 +21,9 @@ class Settings(BaseSettings):
 
     db_host: str = Field(validation_alias="POSTGRES_HOST")
     db_port: int = Field(default=5432, validation_alias="POSTGRES_PORT")
-    db_name: str = Field(validation_alias="POSTGRES_DB")
-    db_user: str = Field(validation_alias="POSTGRES_USER")
-    db_password: str = Field(validation_alias="POSTGRES_PASSWORD")
+    db_name: str = Field(validation_alias=AliasChoices("POSTGRES_DB", "db_name"))
+    db_user: str = Field(validation_alias=AliasChoices("POSTGRES_USER", "db_user"))
+    db_password: str = Field(
+        validation_alias=AliasChoices("POSTGRES_PASSWORD", "db_password")
+    )
     base_url: str = Field(validation_alias="BASE_URL")
