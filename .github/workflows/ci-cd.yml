@@ -157,6 +157,13 @@ jobs:
           path: ./newman-reports/
           retention-days: 1
 
+      - name: Print service logs on failure
+        if: failure()
+        run: |
+          docker compose -p tracks-test -f docker-compose.test.yml logs tracks-api
+          docker compose -p tracks-test -f docker-compose.test.yml logs auth-service
+          docker compose -p tracks-test -f docker-compose.test.yml logs seed
+
       - name: Tear down test stack
         if: always()
         run: docker compose -p tracks-test -f docker-compose.test.yml down -v
