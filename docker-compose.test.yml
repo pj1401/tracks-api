@@ -59,6 +59,8 @@ services:
     build:
       context: .
       dockerfile: auth-service/dockerfile
+      args:
+        AUTH_PORT: 5020
     environment:
       FLASK_HOST: 0.0.0.0
       FLASK_PORT: 5020
@@ -101,6 +103,8 @@ services:
     build:
       context: .
       dockerfile: tracks-api/dockerfile
+      args:
+        TRACKS_PORT: 5010
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
