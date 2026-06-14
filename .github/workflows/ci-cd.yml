@@ -195,6 +195,13 @@ jobs:
     permissions:
       packages: read
     steps:
+      - name: Mask env values
+        run: |
+          echo "::add-mask::$(cat /srv/tracks-api/secrets/admin_username.txt)"
+          echo "::add-mask::$(cat /srv/tracks-api/secrets/admin_email.txt)"
+          echo "::add-mask::$(cat /srv/tracks-api/secrets/db_name.txt)"
+          echo "::add-mask::$(cat /srv/tracks-api/secrets/db_user.txt)"
+
       - name: Checkout code
         uses: actions/checkout@v6
 
@@ -203,3 +210,10 @@ jobs:
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           docker compose -f docker-compose.prod.yml pull
           docker compose -f docker-compose.prod.yml up -d
+
+      - name: Print service logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.prod.yml logs seed
+          docker compose -f docker-compose.prod.yml logs auth-service
+          docker compose -f docker-compose.prod.yml logs tracks-api
