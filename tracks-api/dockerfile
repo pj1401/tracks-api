@@ -1,5 +1,8 @@
 FROM python:3.9-slim
 
+ARG TRACKS_PORT=5010
+ENV TRACKS_PORT=${TRACKS_PORT}
+
 COPY --from=ghcr.io/astral-sh/uv:0.10.5 /uv /uvx /bin/
 
 WORKDIR /app
@@ -17,4 +20,4 @@ RUN uv sync --frozen --no-dev
 
 COPY tracks-api/ .
 
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["sh", "-c", "uv run uvicorn src.main:app --host 0.0.0.0 --port $TRACKS_PORT"]

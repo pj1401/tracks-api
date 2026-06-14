@@ -1,5 +1,8 @@
 FROM python:3.12-alpine3.22
 
+ARG AUTH_PORT=5020
+ENV AUTH_PORT=${AUTH_PORT}
+
 COPY --from=ghcr.io/astral-sh/uv:0.10.5 /uv /uvx /bin/
 
 WORKDIR /app
@@ -24,4 +27,4 @@ RUN uv sync --frozen --no-dev
 
 COPY auth-service/ .
 
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:5010", "--workers", "2", "src.main:app"]
+CMD ["sh", "-c", "uv run gunicorn --bind 0.0.0.0:$AUTH_PORT --workers 2 src.main:app"]
