@@ -18,4 +18,5 @@ docs_bp = get_swaggerui_blueprint(
         "persistAuthorization": True,
         "validatorUrl": "none",
     },
+    blueprint_name="docs",
 )

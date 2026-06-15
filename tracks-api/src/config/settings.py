@@ -27,3 +27,4 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("POSTGRES_PASSWORD", "db_password")
     )
     base_url: str = Field(validation_alias="BASE_URL")
+    root_path: str = Field(default="", validation_alias="ROOT_PATH")
