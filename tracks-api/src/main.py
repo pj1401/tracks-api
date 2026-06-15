@@ -6,6 +6,7 @@ module: src/main.py
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from models import BaseModel
+from .apis import api_v1
 from .routers.router import router
 from .db.async_connection_manager import AsyncDatabaseConnectionManager
 from .config import DbConfig
@@ -36,6 +37,10 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Tracks API", lifespan=lifespan, root_path=settings.root_path)
     include_routers(app)
     return app
+
+
+def mount_versioned_apis(app: FastAPI) -> None:
+    app.mount("/api/v1", api_v1)
 
 
 def include_routers(app: FastAPI) -> None:
