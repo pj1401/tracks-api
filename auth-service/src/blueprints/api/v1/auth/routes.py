@@ -3,7 +3,7 @@ Defines auth routes.
 module: src/blueprints/api/v1/auth/routes.py
 """
 
-from flask import Blueprint, g
+from flask import Blueprint, g, url_for
 from models import User
 from src.util.schemas.user import UserModel
 from src.controllers.user_controller import UserController
@@ -16,7 +16,9 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.before_request
 def before_request():
     """Create objects once per request."""
-    g.user_repo = UserRepository(g.db_manager, User, g.base_url)
+    g.user_repo = UserRepository(
+        g.db_manager, User, f"{g.base_url}{url_for('/.api.v1.users.get')}"
+    )
     g.user_service = UserService(g.user_repo, UserModel)
     g.user_controller = UserController(g.user_service)
 
