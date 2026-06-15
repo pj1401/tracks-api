@@ -18,3 +18,8 @@ async def get(settings: Annotated[Settings, Depends(get_settings)]):
         "docs": f"{settings.base_url}{settings.root_path}/docs",
         "version 1": f"{settings.base_url}{settings.root_path}/api/v1",
     }
+
+
+@router.get("/health")
+async def health():
+    return {"status": 200, "message": "OK"}
