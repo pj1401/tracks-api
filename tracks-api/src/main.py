@@ -36,15 +36,22 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="Tracks API", lifespan=lifespan, root_path=settings.root_path)
     include_routers(app)
+    mount_versioned_apis(app)
     return app
-
-
-def mount_versioned_apis(app: FastAPI) -> None:
-    app.mount("/api/v1", api_v1)
 
 
 def include_routers(app: FastAPI) -> None:
     app.include_router(router)
+
+
+def mount_versioned_apis(app: FastAPI) -> None:
+    """
+    Mount versioned APIs as sub applications.
+
+    :param app: The main FastAPI app.
+    :type app: FastAPI
+    """
+    app.mount("/api/v1", api_v1)
 
 
 app = create_app()

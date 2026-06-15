@@ -11,7 +11,7 @@ v1_router = APIRouter()
 v1_router.include_router(track_router, prefix="/tracks")
 
 
-@v1_router.get("")
+@v1_router.get("/")
 async def get():
     return {
         "message": "Welcome to version 1 of the Tracks API!",

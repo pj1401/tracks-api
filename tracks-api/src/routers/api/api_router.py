@@ -11,7 +11,7 @@ from src.dependencies import get_settings
 api_router = APIRouter()
 
 
-@api_router.get("")
+@api_router.get("/")
 async def get(settings: Annotated[Settings, Depends(get_settings)], request: Request):
     return {
         "message": "Hello from the Tracks API!",
