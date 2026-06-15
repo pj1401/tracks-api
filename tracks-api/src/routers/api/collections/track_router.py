@@ -1,6 +1,6 @@
 """
 Defines the track paths.
-module: src.routers.api.v1.track_router
+module: src.routers.api.collections.track_router
 """
 
 from typing import Annotated

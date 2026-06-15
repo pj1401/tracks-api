@@ -15,7 +15,7 @@ router_v1_bp.register_blueprint(docs_bp, url_prefix="/docs")
 router_v1_bp.register_blueprint(users_bp, url_prefix="/users")
 
 
-@router_v1_bp.route("", methods=["GET"])
+@router_v1_bp.route("/", methods=["GET"])
 def get():
     base_url = cast(str, current_app.config["BASE_URL"])
     response = {
