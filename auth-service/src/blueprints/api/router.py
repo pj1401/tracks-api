@@ -17,7 +17,7 @@ def before_request():
     g.base_url = cast(str, current_app.config["BASE_URL"])
 
 
-@router_api_bp.route("", methods=["GET"])
+@router_api_bp.route("/", methods=["GET"])
 def get():
     base_url = cast(str, current_app.config["BASE_URL"])
     response = {
