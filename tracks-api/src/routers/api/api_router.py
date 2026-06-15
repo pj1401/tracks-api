@@ -15,5 +15,6 @@ api_router = APIRouter()
 async def get(settings: Annotated[Settings, Depends(get_settings)], request: Request):
     return {
         "message": "Hello from the Tracks API!",
+        "docs": f"{settings.base_url}{request.scope.get('root_path')}/docs",
         "version 1": f"{settings.base_url}{request.scope.get('root_path')}/api/v1",
     }
