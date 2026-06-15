@@ -69,7 +69,7 @@ services:
       FLASK_DEBUG: True
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      BASE_URL: https://patriciaj.se/tracks-api/auth
+      BASE_URL: https://patriciaj.se
       PATH_PREFIX: /tracks-api/auth
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user

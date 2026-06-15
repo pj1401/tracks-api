@@ -4,7 +4,9 @@ module: src/config/reverse_proxied.py
 """
 
 from wsgiref.types import StartResponse, WSGIEnvironment
-from flask import Flask
+from typing import Callable
+
+WSGIApp = Callable[[WSGIEnvironment, StartResponse], object]
 
 
 class ReverseProxied:
@@ -12,7 +14,7 @@ class ReverseProxied:
     Helper class for handling reverse proxy.
     """
 
-    def __init__(self, app: Flask):
+    def __init__(self, app: WSGIApp):
         self.app = app
 
     def __call__(self, environ: WSGIEnvironment, start_response: StartResponse):
