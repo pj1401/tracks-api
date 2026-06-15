@@ -74,7 +74,7 @@ def mount_versioned_apis(app: FastAPI) -> None:
     :param app: The main FastAPI app.
     :type app: FastAPI
     """
-    app.mount("/api/v1", api_v1)
+    app.mount("/api/v1/", api_v1)
 
 
 app = create_app()
