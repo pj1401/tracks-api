@@ -112,7 +112,8 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      BASE_URL: https://patriciaj.se/tracks-api
+      BASE_URL: https://patriciaj.se
+      ROOT_PATH: /tracks-api
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
