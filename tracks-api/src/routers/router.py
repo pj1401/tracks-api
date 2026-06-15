@@ -13,6 +13,9 @@ router = APIRouter()
 
 @router.get("/")
 async def get(settings: Annotated[Settings, Depends(get_settings)]):
+    """
+    Returns info about the API. This includes links to the docs and API versions.
+    """
     return {
         "message": "Hello from the Tracks API!",
         "docs": f"{settings.base_url}{settings.root_path}/docs",
