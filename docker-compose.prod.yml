@@ -39,7 +39,7 @@ services:
       CSV_LISTENING_HISTORY_PATH: data/User Listening History.csv
       HDF5_PATH: data/msd_summary_file.h5
       CHUNK_SIZE: 5000
-      NO_OF_CHUNKS: 2
+      NO_OF_CHUNKS: 12
       PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
