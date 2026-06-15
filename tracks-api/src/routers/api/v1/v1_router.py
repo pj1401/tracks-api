@@ -5,7 +5,7 @@ module: src/routers/api/v1/v1_router.py
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request
-from ..collections.track_router import track_router
+from ..collections import track_router
 from src.config import Settings
 from src.dependencies import get_settings
 
