@@ -35,7 +35,6 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
     def _get_filtered_stmt(
         self, stmt: Select[Any], filters: TrackFilters
     ) -> Select[Any]:
-        print(filters)
         if filters.album:
             stmt = self._get_album_filtered_stmt(stmt, filters.album)
         if filters.album_id:
