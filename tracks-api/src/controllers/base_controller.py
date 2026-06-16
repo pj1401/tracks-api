@@ -3,7 +3,7 @@ The BaseController class.
 module: src/controllers/base_controller.py
 """
 
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Mapping, TypeVar
 from fastapi import Response
 from models.schemas.query_params import BaseQueryParams
 from src.services.base_service import BaseService
@@ -28,7 +28,7 @@ class BaseController(Generic[TService]):
 
     async def get(
         self, filters: BaseQueryParams, response: Response
-    ) -> dict[str, int | Any | None]:
+    ) -> Mapping[str, int | list[Any] | str]:
         """
         Get a list of records using optional query parameters.
 
@@ -37,16 +37,21 @@ class BaseController(Generic[TService]):
         :param response: The FastAPI response object.
         :type response: Response
         :return: A JSON response.
-        :rtype: dict[str, int | Any | None]
+        :rtype: dict[str, int | list[Any | None] | str]
         """
         try:
-            return await self.service.get(filters)
+            fetched = await self.service.get(filters)
+            result: Mapping[str, int | Any] = {
+                "status": 200,
+                "data": fetched,
+            }
+            return result
         except Exception as err:
             return self._error_response(err, response)
 
     async def get_by_id(
         self, id: int | str, response: Response
-    ) -> dict[str, int | Any | None]:
+    ) -> dict[str, int | Any | str]:
         """
         Fetch one record's data by matching ID.
 

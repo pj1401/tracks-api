@@ -3,7 +3,7 @@ Defines the track paths.
 module: src.routers.api.collections.track_router
 """
 
-from typing import Annotated
+from typing import Annotated, Mapping
 from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
@@ -28,7 +28,7 @@ async def get_tracks(
     controller: Annotated[TrackController, Depends(get_controller)],
     filter_query: Annotated[TrackQueryParams, Query()],
     response: Response,
-):
+) -> Mapping[str, int | list[TrackSchema] | str]:
     return await controller.get(filter_query, response)
 
 
@@ -37,5 +37,5 @@ async def get_track_by_id(
     controller: Annotated[TrackController, Depends(get_controller)],
     id: int,
     response: Response,
-):
+) -> dict[str, int | TrackSchema | str]:
     return await controller.get_by_id(id, response)
