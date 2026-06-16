@@ -4,7 +4,7 @@ module: src.routers.api.collections.track_router
 """
 
 from typing import Annotated, Mapping
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
 from models.schemas.tracks import TrackSchema, TrackQueryParams
@@ -16,9 +16,13 @@ from src.controllers.track_controller import TrackController
 track_router = APIRouter(tags=["tracks"])
 
 
-async def get_controller(session: AsyncSession = Depends(get_session)):
+async def get_controller(
+    request: Request, session: AsyncSession = Depends(get_session)
+):
     settings = get_settings()
-    track_repo = TrackRepository(session, Track, settings.base_url)
+    track_repo = TrackRepository(
+        session, Track, f"{settings.base_url}{request.scope.get('root_path')}"
+    )
     track_service = TrackService(track_repo, TrackSchema)
     return TrackController(track_service)
 

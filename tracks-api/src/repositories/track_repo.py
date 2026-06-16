@@ -118,18 +118,18 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
 
     def model_to_dict(self, model: Track) -> Dict[str, Any]:
         data = model.to_dict()
-        data["href"] = f"{self.base_url}/api/v1/tracks/{model.id}"
+        data["href"] = f"{self.base_url}/tracks/{model.id}"
         data["artists"] = [
             {
                 "id": a.id,
-                "href": f"{self.base_url}/api/v1/artists/{a.id}",
+                "href": f"{self.base_url}/artists/{a.id}",
             }
             for a in model.artists
         ]
         data["albums"] = [
             {
                 "id": a.id,
-                "href": f"{self.base_url}/api/v1/albums/{a.id}",
+                "href": f"{self.base_url}/albums/{a.id}",
             }
             for a in model.albums
         ]
