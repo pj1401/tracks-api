@@ -10,6 +10,7 @@ from .apis import api_v1
 from .routers.router import router
 from .db.async_connection_manager import AsyncDatabaseConnectionManager
 from .config import DbConfig, Settings
+from .decorators.exception_handlers import setup_exception_handlers
 from .dependencies import init_db_manager, get_settings
 
 
@@ -70,6 +71,10 @@ def mount_versioned_apis(app: FastAPI) -> None:
     :type app: FastAPI
     """
     app.mount("/api/v1/", api_v1)
+
+
+def include_exception_handlers(app: FastAPI) -> None:
+    setup_exception_handlers(app)
 
 
 app = create_app()
