@@ -3,8 +3,9 @@ The BaseController class.
 module: src/controllers/base_controller.py
 """
 
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Mapping, TypeVar
 from fastapi import Response
+from models.schemas.query_params import BaseQueryParams
 from src.services.base_service import BaseService
 from src.util.error import convert_to_http_error, log_original_error
 
@@ -25,9 +26,32 @@ class BaseController(Generic[TService]):
         """
         self.service = service
 
+    async def get(
+        self, query_params: BaseQueryParams, response: Response
+    ) -> Mapping[str, int | list[Any] | str]:
+        """
+        Get a list of records using optional query parameters.
+
+        :param query_params: A Pydantic model containing the query parameter data.
+        :type query_params: BaseQueryParams
+        :param response: The FastAPI response object.
+        :type response: Response
+        :return: A JSON response.
+        :rtype: dict[str, int | list[Any | None] | str]
+        """
+        try:
+            fetched = await self.service.get(query_params)
+            result: Mapping[str, int | Any] = {
+                "status": 200,
+                "data": fetched,
+            }
+            return result
+        except Exception as err:
+            return self._error_response(err, response)
+
     async def get_by_id(
         self, id: int | str, response: Response
-    ) -> dict[str, int | Any | None]:
+    ) -> dict[str, int | Any | str]:
         """
         Fetch one record's data by matching ID.
 
