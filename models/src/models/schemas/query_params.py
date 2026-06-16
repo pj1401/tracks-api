@@ -16,7 +16,7 @@ class BaseQueryParams(BaseModel):
     :vartype offset: int
     """
 
-    limit: int = Field(20, ge=1, le=25)
+    limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
 
     @model_validator(mode="before")
