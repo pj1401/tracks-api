@@ -427,7 +427,7 @@
                               "// Set variables\r",
                               "pm.collectionVariables.set('user2_access_token', responseJson.access_token);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"Get a track by ID (Not Found (failure))\");\r",
+                              "pm.execution.setNextRequest(\"Filter tracks (Invalid limit value (failure))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -621,6 +621,241 @@
               "name": "tracks",
               "item": [
                 {
+                  "name": "Filter tracks",
+                  "item": [
+                    {
+                      "name": "Filter tracks (Invalid limit value (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter tracks (Get 5 tracks filtered by tags (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks?limit=999",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "999"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Filter tracks (Get 5 tracks filtered by tags (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'href', 'next', 'previous', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const tracks = responseJson.data\r",
+                              "\r",
+                              "pm.test('Response contains 5 tracks', () => {\r",
+                              "    pm.expect(tracks.length).to.equal(5);\r",
+                              "})\r",
+                              "\r",
+                              "const containsTag = (track) => track.tags.toLowerCase().includes('metal')\r",
+                              "\r",
+                              "pm.test('Tracks are filtered using tags', () => {\r",
+                              "    pm.expect(tracks.every(containsTag)).to.be.true;\r",
+                              "})\r",
+                              "\r",
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "pm.collectionVariables.set('artist_id', tracks[getRandomInt(0, tracks.length)].artists[0].id);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter tracks (Filter by artist_id (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks?limit=5&offset=1&tags=pop&tags=metal",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "5"
+                            },
+                            {
+                              "key": "offset",
+                              "value": "1"
+                            },
+                            {
+                              "key": "tags",
+                              "value": "pop"
+                            },
+                            {
+                              "key": "tags",
+                              "value": "metal"
+                            }
+                          ]
+                        },
+                        "description": "Get 5 tracks. When using multiple values for one parameter, only the last value is used for filtering."
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Filter tracks (Filter by artist_id (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'href', 'next', 'previous', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const artistId = pm.collectionVariables.get('artist_id');\r",
+                              "const tracks = responseJson.data;\r",
+                              "\r",
+                              "const containsArtistId = (track) => {\r",
+                              "    const artists = track.artists;\r",
+                              "    return artists.some((artist) => artist.id === artistId)\r",
+                              "}\r",
+                              "\r",
+                              "pm.test(`All returned tracks contain artist ID (${artistId}) used in filter`, () => {\r",
+                              "    pm.expect(tracks.every(containsArtistId)).to.be.true;\r",
+                              "})\r",
+                              "\r",
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "pm.collectionVariables.set('track_id', tracks[getRandomInt(0, tracks.length)].id);\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Get a track by ID (Not Found (failure))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks?artist_id={{artist_id}}&limit=5",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks"
+                          ],
+                          "query": [
+                            {
+                              "key": "artist_id",
+                              "value": "{{artist_id}}"
+                            },
+                            {
+                              "key": "offset",
+                              "value": "",
+                              "disabled": true
+                            },
+                            {
+                              "key": "limit",
+                              "value": "5"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
                   "name": "Get a track by ID",
                   "item": [
                     {
@@ -720,7 +955,7 @@
                           "variable": [
                             {
                               "key": "id",
-                              "value": "30"
+                              "value": "{{track_id}}"
                             }
                           ]
                         }
@@ -771,6 +1006,14 @@
     },
     {
       "key": "user2_access_token",
+      "value": ""
+    },
+    {
+      "key": "artist_id",
+      "value": ""
+    },
+    {
+      "key": "track_id",
       "value": ""
     }
   ]
