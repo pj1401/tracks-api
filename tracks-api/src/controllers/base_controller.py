@@ -27,20 +27,20 @@ class BaseController(Generic[TService]):
         self.service = service
 
     async def get(
-        self, filters: BaseQueryParams, response: Response
+        self, query_params: BaseQueryParams, response: Response
     ) -> Mapping[str, int | list[Any] | str]:
         """
         Get a list of records using optional query parameters.
 
-        :param filters: A Pydantic model containing the query parameter data.
-        :type filters: BaseQueryParams
+        :param query_params: A Pydantic model containing the query parameter data.
+        :type query_params: BaseQueryParams
         :param response: The FastAPI response object.
         :type response: Response
         :return: A JSON response.
         :rtype: dict[str, int | list[Any | None] | str]
         """
         try:
-            fetched = await self.service.get(filters)
+            fetched = await self.service.get(query_params)
             result: Mapping[str, int | Any] = {
                 "status": 200,
                 "data": fetched,
