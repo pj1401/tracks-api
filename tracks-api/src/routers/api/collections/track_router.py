@@ -4,10 +4,10 @@ module: src.routers.api.collections.track_router
 """
 
 from typing import Annotated
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
-from models.schemas.tracks import TrackSchema
+from models.schemas.tracks import TrackSchema, TrackQueryParams
 from src.dependencies import get_session, get_settings
 from src.repositories.track_repo import TrackRepository
 from src.services.track_service import TrackService
@@ -24,8 +24,8 @@ async def get_controller(session: AsyncSession = Depends(get_session)):
 
 
 @track_router.get("", status_code=status.HTTP_200_OK)
-async def get_tracks(session: AsyncSession = Depends(get_session)):
-    pass
+async def get_tracks(filter_query: Annotated[TrackQueryParams, Query()]):
+    return filter_query
 
 
 @track_router.get("/{id}", status_code=status.HTTP_200_OK)
