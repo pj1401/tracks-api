@@ -5,6 +5,7 @@ module: src/controllers/base_controller.py
 
 from typing import Any, Generic, TypeVar
 from fastapi import Response
+from models.schemas.query_params import BaseQueryParams
 from src.services.base_service import BaseService
 from src.util.error import convert_to_http_error, log_original_error
 
@@ -24,6 +25,24 @@ class BaseController(Generic[TService]):
         :type service: TService
         """
         self.service = service
+
+    async def get(
+        self, filters: BaseQueryParams, response: Response
+    ) -> dict[str, int | Any | None]:
+        """
+        Get a list of records using optional query parameters.
+
+        :param filters: A Pydantic model containing the query parameter data.
+        :type filters: BaseQueryParams
+        :param response: The FastAPI response object.
+        :type response: Response
+        :return: A JSON response.
+        :rtype: dict[str, int | Any | None]
+        """
+        try:
+            return await self.service.get(filters)
+        except Exception as err:
+            return self._error_response(err, response)
 
     async def get_by_id(
         self, id: int | str, response: Response

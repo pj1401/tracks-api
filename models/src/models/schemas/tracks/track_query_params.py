@@ -7,6 +7,7 @@ from pydantic import Field
 from .. import BaseQueryParams
 from .track import Mode
 
+
 class TrackQueryParams(BaseQueryParams):
     name: str | None = None
     artist: str | None = None

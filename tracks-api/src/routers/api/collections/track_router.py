@@ -24,14 +24,18 @@ async def get_controller(session: AsyncSession = Depends(get_session)):
 
 
 @track_router.get("", status_code=status.HTTP_200_OK)
-async def get_tracks(filter_query: Annotated[TrackQueryParams, Query()]):
-    return filter_query
+async def get_tracks(
+    controller: Annotated[TrackController, Depends(get_controller)],
+    filter_query: Annotated[TrackQueryParams, Query()],
+    response: Response,
+):
+    return await controller.get(filter_query, response)
 
 
 @track_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_track_by_id(
+    controller: Annotated[TrackController, Depends(get_controller)],
     id: int,
     response: Response,
-    controller: Annotated[TrackController, Depends(get_controller)],
 ):
     return await controller.get_by_id(id, response)
