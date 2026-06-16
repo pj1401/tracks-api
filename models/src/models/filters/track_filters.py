@@ -17,5 +17,6 @@ class TrackFilters(BaseFilters):
     mode: int | None = None
     min_total_playcount: int | None = None
     max_total_playcount: int | None = None
+    tags: str | None = None
     artist_id: int | None = None
     album_id: int | None = None

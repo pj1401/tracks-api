@@ -32,4 +32,5 @@ class TrackService(WritableService[TrackRepository, TrackQueryParams, TrackParam
             max_total_playcount=params.max_total_playcount,
             artist_id=params.artist_id,
             album_id=params.album_id,
+            tags=params.tags,
         )

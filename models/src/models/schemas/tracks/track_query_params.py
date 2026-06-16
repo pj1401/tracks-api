@@ -17,5 +17,6 @@ class TrackQueryParams(BaseQueryParams):
     mode: Mode | None = None
     min_total_playcount: int | None = Field(None, ge=0)
     max_total_playcount: int | None = Field(None, ge=0)
+    tags: str | None = None
     artist_id: int | None = None
     album_id: int | None = None

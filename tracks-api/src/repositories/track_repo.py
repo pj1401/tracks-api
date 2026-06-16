@@ -35,6 +35,7 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
     def _get_filtered_stmt(
         self, stmt: Select[Any], filters: TrackFilters
     ) -> Select[Any]:
+        print(filters)
         if filters.album:
             stmt = self._get_album_filtered_stmt(stmt, filters.album)
         if filters.album_id:
@@ -57,6 +58,8 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
             stmt = self._get_mode_filtered_stmt(stmt, filters.mode)
         if filters.name:
             stmt = self._get_name_filtered_stmt(stmt, filters.name)
+        if filters.tags:
+            stmt = self._get_tags_filtered_stmt(stmt, filters.tags)
         if filters.year:
             stmt = self._get_year_filtered_stmt(stmt, filters.year)
 
@@ -100,6 +103,9 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
 
     def _get_name_filtered_stmt(self, stmt: Select[Any], name: str) -> Select[Any]:
         return stmt.where(func.lower(Track.name).contains(name.lower()))
+
+    def _get_tags_filtered_stmt(self, stmt: Select[Any], tags: str) -> Select[Any]:
+        return stmt.where(func.lower(Track.tags).contains(tags.lower()))
 
     def _get_year_filtered_stmt(self, stmt: Select[Any], year: int) -> Select[Any]:
         return stmt.where(Track.year == year)
