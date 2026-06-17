@@ -50,7 +50,7 @@ def data() -> list[Dict[str, Any]]:
             "spotify_id": "0Aau2Ju1RoLAhL90zRcDx4",
             "tags": '"rock, metal, classic_rock, hard_rock, 80s, heavy_metal"',
             "genre": "NaN",
-            "year": 2014,
+            "year": 1987,
             "duration_ms": 377386,
             "danceability": 0.272,
             "mode": 1,
@@ -68,6 +68,34 @@ def data() -> list[Dict[str, Any]]:
                 }
             ],
         },
+        {
+            "id": 41,
+            "href": "http://example-domain.com/tracks-api/api/v1/tracks/41",
+            "created_at": "2026-06-16T13:45:35.877848Z",
+            "updated_at": "2026-06-16T13:45:35.877848Z",
+            "name": "Paranoid",
+            "total_playcount": 0,
+            "spotify_id": "01dw6mDc9xJMoEPasHaV7Y",
+            "tags": '"rock, metal, classic_rock, hard_rock, heavy_metal, 70s"',
+            "genre": "NaN",
+            "year": 1970,
+            "duration_ms": 166546,
+            "danceability": 0.413,
+            "mode": 0,
+            "valence": 0.492,
+            "artists": [
+                {
+                    "id": 25,
+                    "href": "http://example-domain.com/tracks-api/api/v1/artists/25",
+                }
+            ],
+            "albums": [
+                {
+                    "id": 40,
+                    "href": "http://example-domain.com/tracks-api/api/v1/albums/40",
+                }
+            ],
+        },
     ]
 
 
@@ -77,7 +105,9 @@ def query_params() -> TrackQueryParams:
 
 
 class TestBuildUrl:
-    """Tests the _build_url method."""
+    """
+    Tests the _build_url method.
+    """
 
     def test_returns_correct_href(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
@@ -112,11 +142,7 @@ class TestBuildUrl:
     def test_returns_correct_previous_url(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
-        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=2&offset=3&tags=metal"
-
-        # Set limit to 2 for this test, so the offset in the previous URL makes sense.
-        query_params.limit = 2
-
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
@@ -128,3 +154,49 @@ class TestBuildUrl:
         limit = query_params.limit
         actual_previous = paginated_response._build_url(max(offset - limit, 0))  # type: ignore[reportPrivateUsage]
         assert actual_previous == expected_previous
+
+
+class TestToDict:
+    """
+    Tests the to_dict method.
+    """
+
+    def test_data_length_less_than_limit(
+        self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
+    ):
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&tags=metal"
+        expected_next = None
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            query_params,
+            200,
+            data,
+        )
+        response_dict = paginated_response.to_dict()
+        assert response_dict["href"] == expected_href
+        assert response_dict["next"] == expected_next
+        assert response_dict["previous"] == expected_previous
+
+    def test_data_length_equals_limit(
+        self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
+    ):
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=5&tags=metal"
+        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=8&tags=metal"
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=2&tags=metal"
+
+        # Set limit to 3 for this test.
+        query_params.limit = 3
+
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            query_params,
+            200,
+            data,
+        )
+        response_dict = paginated_response.to_dict()
+        assert response_dict["href"] == expected_href
+        assert response_dict["next"] == expected_next
+        assert response_dict["previous"] == expected_previous
