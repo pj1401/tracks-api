@@ -21,10 +21,14 @@ async def get_controller(
 ):
     settings = get_settings()
     track_repo = TrackRepository(
-        session, Track, f"{settings.base_url}{request.scope.get('root_path')}"
+        session, Track, f"{settings.base_url}", f"{request.scope.get('root_path')}"
     )
     track_service = TrackService(track_repo, TrackSchema)
-    return TrackController(track_service)
+    return TrackController(
+        track_service,
+        f"{settings.base_url}",
+        f"{request.scope.get('root_path')}/tracks",
+    )
 
 
 @track_router.get("", status_code=status.HTTP_200_OK)

@@ -24,7 +24,11 @@ class BaseRepository(Generic[TModel, TFilters]):
     """
 
     def __init__(
-        self, session: AsyncSession, model: type[TModel], base_url: str
+        self,
+        session: AsyncSession,
+        model: type[TModel],
+        base_url: str,
+        collections_path: str,
     ) -> None:
         """
         Initialise the repository.
@@ -35,10 +39,13 @@ class BaseRepository(Generic[TModel, TFilters]):
         :type model: type[TModel]
         :param base_url: The base URL of the application.
         :type base_url: str
+        :param collections_path: The path to the collections. e.g. "/api/v1"
+        :type collections_path: str
         """
         self.session = session
         self.model = model
         self.base_url = base_url
+        self.collections_path = collections_path
 
     async def get(self, filters: TFilters) -> list[Dict[str, Any]]:
         """

@@ -34,9 +34,12 @@ class PaginatedResponse:
         return {
             "status": self.status,
             "href": self._build_url(offset),
+            # Next is null if the number of returned records are less than limit.
+            # Less than limit indicates the last page, so there is no next page.
             "next": self._build_url(offset + limit)
             if len(self.data) == limit
             else None,
+            # Previous is null if offset is 0. If offset is 0, that indicates first page.
             "previous": self._build_url(max(offset - limit, 0)) if offset > 0 else None,
             "data": self.data,
         }
