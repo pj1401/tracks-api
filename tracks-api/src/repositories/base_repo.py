@@ -57,7 +57,7 @@ class BaseRepository(Generic[TModel, TFilters]):
         :rtype: list[Dict[str, Any]]
         """
         try:
-            stmt = self._get_stmt(filters)
+            stmt = self._get_stmt(filters).order_by(filters.sort)
             result = await self.session.scalars(stmt.offset(filters.offset))
             rows = result.fetchmany(filters.limit)
             return [self.model_to_dict(row) for row in rows]
@@ -74,7 +74,7 @@ class BaseRepository(Generic[TModel, TFilters]):
         :return: The statement using filters if any.
         :rtype: Select[Any]
         """
-        return select(self.model)
+        return self._get_filtered_stmt(select(self.model), filters)
 
     def _get_filtered_stmt(self, stmt: Select[Any], filters: TFilters) -> Select[Any]:
         """

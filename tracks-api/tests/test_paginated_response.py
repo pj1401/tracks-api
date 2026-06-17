@@ -112,7 +112,7 @@ class TestBuildUrl:
     def test_returns_correct_href(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
-        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&tags=metal"
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&sort=id&tags=metal"
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
@@ -126,7 +126,7 @@ class TestBuildUrl:
     def test_returns_correct_next_url(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
-        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=10&tags=metal"
+        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=10&sort=id&tags=metal"
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
@@ -142,7 +142,7 @@ class TestBuildUrl:
     def test_returns_correct_previous_url(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
-        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&sort=id&tags=metal"
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
@@ -167,9 +167,9 @@ class TestToDict:
         """
         There should be no next URL when the number of returned records is less than limit.
         """
-        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&tags=metal"
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&sort=id&tags=metal"
         expected_next = None
-        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&sort=id&tags=metal"
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
@@ -185,9 +185,9 @@ class TestToDict:
     def test_data_length_equals_limit(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
-        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=5&tags=metal"
-        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=8&tags=metal"
-        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=2&tags=metal"
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=5&sort=id&tags=metal"
+        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=8&sort=id&tags=metal"
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=2&sort=id&tags=metal"
 
         # Set limit to the length of the data array.
         query_params.limit = len(data)
@@ -210,7 +210,7 @@ class TestToDict:
         """
         No previous URL is returned when offset is 0.
         """
-        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&sort=id&tags=metal"
         expected_next = None
         expected_previous = None
 
@@ -221,6 +221,26 @@ class TestToDict:
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
             query_params,
+            200,
+            data,
+        )
+        response_dict = paginated_response.to_dict()
+        assert response_dict["href"] == expected_href
+        assert response_dict["next"] == expected_next
+        assert response_dict["previous"] == expected_previous
+
+    def test_default_values_included_in_url(self, data: list[Dict[str, Any]]):
+        """
+        Default values for limit, offset and id query parameters
+          should be included when they aren't specified.
+        """
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=20&offset=0&sort=id&tags=metal"
+        expected_next = None
+        expected_previous = None
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            TrackQueryParams(tags="metal"),
             200,
             data,
         )

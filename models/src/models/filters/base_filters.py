@@ -19,3 +19,4 @@ class BaseFilters:
 
     limit: int = 20
     offset: int = 0
+    sort: str = "id"
