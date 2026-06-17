@@ -92,3 +92,39 @@ class TestBuildUrl:
         )
         actual_href = paginated_response._build_url(query_params.offset)  # type: ignore[reportPrivateUsage]
         assert actual_href == expected_href
+
+    def test_returns_correct_next_url(
+        self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
+    ):
+        expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=10&tags=metal"
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            query_params,
+            200,
+            data,
+        )
+        offset = query_params.offset
+        limit = query_params.limit
+        actual_next = paginated_response._build_url(offset + limit)  # type: ignore[reportPrivateUsage]
+        assert actual_next == expected_next
+
+    def test_returns_correct_previous_url(
+        self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
+    ):
+        expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=2&offset=3&tags=metal"
+
+        # Set limit to 2 for this test, so the offset in the previous URL makes sense.
+        query_params.limit = 2
+
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            query_params,
+            200,
+            data,
+        )
+        offset = query_params.offset
+        limit = query_params.limit
+        actual_previous = paginated_response._build_url(max(offset - limit, 0))  # type: ignore[reportPrivateUsage]
+        assert actual_previous == expected_previous
