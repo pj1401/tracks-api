@@ -13,10 +13,11 @@ from pathlib import Path
 
 
 def load_static_openapi() -> dict[str, Any]:
-    if not api_v1.openapi_schema:
-        api_v1.openapi_schema = json.loads(
+    if api_v1.openapi_schema is None:
+        loaded: dict[str, Any] = json.loads(
             Path("static/tracks-api-v1.openapi.json").read_text()
         )
+        api_v1.openapi_schema = loaded
     return api_v1.openapi_schema
 
 
