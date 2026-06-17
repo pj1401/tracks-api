@@ -12,5 +12,5 @@ class TrackController(WritableController[TrackService]):
     HTTP layer for the tacks collection.
     """
 
-    def __init__(self, track_service: TrackService):
-        super().__init__(track_service)
+    def __init__(self, track_service: TrackService, base_url: str, path: str):
+        super().__init__(track_service, base_url, path)

@@ -3,8 +3,8 @@ Defines the track paths.
 module: src.routers.api.collections.track_router
 """
 
-from typing import Annotated, Mapping
-from fastapi import APIRouter, Depends, Query, Response, status
+from typing import Annotated
+from fastapi import APIRouter, Depends, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
 from models.schemas.tracks import TrackSchema, TrackQueryParams
@@ -16,11 +16,19 @@ from src.controllers.track_controller import TrackController
 track_router = APIRouter(tags=["tracks"])
 
 
-async def get_controller(session: AsyncSession = Depends(get_session)):
+async def get_controller(
+    request: Request, session: AsyncSession = Depends(get_session)
+):
     settings = get_settings()
-    track_repo = TrackRepository(session, Track, settings.base_url)
+    track_repo = TrackRepository(
+        session, Track, f"{settings.base_url}", f"{request.scope.get('root_path')}"
+    )
     track_service = TrackService(track_repo, TrackSchema)
-    return TrackController(track_service)
+    return TrackController(
+        track_service,
+        f"{settings.base_url}",
+        f"{request.scope.get('root_path')}/tracks",
+    )
 
 
 @track_router.get("", status_code=status.HTTP_200_OK)
@@ -28,7 +36,7 @@ async def get_tracks(
     controller: Annotated[TrackController, Depends(get_controller)],
     filter_query: Annotated[TrackQueryParams, Query()],
     response: Response,
-) -> Mapping[str, int | list[TrackSchema] | str]:
+) -> dict[str, int | str | list[TrackSchema | None] | None]:
     return await controller.get(filter_query, response)
 
 

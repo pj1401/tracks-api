@@ -28,6 +28,7 @@ dependencies = [
 dev = [
     "hatchling>=1.30.1",
     "pyright>=1.1.410",
+    "pytest>=9.1.0",
     "ruff>=0.15.16",
 ]
 
@@ -38,6 +39,11 @@ models = { path = "../models", editable = true }
 entrypoint = "src.main:app"
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "tests"]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "--junitxml=test-reports/junit.xml"

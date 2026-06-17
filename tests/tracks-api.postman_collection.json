@@ -716,7 +716,7 @@
                               "\r",
                               "pm.collectionVariables.set('artist_id', tracks[getRandomInt(0, tracks.length)].artists[0].id);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"Filter tracks (Filter by artist_id (success))\");\r",
+                              "pm.execution.setNextRequest(\"Filter tracks (Offset exceeds number of records (success))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -767,6 +767,73 @@
                           ]
                         },
                         "description": "Get 5 tracks. When using multiple values for one parameter, only the last value is used for filtering."
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Filter tracks (Offset exceeds number of records (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'href', 'next', 'previous', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const tracks = responseJson.data;\r",
+                              "\r",
+                              "pm.test('data is an empty list', () => {\r",
+                              "    pm.expect(tracks.length).to.equal(0);\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('next is null', () => {\r",
+                              "    pm.expect(responseJson.next).to.be.null;\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter tracks (Filter by artist_id (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks?artist_id={{artist_id}}&limit=100&offset=100100",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks"
+                          ],
+                          "query": [
+                            {
+                              "key": "artist_id",
+                              "value": "{{artist_id}}"
+                            },
+                            {
+                              "key": "limit",
+                              "value": "100"
+                            },
+                            {
+                              "key": "offset",
+                              "value": "100100"
+                            }
+                          ]
+                        }
                       },
                       "response": []
                     },
@@ -840,13 +907,13 @@
                               "value": "{{artist_id}}"
                             },
                             {
-                              "key": "offset",
-                              "value": "",
-                              "disabled": true
-                            },
-                            {
                               "key": "limit",
                               "value": "5"
+                            },
+                            {
+                              "key": "offset",
+                              "value": "0",
+                              "disabled": true
                             }
                           ]
                         }

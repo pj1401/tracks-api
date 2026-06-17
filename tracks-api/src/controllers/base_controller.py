@@ -3,11 +3,12 @@ The BaseController class.
 module: src/controllers/base_controller.py
 """
 
-from typing import Any, Generic, Mapping, TypeVar
+from typing import Any, Generic, TypeVar
 from fastapi import Response
 from models.schemas.query_params import BaseQueryParams
 from src.services.base_service import BaseService
 from src.util.error import convert_to_http_error, log_original_error
+from src.util.paginated_response import PaginatedResponse
 
 TService = TypeVar("TService", bound=BaseService[Any, Any])
 
@@ -17,18 +18,24 @@ class BaseController(Generic[TService]):
     BaseController for HTTP routes.
     """
 
-    def __init__(self, service: TService):
+    def __init__(self, service: TService, base_url: str, path: str):
         """
         Initialise the controller with its service dependency.
 
         :param service: The service that performs business logic.
         :type service: TService
+        :param base_url: The base URL of the application.
+        :type base_url: str
+        :param path: The path to the collection. e.g. "/api/v1/tracks"
+        :type path: str
         """
         self.service = service
+        self.base_url = base_url
+        self.path = path
 
     async def get(
         self, query_params: BaseQueryParams, response: Response
-    ) -> Mapping[str, int | list[Any] | str]:
+    ) -> dict[str, int | str | Any]:
         """
         Get a list of records using optional query parameters.
 
@@ -37,15 +44,14 @@ class BaseController(Generic[TService]):
         :param response: The FastAPI response object.
         :type response: Response
         :return: A JSON response.
-        :rtype: dict[str, int | list[Any | None] | str]
+        :rtype: dict[str, int | list[Any] | str]
         """
         try:
             fetched = await self.service.get(query_params)
-            result: Mapping[str, int | Any] = {
-                "status": 200,
-                "data": fetched,
-            }
-            return result
+            paginated_response = PaginatedResponse(
+                self.base_url, self.path, query_params, 200, fetched
+            )
+            return paginated_response.to_dict()
         except Exception as err:
             return self._error_response(err, response)
 

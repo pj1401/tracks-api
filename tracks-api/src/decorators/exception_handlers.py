@@ -40,7 +40,7 @@ def setup_exception_handlers(app: FastAPI):
         return JSONResponse(response_data, status_code=http_status)
 
     @app.exception_handler(Exception)
-    def handle_exception(exception: Exception):  # type: ignore[unused-ignore]
+    async def handle_exception(request: Request, exception: Exception):  # type: ignore[unused-ignore]
         """Handle other exceptions and return a JSON response."""
         return error_response(exception)
 

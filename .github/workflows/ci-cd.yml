@@ -75,8 +75,16 @@ jobs:
 
       - name: Install uv
         run: pip install uv
+      
+      - name: Install dependencies for tracks-api service
+        working-directory: tracks-api
+        run: uv sync --group dev
 
-      - name: Install dependencies
+      - name: Run pytest for tracks-api service
+        working-directory: tracks-api
+        run: uv run pytest
+
+      - name: Install dependencies for seed service
         working-directory: seed
         run: uv sync --group dev
 
