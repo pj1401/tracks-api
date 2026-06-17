@@ -164,6 +164,9 @@ class TestToDict:
     def test_data_length_less_than_limit(
         self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
     ):
+        """
+        There should be no next URL when the number of returned records is less than limit.
+        """
         expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=5&tags=metal"
         expected_next = None
         expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
@@ -186,8 +189,33 @@ class TestToDict:
         expected_next = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=8&tags=metal"
         expected_previous = "http://example-domain.com/tracks-api/api/v1/tracks?limit=3&offset=2&tags=metal"
 
-        # Set limit to 3 for this test.
-        query_params.limit = 3
+        # Set limit to the length of the data array.
+        query_params.limit = len(data)
+
+        paginated_response = PaginatedResponse(
+            "http://example-domain.com",
+            "/tracks-api/api/v1/tracks",
+            query_params,
+            200,
+            data,
+        )
+        response_dict = paginated_response.to_dict()
+        assert response_dict["href"] == expected_href
+        assert response_dict["next"] == expected_next
+        assert response_dict["previous"] == expected_previous
+
+    def test_offset_is_zero(
+        self, query_params: TrackQueryParams, data: list[Dict[str, Any]]
+    ):
+        """
+        No previous URL is returned when offset is 0.
+        """
+        expected_href = "http://example-domain.com/tracks-api/api/v1/tracks?limit=5&offset=0&tags=metal"
+        expected_next = None
+        expected_previous = None
+
+        # Set offset to 0 for this test.
+        query_params.offset = 0
 
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
