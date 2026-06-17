@@ -3,11 +3,12 @@ The BaseController class.
 module: src/controllers/base_controller.py
 """
 
-from typing import Any, Dict, Generic, Mapping, TypeVar
+from typing import Any, Generic, TypeVar
 from fastapi import Response
 from models.schemas.query_params import BaseQueryParams
 from src.services.base_service import BaseService
 from src.util.error import convert_to_http_error, log_original_error
+from src.util.paginated_response import PaginatedResponse
 
 TService = TypeVar("TService", bound=BaseService[Any, Any])
 
@@ -34,7 +35,7 @@ class BaseController(Generic[TService]):
 
     async def get(
         self, query_params: BaseQueryParams, response: Response
-    ) -> Mapping[str, int | list[Any] | str]:
+    ) -> dict[str, int | str | Any]:
         """
         Get a list of records using optional query parameters.
 
@@ -47,16 +48,12 @@ class BaseController(Generic[TService]):
         """
         try:
             fetched = await self.service.get(query_params)
-            result: Mapping[str, int | Any] = {
-                "status": 200,
-                "data": fetched,
-            }
-            return result
+            paginated_response = PaginatedResponse(
+                self.base_url, self.path, query_params, 200, fetched
+            )
+            return paginated_response.to_dict()
         except Exception as err:
             return self._error_response(err, response)
-
-    def _get_paginated_response(self, data: list[Dict[str, Any]]):
-        return data
 
     async def get_by_id(
         self, id: int | str, response: Response
