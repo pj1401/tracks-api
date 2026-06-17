@@ -240,7 +240,7 @@ class TestToDict:
         paginated_response = PaginatedResponse(
             "http://example-domain.com",
             "/tracks-api/api/v1/tracks",
-            TrackQueryParams(tags="metal"),
+            TrackQueryParams(tags="metal"),  # type: ignore[reportCallIssue]
             200,
             data,
         )
