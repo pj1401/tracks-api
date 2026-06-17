@@ -64,7 +64,6 @@ services:
         AUTH_PORT: 5010
     environment:
       FLASK_HOST: 0.0.0.0
-      FLASK_PORT: 5010
       FLASK_DEBUG: True
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432

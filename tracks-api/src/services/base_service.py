@@ -57,10 +57,7 @@ class BaseService(Generic[TRepository, TQueryParams]):
         :return: The BaseFilters or similar object.
         :rtype: BaseFilters
         """
-        return BaseFilters(
-            limit=params.limit,
-            offset=params.offset,
-        )
+        return BaseFilters(limit=params.limit, offset=params.offset, sort=params.sort)
 
     async def get_by_id(self, id: int | str) -> Dict[str, Any]:
         """

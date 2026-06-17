@@ -3,7 +3,16 @@ BaseQueryParams schema.
 module: src/util/schemas/query_params.py
 """
 
+from enum import StrEnum
 from pydantic import BaseModel, Field, model_validator
+
+
+class SortOptions(StrEnum):
+    """Specifies the column to sort by"""
+
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"
+    ID = "id"
 
 
 class BaseQueryParams(BaseModel):
@@ -14,10 +23,13 @@ class BaseQueryParams(BaseModel):
     :vartype limit: int
     :var offset: Specifies the starting index of the data.
     :vartype offset: int
+    :var sort: The column to sort by.
+    :vartype sort: SortOptions
     """
 
     limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
+    sort: SortOptions = Field(default=SortOptions("id"))
 
     @model_validator(mode="before")
     @classmethod

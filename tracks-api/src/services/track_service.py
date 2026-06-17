@@ -22,6 +22,7 @@ class TrackService(WritableService[TrackRepository, TrackQueryParams, TrackParam
         return TrackFilters(
             limit=params.limit,
             offset=params.offset,
+            sort=params.sort,
             name=params.name,
             artist=params.artist,
             album=params.album,
