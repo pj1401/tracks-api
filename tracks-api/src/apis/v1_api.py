@@ -3,27 +3,14 @@ Version 1 sub API application.
 module: src.apis.v1_api
 """
 
-from typing import Any
-
 from fastapi import FastAPI
 from src.decorators.exception_handlers import setup_exception_handlers
+from src.dependencies.static_openapi import static_openapi_loader
 from ..routers.api.v1.v1_router import v1_router
-import json
-from pathlib import Path
-
-
-def load_static_openapi() -> dict[str, Any]:
-    if api_v1.openapi_schema is None:
-        loaded: dict[str, Any] = json.loads(
-            Path("static/tracks-api-v1.openapi.json").read_text()
-        )
-        api_v1.openapi_schema = loaded
-    return api_v1.openapi_schema
-
 
 api_v1 = FastAPI(title="Tracks API v1", version="0.3.0")
 
-api_v1.openapi = load_static_openapi
+api_v1.openapi = static_openapi_loader(api_v1, "static/tracks-api-v1.openapi.json")
 
 api_v1.include_router(v1_router)
 
