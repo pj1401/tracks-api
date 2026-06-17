@@ -13,6 +13,16 @@ from models.schemas import BaseQueryParams
 class PaginatedResponse:
     """
     Used to build pagination links.
+
+    :var base_url: The base URL of the application.
+    :vartype base_url: str
+    :var path: The path to the collection. e.g. "/api/v1/tracks"
+    :vartype path: str
+    :var params: A Pydantic model containing the query parameter data.
+    :vartype params: BaseQueryParams
+    :var status: A HTTP status code.
+    :vartype status: int
+    :var data: A list of dictionaries representing the records.
     """
 
     base_url: str
