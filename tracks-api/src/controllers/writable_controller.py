@@ -5,6 +5,7 @@ module: src/controllers/writable_controller.py
 
 from typing import Any, TypeVar
 from fastapi import Response
+from pydantic import BaseModel
 from src.controllers.base_controller import BaseController
 from src.services.writable_service import WritableService
 
@@ -15,6 +16,25 @@ class WritableController(BaseController[TService]):
     """
     WritableController for handling read/write endpoints.
     """
+
+    async def post(
+        self, body_params: BaseModel, response: Response
+    ) -> dict[str, int | str | Any]:
+        """
+        Create a new resource.
+
+        :return: The JSON response with the HTTP status code and created resource.
+        :rtype: dict[str, int | str | Any]
+        """
+        try:
+            resource = await self.service.post(body_params)
+            result: dict[str, int | Any | None] = {
+                "status": 200,
+                "data": resource,
+            }
+            return result
+        except Exception as err:
+            return self._error_response(err, response)
 
     async def delete(self, id: int, response: Response):
         """

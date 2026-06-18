@@ -117,6 +117,21 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
             .options(selectinload(Track.artists), selectinload(Track.albums))
         )
 
+    def get_new_model(self, arguments: TrackParams) -> Track:
+        # TODO: Add the album and artist relationships.
+        return Track(
+            name=arguments.name,
+            total_playcount=arguments.total_playcount,
+            spotify_id=arguments.spotify_id,
+            tags=None if arguments.tags is None else " ,".join(arguments.tags),
+            genre=arguments.genre,
+            year=arguments.year,
+            duration_ms=arguments.duration_ms,
+            danceability=arguments.danceability,
+            mode=arguments.mode,
+            valence=arguments.valence,
+        )
+
     def model_to_dict(self, model: Track) -> Dict[str, Any]:
         data = model.to_dict()
         data["href"] = f"{self.base_url}{self.collections_path}/tracks/{model.id}"

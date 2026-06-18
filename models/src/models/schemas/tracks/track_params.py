@@ -14,7 +14,7 @@ from .track import Mode
 class TrackParams(BaseModel):
     name: str = Field(..., description="The name of the track.")
     total_playcount: int | None = Field(
-        None, description="Number of times the song has been played."
+        None, description="Number of times the song has been played.", ge=0
     )
     spotify_id: str | None = Field(None, description="The spotify ID.")
     tags: list[str] | None = Field(
@@ -22,14 +22,21 @@ class TrackParams(BaseModel):
     )
     genre: str | None = Field(None, description="The genre.")
     year: int = Field(..., description="The year the track was released.")
-    duration_ms: int | None = Field(None, description="The duration in milliseconds.")
+    duration_ms: int | None = Field(
+        None, description="The duration in milliseconds.", ge=0
+    )
     danceability: float | None = Field(
-        None, description="An algorithmic estimation of the track danceability."
+        None,
+        description="An algorithmic estimation of the track danceability.",
+        ge=0,
+        le=1,
     )
     mode: Mode | None = Field(None, description="Major or minor.")
     valence: float | None = Field(
         None,
         description="An algorithmic estimation of the track valence. Valence describes musical positivity.",
+        ge=0,
+        le=1,
     )
     artist_ids: list[int] = Field(
         ...,
