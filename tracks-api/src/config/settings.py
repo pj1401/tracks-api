@@ -28,3 +28,6 @@ class Settings(BaseSettings):
     )
     base_url: str = Field(validation_alias="BASE_URL")
     root_path: str = Field(default="", validation_alias="ROOT_PATH")
+    public_key: str = Field(
+        validation_alias=AliasChoices("JWT_PUBLIC_KEY", "jwt_public_key")
+    )
