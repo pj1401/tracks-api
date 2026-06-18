@@ -35,3 +35,11 @@ class TrackService(WritableService[TrackRepository, TrackQueryParams, TrackParam
             album_id=params.album_id,
             tags=params.tags,
         )
+
+    def validate_related(self, arguments: TrackParams):
+        pass
+        # TODO: Check that the related resources exists.
+        # for album_id in arguments.album_ids:
+        #     self.album_repo.get_by_id(album_id)
+        # for artist_id in arguments.artist_ids:
+        #     self.artist_repo.get_by_id(artist_id)

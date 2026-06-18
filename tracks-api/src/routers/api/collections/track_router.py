@@ -7,8 +7,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Track
-from models.schemas.tracks import TrackSchema, TrackQueryParams
-from src.dependencies import get_session, get_settings
+from models.schemas.tracks import TrackParams, TrackSchema, TrackQueryParams
+from src.dependencies import get_session, get_settings, get_user_id
 from src.repositories.track_repo import TrackRepository
 from src.services.track_service import TrackService
 from src.controllers.track_controller import TrackController
@@ -38,6 +38,16 @@ async def get_tracks(
     response: Response,
 ) -> dict[str, int | str | list[TrackSchema | None] | None]:
     return await controller.get(filter_query, response)
+
+
+@track_router.post("", status_code=status.HTTP_201_CREATED)
+async def create_item(
+    controller: Annotated[TrackController, Depends(get_controller)],
+    user_id: Annotated[int, Depends(get_user_id)],
+    track: TrackParams,
+    response: Response,
+):
+    return await controller.post(track, response)
 
 
 @track_router.get("/{id}", status_code=status.HTTP_200_OK)

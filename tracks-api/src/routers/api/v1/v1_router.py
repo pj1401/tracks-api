@@ -4,10 +4,10 @@ module: src/routers/api/v1/v1_router.py
 """
 
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from ..collections import track_router
 from src.config import Settings
-from src.dependencies import get_settings
+from src.dependencies import get_settings, get_user_id
 
 v1_router = APIRouter()
 v1_router.include_router(track_router, prefix="/tracks")
@@ -24,3 +24,10 @@ async def get(settings: Annotated[Settings, Depends(get_settings)]):
 @v1_router.get("/health")
 async def health():
     return {"status": 200, "message": "OK"}
+
+
+@v1_router.get("/auth-required", status_code=status.HTTP_200_OK)
+async def auth_test(
+    user_id: Annotated[int, Depends(get_user_id)],
+) -> dict[str, int | str]:
+    return {"status": 200, "message": "JWT was decoded!"}

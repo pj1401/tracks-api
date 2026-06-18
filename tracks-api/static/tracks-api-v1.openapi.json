@@ -112,6 +112,7 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -125,6 +126,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -137,6 +139,7 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
+            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -146,6 +149,116 @@
                 "id"
               ],
               "default": "id"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The name of the track.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "artist",
+            "in": "query",
+            "description": "The name of the artist.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "album",
+            "in": "query",
+            "description": "The name of the album.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "The genre.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "description": "The year the track was released.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "Major or minor.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_total_playcount",
+            "in": "query",
+            "description": "Specifies the minimum value for total play count.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "max_total_playcount",
+            "in": "query",
+            "description": "Specifies the maximum value for total play count.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags describing the genres the track belongs to.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "artist_id",
+            "in": "query",
+            "description": "Specifies the artist ID.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "album_id",
+            "in": "query",
+            "description": "Specifies the album ID.",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -276,6 +389,94 @@
           }
         },
         "security": []
+      },
+      "post": {
+        "summary": "Create a track",
+        "deprecated": false,
+        "description": "Add a track to the collection. Requires authentication.",
+        "tags": [
+          "tracks"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackPayload"
+              },
+              "example": {
+                "name": "Don't Stay",
+                "year": 2003,
+                "artist_ids": [
+                  12
+                ],
+                "album_ids": [
+                  29
+                ],
+                "total_playcount": 153000,
+                "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
+                "tags": [
+                  "metal",
+                  "nu_metal",
+                  "rock"
+                ],
+                "genre": "nu_metal",
+                "duration_ms": 188000,
+                "danceability": 0.453,
+                "mode": 0,
+                "valence": 0.243
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "minimum": 0,
+                      "maximum": 999,
+                      "default": 201
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Track",
+                      "description": "The created track."
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad Request",
+            "description": "The request cannot or will not be processed due to something that is perceived to be a client error (for example validation error)."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized",
+            "description": "Credentials invalid or not provided."
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     }
   },
@@ -330,108 +531,6 @@
           "href"
         ]
       },
-      "Track": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "The ID of the resource",
-            "minimum": 0
-          },
-          "href": {
-            "type": "string",
-            "description": "self-link",
-            "title": ""
-          },
-          "created_at": {
-            "type": "string",
-            "description": "The date and time when the resource was created"
-          },
-          "updated_at": {
-            "type": "string",
-            "description": "The date and time when the resource was last modified"
-          },
-          "name": {
-            "type": "string",
-            "description": "The name of the track."
-          },
-          "total_playcount": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Number of times the song has been played."
-          },
-          "spotify_id": {
-            "type": "string",
-            "description": "The spotify ID."
-          },
-          "tags": {
-            "type": "string",
-            "description": "Tags describing the genres the track belongs to."
-          },
-          "genre": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "The genre."
-          },
-          "year": {
-            "type": "integer",
-            "description": "The year the track was released."
-          },
-          "duration_ms": {
-            "type": "integer",
-            "description": "The duration in milliseconds."
-          },
-          "danceability": {
-            "type": "number",
-            "description": "An algorithmic estimation of the track danceability."
-          },
-          "mode": {
-            "type": "integer",
-            "description": "Major or minor.",
-            "enum": [
-              0,
-              1
-            ]
-          },
-          "valence": {
-            "type": "number",
-            "description": "An algorithmic estimation of the track valence. Valence describes musical positivity."
-          },
-          "artists": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RelatedResource"
-            }
-          },
-          "albums": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RelatedResource"
-            }
-          }
-        },
-        "required": [
-          "name",
-          "total_playcount",
-          "spotify_id",
-          "tags",
-          "year",
-          "duration_ms",
-          "danceability",
-          "mode",
-          "valence",
-          "artists",
-          "albums",
-          "id",
-          "href",
-          "created_at",
-          "updated_at"
-        ]
-      },
       "BasePagination": {
         "type": "object",
         "properties": {
@@ -467,6 +566,221 @@
           "next",
           "previous",
           "status"
+        ]
+      },
+      "Track": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The ID of the resource",
+            "minimum": 0
+          },
+          "href": {
+            "type": "string",
+            "description": "self-link",
+            "title": ""
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time when the resource was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "The date and time when the resource was last modified"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the track."
+          },
+          "total_playcount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of times the song has been played."
+          },
+          "spotify_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The spotify ID."
+          },
+          "tags": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tags describing the genres the track belongs to."
+          },
+          "genre": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The genre."
+          },
+          "year": {
+            "type": "integer",
+            "description": "The year the track was released."
+          },
+          "duration_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "The duration in milliseconds."
+          },
+          "danceability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "An algorithmic estimation of the track danceability."
+          },
+          "mode": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Major or minor.",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "valence": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "An algorithmic estimation of the track valence. Valence describes musical positivity."
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RelatedResource"
+            }
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RelatedResource"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "total_playcount",
+          "spotify_id",
+          "tags",
+          "year",
+          "duration_ms",
+          "danceability",
+          "mode",
+          "valence",
+          "artists",
+          "albums",
+          "genre",
+          "id",
+          "href",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "TrackPayload": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the track."
+          },
+          "year": {
+            "type": "integer",
+            "description": "The year the track was released."
+          },
+          "artist_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 1,
+            "description": "An array containing the IDs of artists that worked on the track."
+          },
+          "album_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 1,
+            "description": "An array of IDs of albums where the track appears."
+          },
+          "total_playcount": {
+            "type": "integer",
+            "description": "Number of times the song has been played."
+          },
+          "spotify_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The spotify ID."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags describing the genres the track belongs to."
+          },
+          "genre": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The genre."
+          },
+          "duration_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "The duration in milliseconds."
+          },
+          "danceability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "An algorithmic estimation of the track danceability."
+          },
+          "mode": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Major or minor.",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "valence": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "An algorithmic estimation of the track valence. Valence describes musical positivity."
+          }
+        },
+        "required": [
+          "name",
+          "year",
+          "artist_ids",
+          "album_ids"
         ]
       }
     },
@@ -545,6 +859,44 @@
           }
         }
       },
+      "Unauthorized": {
+        "description": "Credentials invalid or not provided.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "description": "HTTP status code",
+                  "default": 401,
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "message": {
+                  "type": "string",
+                  "title": "",
+                  "description": "Description"
+                }
+              },
+              "required": [
+                "status",
+                "message"
+              ]
+            },
+            "examples": {
+              "Default": {
+                "summary": "Default",
+                "value": {
+                  "status": 401,
+                  "message": "Credentials invalid or not provided."
+                }
+              }
+            }
+          }
+        }
+      },
       "Not Found": {
         "description": "The requested resource was not found.",
         "content": {
@@ -584,7 +936,12 @@
         }
       }
     },
-    "securitySchemes": {}
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
   },
   "servers": [
     {

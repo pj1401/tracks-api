@@ -17,7 +17,7 @@ TArgs = TypeVar("TArgs", bound=PydanticBaseModel)
 class WritableService(
     BaseService[TRepository, TQueryParams], Generic[TRepository, TQueryParams, TArgs]
 ):
-    def post(self, arguments: TArgs) -> dict[str, Any]:
+    async def post(self, arguments: TArgs) -> dict[str, Any]:
         """
         Create a new resource.
 
@@ -28,7 +28,7 @@ class WritableService(
         """
         try:
             self.validate_related(arguments)
-            data = self.repository.post(arguments)
+            data = await self.repository.post(arguments)
             return self.schema.model_validate(data).model_dump()
         except Exception as err:
             raise err
