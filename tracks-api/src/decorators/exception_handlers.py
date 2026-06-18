@@ -20,7 +20,14 @@ def setup_exception_handlers(app: FastAPI):
         request: Request, exception: StarletteHTTPException
     ):
         """Handle HTTP exceptions."""
-        return error_response(exception)
+        log_original_error(exception)
+        status = exception.status_code
+        response_data = {
+            # Only use status codes defined in the error module.
+            "status": status if status in httpStatusReasonMap else 500,
+            "message": httpStatusReasonMap.get(status, exception.detail),
+        }
+        return JSONResponse(response_data, status_code=exception.status_code)
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(  # type: ignore[unused-ignore]

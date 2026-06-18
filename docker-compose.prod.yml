@@ -116,11 +116,13 @@ services:
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
       PYTHONDONTWRITEBYTECODE: 1
     secrets:
       - db_name
       - db_user
       - db_password
+      - jwt_public_key
     depends_on:
       db:
         condition: service_healthy
