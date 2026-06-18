@@ -49,11 +49,19 @@ def get_tags(settings: Settings) -> list[dict[str, str | dict[str, str]]]:
     """
     return [
         {
-            "name": "v1",
+            "name": "Tracks v1",
             "description": "Tracks API version 1, link to the docs is to the right",
             "externalDocs": {
-                "description": "version 1 docs",
+                "description": "Tracks v1 docs",
                 "url": f"{settings.base_url}{settings.root_path}/api/v1/docs",
+            },
+        },
+        {
+            "name": "Auth v1",
+            "description": "Auth API version 1, link to the docs is to the right",
+            "externalDocs": {
+                "description": "Auth v1 docs",
+                "url": f"{settings.base_url}{settings.root_path}/auth/api/v1/docs",
             },
         },
     ]
