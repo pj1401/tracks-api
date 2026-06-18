@@ -17,19 +17,6 @@ JWT_ALGORITHM = "ES512"
 security = HTTPBearer()
 
 
-async def get_credentials():
-    """
-    Get the credentials from the header. Raises InvalidCredentialsError if credentials aren't found.
-
-    :return: The credentials from the Authorization header.
-    :rtype: HTTPBearer
-    """
-    try:
-        return security
-    except Exception:
-        raise InvalidCredentialsError
-
-
 async def get_public_key():
     settings = get_settings()
     return settings.public_key
