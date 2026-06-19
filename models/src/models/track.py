@@ -14,14 +14,14 @@ class Track(BaseModel):
     __tablename__: str = "tracks"
     name: Column[str] = Column(String, nullable=False)
     total_playcount: Column[int] = Column(BigInteger, default=0)
-    spotify_id: Column[str] = Column(String)
-    tags: Column[str] = Column(String)
-    genre: Column[str] = Column(String)
+    spotify_id: Column[str] = Column(String, nullable=True)
+    tags: Column[str] = Column(String, nullable=True)
+    genre: Column[str] = Column(String, nullable=True)
     year: Column[int] = Column(Integer)
-    duration_ms: Column[int] = Column(Integer)
-    danceability: Column[Decimal] = Column(Numeric(precision=4, scale=3))
-    mode: Column[int] = Column(Integer)
-    valence: Column[Decimal] = Column(Numeric(precision=4, scale=3))
+    duration_ms: Column[int] = Column(Integer, nullable=True)
+    danceability: Column[Decimal] = Column(Numeric(precision=4, scale=3), nullable=True)
+    mode: Column[int] = Column(Integer, nullable=True)
+    valence: Column[Decimal] = Column(Numeric(precision=4, scale=3), nullable=True)
     artists: Mapped[List[Any]] = relationship(
         "Artist", secondary="artists_tracks", back_populates="tracks"
     )

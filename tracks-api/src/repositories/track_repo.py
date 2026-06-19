@@ -8,6 +8,7 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.repositories.writable_repo import WritableRepository
+from src.util.error import ValidationError
 from models import Album, Artist, Track
 from models.filters import TrackFilters
 from models.schemas.tracks import TrackParams
@@ -117,20 +118,41 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
             .options(selectinload(Track.artists), selectinload(Track.albums))
         )
 
-    def get_new_model(self, arguments: TrackParams) -> Track:
-        # TODO: Add the album and artist relationships.
+    async def get_new_model(self, arguments: TrackParams) -> Track:
+        # TODO: Look up related resources in the service layer. AlbumRepository and ArtistRepository would be required.
+        artists = await self._get_artists_by_ids(arguments.artist_ids)
+        albums = await self._get_albums_by_ids(arguments.album_ids)
+
         return Track(
             name=arguments.name,
             total_playcount=arguments.total_playcount,
             spotify_id=arguments.spotify_id,
-            tags=None if arguments.tags is None else " ,".join(arguments.tags),
+            tags=None if arguments.tags is None else ", ".join(arguments.tags),
             genre=arguments.genre,
             year=arguments.year,
             duration_ms=arguments.duration_ms,
             danceability=arguments.danceability,
             mode=arguments.mode,
             valence=arguments.valence,
+            artists=artists,
+            albums=albums,
         )
+
+    async def _get_artists_by_ids(self, ids: list[int]) -> list[Artist]:
+        unique_ids = set(ids)
+        stmt = select(Artist).where(Artist.id.in_(unique_ids))
+        artists = list((await self.session.scalars(stmt)).all())
+        if len(artists) != len(unique_ids):
+            raise ValidationError()
+        return artists
+
+    async def _get_albums_by_ids(self, ids: list[int]) -> list[Album]:
+        unique_ids = set(ids)
+        stmt = select(Album).where(Album.id.in_(unique_ids))
+        albums = list((await self.session.scalars(stmt)).all())
+        if len(albums) != len(unique_ids):
+            raise ValidationError()
+        return albums
 
     def model_to_dict(self, model: Track) -> Dict[str, Any]:
         data = model.to_dict()

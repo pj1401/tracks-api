@@ -18,19 +18,19 @@ class TrackSchema(BaseResourceSchema):
     total_playcount: int | None = Field(
         ..., description="Number of times the song has been played."
     )
-    spotify_id: str = Field(..., description="The spotify ID.")
-    tags: str = Field(
-        ..., description="Tags describing the genres the track belongs to."
+    spotify_id: str | None = Field(None, description="The spotify ID.")
+    tags: str | None = Field(
+        None, description="Tags describing the genres the track belongs to."
     )
     genre: str | None = Field(None, description="The genre.")
     year: int = Field(..., description="The year the track was released.")
-    duration_ms: int = Field(..., description="The duration in milliseconds.")
-    danceability: float = Field(
-        ..., description="An algorithmic estimation of the track danceability."
+    duration_ms: int | None = Field(None, description="The duration in milliseconds.")
+    danceability: float | None = Field(
+        None, description="An algorithmic estimation of the track danceability."
     )
-    mode: Mode = Field(..., description="Major or minor.")
-    valence: float = Field(
-        ...,
+    mode: Mode | None = Field(None, description="Major or minor.")
+    valence: float | None = Field(
+        None,
         description="An algorithmic estimation of the track valence. Valence describes musical positivity.",
     )
     artists: list[RelatedResource]
