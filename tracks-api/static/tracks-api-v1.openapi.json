@@ -11,6 +11,9 @@
     },
     {
       "name": "artists"
+    },
+    {
+      "name": "albums"
     }
   ],
   "paths": {
@@ -721,6 +724,258 @@
         },
         "security": []
       }
+    },
+    "/artists/{id}": {
+      "get": {
+        "summary": "Get an artist by ID",
+        "deprecated": false,
+        "description": "Get an artist by ID.",
+        "tags": [
+          "artists"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The artist ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "The ID of the resource.",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "minimum": 0,
+                      "maximum": 999,
+                      "default": 200
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Artist"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "$ref": "#/components/responses/Not Found",
+            "description": "The requested resource was not found."
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        },
+        "security": []
+      }
+    },
+    "/albums": {
+      "get": {
+        "summary": "Filter albums",
+        "deprecated": false,
+        "description": "Get a list of albums using optional filters.",
+        "tags": [
+          "albums"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Specifies the maximum number of items to return.",
+            "required": false,
+            "example": 20,
+            "schema": {
+              "type": "integer",
+              "description": "Specifies the maximum number of items to return.",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Specifies the starting index of the data.",
+            "required": false,
+            "example": 0,
+            "schema": {
+              "type": "integer",
+              "description": "Specifies the maximum number of items to return.",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Specifies the starting index of the data.",
+            "required": false,
+            "example": "id",
+            "schema": {
+              "type": "string",
+              "description": "Specifies the column to sort by.",
+              "enum": [
+                "created_at",
+                "updated_at",
+                "id"
+              ],
+              "default": "id"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The album name.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "minimum": 100,
+                      "maximum": 999,
+                      "default": 200
+                    },
+                    "href": {
+                      "type": "string",
+                      "title": "",
+                      "description": "self-link"
+                    },
+                    "next": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "URL to next page"
+                    },
+                    "previous": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "URL to previous page"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Album"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "status",
+                    "href",
+                    "next",
+                    "previous"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad Request",
+            "description": "The request cannot or will not be processed due to something that is perceived to be a client error (for example validation error)."
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        },
+        "security": []
+      }
+    },
+    "/albums/{id}": {
+      "get": {
+        "summary": "Get an album by ID",
+        "deprecated": false,
+        "description": "Get an album by ID.",
+        "tags": [
+          "albums"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The album ID.",
+            "required": true,
+            "example": 1,
+            "schema": {
+              "type": "integer",
+              "description": "The ID of the resource.",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "minimum": 0,
+                      "maximum": 999,
+                      "default": 200
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Album"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "$ref": "#/components/responses/Not Found",
+            "description": "The requested resource was not found."
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        },
+        "security": []
+      }
     }
   },
   "webhooks": {},
@@ -732,7 +987,7 @@
           "id": {
             "type": "integer",
             "description": "The ID of the resource.",
-            "minimum": 0
+            "minimum": 1
           },
           "href": {
             "type": "string",
@@ -817,7 +1072,7 @@
           "id": {
             "type": "integer",
             "description": "The ID of the resource.",
-            "minimum": 0
+            "minimum": 1
           },
           "href": {
             "type": "string",
@@ -1029,7 +1284,7 @@
           "id": {
             "type": "integer",
             "description": "The ID of the resource.",
-            "minimum": 0
+            "minimum": 1
           },
           "href": {
             "type": "string",
@@ -1064,6 +1319,53 @@
           "name",
           "tracks",
           "albums",
+          "id",
+          "href",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "Album": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The ID of the resource.",
+            "minimum": 1
+          },
+          "href": {
+            "type": "string",
+            "description": "self-link",
+            "title": ""
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time when the resource was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "The date and time when the resource was last modified"
+          },
+          "name": {
+            "type": "string",
+            "description": "The album name."
+          },
+          "tracks": {
+            "type": "string",
+            "description": "URL to the tracks collection filtered by the album ID."
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RelatedResource"
+            },
+            "description": "Artists that worked on the album."
+          }
+        },
+        "required": [
+          "tracks",
+          "artists",
+          "name",
           "id",
           "href",
           "created_at",
