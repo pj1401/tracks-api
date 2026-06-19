@@ -33,7 +33,7 @@ class WritableRepository(
         :rtype: Dict[str, Any]
         """
         try:
-            resource = self.get_new_model(arguments)
+            resource = await self.get_new_model(arguments)
             self.session.add(resource)
             await self.session.commit()
             stmt = self._get_by_id_stmt(cast(int, resource.id))
@@ -45,7 +45,7 @@ class WritableRepository(
             await self.session.rollback()
             raise
 
-    def get_new_model(self, arguments: TArgs) -> TModel:
+    async def get_new_model(self, arguments: TArgs) -> TModel:
         """
         Map the arguments for the database model.
 
