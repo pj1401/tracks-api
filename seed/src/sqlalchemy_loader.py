@@ -6,7 +6,7 @@ module: src/sqlalchemy_loader.py
 from typing import Dict, List, Type, TypeVar, cast
 import bcrypt
 import pandas as pd  # type: ignore
-from sqlalchemy import Table, create_engine, inspect
+from sqlalchemy import Table, create_engine, inspect, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError
@@ -62,6 +62,10 @@ class DatabaseLoader:
         self.seed_artists_albums(tracks_df)
         self.seed_artists_tracks(tracks_df)
         self.seed_tracks_albums(tracks_df)
+
+        self.sync_pk_sequence("artists")
+        self.sync_pk_sequence("albums")
+        self.sync_pk_sequence("tracks")
 
     def seed_artists(self, data: pd.DataFrame) -> None:
         """Seed the artists table."""
@@ -215,6 +219,27 @@ class DatabaseLoader:
                     }
                 )
         return relationships
+
+    def sync_pk_sequence(self, table_name: str, pk_column: str = "id") -> None:
+        """
+        Sync a table's PK sequence with its current max value.
+        """
+        session = self.session_factory()
+        try:
+            session.execute(
+                text(
+                    "SELECT setval(pg_get_serial_sequence(:table, :column), "
+                    f"COALESCE((SELECT MAX({pk_column}) FROM {table_name}), 1))"
+                ),
+                {"table": table_name, "column": pk_column},
+            )
+            session.commit()
+            print(f"Synced sequence for {table_name}.{pk_column}.")
+        except SQLAlchemyError as err:
+            session.rollback()
+            raise err
+        finally:
+            session.close()
 
     def seed_admin_user(self, admin: UserSchema):
         session = self.session_factory()
