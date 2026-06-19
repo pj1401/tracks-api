@@ -8,6 +8,9 @@
   "tags": [
     {
       "name": "tracks"
+    },
+    {
+      "name": "artists"
     }
   ],
   "paths": {
@@ -25,7 +28,7 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": "",
+            "example": 20,
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -39,7 +42,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "",
+            "example": 0,
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -52,7 +55,7 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "",
+            "example": "id",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -69,7 +72,7 @@
             "in": "query",
             "description": "The name of the track.",
             "required": false,
-            "example": "",
+            "example": "{{$music.songName}}",
             "schema": {
               "type": "string"
             }
@@ -79,7 +82,7 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "",
+            "example": "{{$music.artist}}",
             "schema": {
               "type": "string"
             }
@@ -89,7 +92,7 @@
             "in": "query",
             "description": "The name of the album.",
             "required": false,
-            "example": "",
+            "example": "{{$music.album}}",
             "schema": {
               "type": "string"
             }
@@ -99,7 +102,7 @@
             "in": "query",
             "description": "The genre.",
             "required": false,
-            "example": "",
+            "example": "{{$music.genre}}",
             "schema": {
               "type": "string"
             }
@@ -109,7 +112,7 @@
             "in": "query",
             "description": "The year the track was released.",
             "required": false,
-            "example": "",
+            "example": 2000,
             "schema": {
               "type": "integer"
             }
@@ -119,9 +122,17 @@
             "in": "query",
             "description": "Major or minor.",
             "required": false,
-            "example": "",
+            "example": "0",
             "schema": {
-              "type": "string"
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Major or minor.",
+              "enum": [
+                0,
+                1
+              ]
             }
           },
           {
@@ -149,7 +160,7 @@
             "in": "query",
             "description": "Tags describing the genres the track belongs to.",
             "required": false,
-            "example": "",
+            "example": "{{$music.genre}}",
             "schema": {
               "type": "string"
             }
@@ -581,6 +592,135 @@
           }
         ]
       }
+    },
+    "/artists": {
+      "get": {
+        "summary": "Filter artists",
+        "deprecated": false,
+        "description": "Get a list of artists using optional filters.",
+        "tags": [
+          "artists"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Specifies the maximum number of items to return.",
+            "required": false,
+            "example": 20,
+            "schema": {
+              "type": "integer",
+              "description": "Specifies the maximum number of items to return.",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Specifies the starting index of the data.",
+            "required": false,
+            "example": 0,
+            "schema": {
+              "type": "integer",
+              "description": "Specifies the starting index of the data.",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Specifies the column to sort by.",
+            "required": false,
+            "example": "id",
+            "schema": {
+              "type": "string",
+              "description": "Specifies the column to sort by.",
+              "enum": [
+                "created_at",
+                "updated_at",
+                "id"
+              ],
+              "default": "id"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The name of the artist.",
+            "required": false,
+            "example": "{{$music.artist}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code",
+                      "minimum": 100,
+                      "maximum": 999,
+                      "default": 200
+                    },
+                    "href": {
+                      "type": "string",
+                      "title": "",
+                      "description": "self-link"
+                    },
+                    "next": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "URL to next page"
+                    },
+                    "previous": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "URL to previous page"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Artist"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "status",
+                    "href",
+                    "next",
+                    "previous"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad Request",
+            "description": "The request cannot or will not be processed due to something that is perceived to be a client error (for example validation error)."
+          },
+          "500": {
+            "$ref": "#/components/responses/Internal Server Error",
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        },
+        "security": []
+      }
     }
   },
   "webhooks": {},
@@ -881,6 +1021,53 @@
           "year",
           "artist_ids",
           "album_ids"
+        ]
+      },
+      "Artist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The ID of the resource.",
+            "minimum": 0
+          },
+          "href": {
+            "type": "string",
+            "description": "self-link",
+            "title": ""
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time when the resource was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "The date and time when the resource was last modified"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the artist."
+          },
+          "tracks": {
+            "type": "string",
+            "description": "URL to the tracks collection filtered by the artist ID."
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RelatedResource"
+            },
+            "description": "The albums the artist has worked on."
+          }
+        },
+        "required": [
+          "name",
+          "tracks",
+          "albums",
+          "id",
+          "href",
+          "created_at",
+          "updated_at"
         ]
       }
     },
