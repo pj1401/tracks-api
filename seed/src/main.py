@@ -50,9 +50,9 @@ def main():
             transoformed_data = transformer.transform_chunk(chunk)
             db_loader.seed_chunk(transoformed_data)
 
-        admin_username = _get_env_or_secret("ADMIN_USERNAME")
-        admin_email = _get_env_or_secret("ADMIN_EMAIL")
-        admin_password = _get_env_or_secret("ADMIN_PASSWORD")
+        admin_username = str(_get_env_or_secret("ADMIN_USERNAME"))
+        admin_email = str(_get_env_or_secret("ADMIN_EMAIL"))
+        admin_password = str(_get_env_or_secret("ADMIN_PASSWORD"))
 
         db_loader.seed_admin_user(User(admin_username, admin_email, admin_password))
 
