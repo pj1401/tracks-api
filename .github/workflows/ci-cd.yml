@@ -31,6 +31,20 @@ jobs:
       - name: Install uv
         run: pip install uv
       
+      - name: Install models dependencies
+        working-directory: models
+        run: uv sync --group dev
+
+      - name: Run pyright in models
+        working-directory: models
+        run: uv run pyright
+
+      - name: Run ruff in models
+        working-directory: models
+        run: |
+          uv run ruff check src
+          uv run ruff format --diff
+      
       - name: Install auth-service dependencies
         working-directory: auth-service
         run: uv sync --group dev
