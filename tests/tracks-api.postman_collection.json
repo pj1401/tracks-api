@@ -1217,8 +1217,9 @@
                               "})\r",
                               "\r",
                               "pm.collectionVariables.set('track_id', track.id);\r",
+                              "pm.collectionVariables.set('created_track_name', track.name);\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"Delete a track (No auth (failure))\");\r",
+                              "pm.execution.setNextRequest(\"Update a track (Invalid artist ID (failure))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -1246,6 +1247,264 @@
                           ],
                           "path": [
                             "tracks"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ],
+                  "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                      {
+                        "key": "token",
+                        "value": "{{access_token}}",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "Update a track",
+                  "item": [
+                    {
+                      "name": "Update a track (Invalid artist ID (failure))",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "pm.collectionVariables.set('year', new Date(pm.variables.replaceIn('{{$randomDatePast}}')).getFullYear());\r",
+                              "pm.collectionVariables.set('total_play', getRandomInt(0, 3000000000));\r",
+                              "pm.collectionVariables.set('duration', getRandomInt(0, 3600000));\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Update a track (Update (success))\");"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"{{$randomStreetName}}\",\r\n    \"year\": {{year}},\r\n    \"artist_ids\": [\r\n        0\r\n    ],\r\n    \"album_ids\": [\r\n        {{album_id}}\r\n    ],\r\n    \"total_playcount\": {{total_play}},\r\n    \"spotify_id\": \"{{$guid}}\",\r\n    \"tags\": [\"{{$randomStreetName}}\", \"{{$randomWord}}\"],\r\n    \"duration_ms\": {{duration}}\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{track_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Update a track (Update (success))",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "pm.collectionVariables.set('year', new Date(pm.variables.replaceIn('{{$randomDatePast}}')).getFullYear());\r",
+                              "pm.collectionVariables.set('total_play', getRandomInt(0, 3000000000));\r",
+                              "pm.collectionVariables.set('duration', getRandomInt(0, 3600000));\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 204\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Update a track (Check track name after update (success))\");"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"{{$randomStreetName}}\",\r\n    \"year\": {{year}},\r\n    \"artist_ids\": [\r\n        {{artist_id}}\r\n    ],\r\n    \"album_ids\": [\r\n        {{album_id}}\r\n    ],\r\n    \"total_playcount\": {{total_play}},\r\n    \"spotify_id\": \"{{$guid}}\",\r\n    \"tags\": [\"{{$randomStreetName}}\", \"{{$randomWord}}\"],\r\n    \"duration_ms\": {{duration}}\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{track_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Update a track (Check track name after update (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const old_track_name = pm.collectionVariables.get('created_track_name')\r",
+                              "const track = responseJson.data;\r",
+                              "\r",
+                              "pm.test('Track name has changed', () => {\r",
+                              "    pm.expect(track.name).to.not.equal(old_track_name);\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Delete a track (No auth (failure))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{track_id}}"
+                            }
                           ]
                         }
                       },
