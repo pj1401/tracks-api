@@ -3,11 +3,11 @@ The WritableRepository class.
 module: src/services/writable_repo.py
 """
 
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Dict, Generic, TypeVar, cast
 from sqlalchemy import select, update
 from pydantic import BaseModel as PydanticBaseModel
 from src.repositories.base_repo import BaseRepository
-from src.util.error import NotFoundError
+from src.util.error import NotFoundError, ValidationError
 from models.filters import BaseFilters
 from models import BaseModel
 
@@ -36,7 +36,10 @@ class WritableRepository(
             resource = self.get_new_model(arguments)
             self.session.add(resource)
             await self.session.commit()
-            await self.session.refresh(resource)
+            stmt = self._get_by_id_stmt(cast(int, resource.id))
+            resource = (await self.session.scalars(stmt)).first()
+            if resource is None:
+                raise ValidationError()
             return self.model_to_dict(resource)
         except Exception:
             await self.session.rollback()

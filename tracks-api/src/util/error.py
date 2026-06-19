@@ -16,6 +16,15 @@ class CustomError(Exception):
         self.message = message
 
 
+class ValidationError(CustomError):
+    def __init__(
+        self,
+        err: Exception | None = None,
+        message: str = "The request cannot or will not be processed due to something that is perceived to be a client error (for example validation error).",
+    ):
+        super().__init__(err, message)
+
+
 class UniqueViolationError(CustomError):
     def __init__(
         self,
