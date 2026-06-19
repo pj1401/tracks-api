@@ -123,7 +123,7 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
             name=arguments.name,
             total_playcount=arguments.total_playcount,
             spotify_id=arguments.spotify_id,
-            tags=None if arguments.tags is None else " ,".join(arguments.tags),
+            tags=None if arguments.tags is None else ", ".join(arguments.tags),
             genre=arguments.genre,
             year=arguments.year,
             duration_ms=arguments.duration_ms,
