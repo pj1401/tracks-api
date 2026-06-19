@@ -817,10 +817,9 @@
             "example": 0,
             "schema": {
               "type": "integer",
-              "description": "Specifies the maximum number of items to return.",
-              "default": 20,
-              "maximum": 100,
-              "minimum": 1
+              "description": "Specifies the starting index of the data.",
+              "minimum": 0,
+              "default": 0
             }
           },
           {
