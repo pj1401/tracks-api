@@ -41,7 +41,7 @@ async def get_tracks(
 
 
 @track_router.post("", status_code=status.HTTP_201_CREATED)
-async def create_item(
+async def post(
     controller: Annotated[TrackController, Depends(get_controller)],
     user_id: Annotated[int, Depends(get_user_id)],
     track: TrackParams,
@@ -57,3 +57,13 @@ async def get_track_by_id(
     response: Response,
 ) -> dict[str, int | TrackSchema | str]:
     return await controller.get_by_id(id, response)
+
+
+@track_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete(
+    controller: Annotated[TrackController, Depends(get_controller)],
+    user_id: Annotated[int, Depends(get_user_id)],
+    id: int,
+    response: Response,
+):
+    return await controller.delete(id, response)
