@@ -486,7 +486,7 @@
                           "  pm.response.to.have.status(correctStatusCode);\r",
                           "});\r",
                           "\r",
-                          "pm.execution.setNextRequest(\"Delete a user (Delete second user (success))\");\r",
+                          "pm.execution.setNextRequest(\"Delete a user (Login after deletion (failure))\");\r",
                           ""
                         ],
                         "type": "text/javascript",
@@ -512,6 +512,64 @@
                           "key": "id",
                           "value": "{{user_id}}"
                         }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete a user (Login after deletion (failure))",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const responseJson = pm.response.json();\r",
+                          "\r",
+                          "const correctStatusCode = 401\r",
+                          "\r",
+                          "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                          "  pm.response.to.have.status(correctStatusCode);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test('Response has expected properties', () => {\r",
+                          "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                          "})\r",
+                          "\r",
+                          "pm.execution.setNextRequest(\"Delete a user (Delete second user (success))\");\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "content-type": true
+                    }
+                  },
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}\r\n"
+                    },
+                    "url": {
+                      "raw": "{{authUrl}}/login",
+                      "host": [
+                        "{{authUrl}}"
+                      ],
+                      "path": [
+                        "login"
                       ]
                     }
                   },
@@ -1406,8 +1464,6 @@
                           "listen": "test",
                           "script": {
                             "exec": [
-                              "const responseJson = pm.response.json();\r",
-                              "\r",
                               "const correctStatusCode = 204\r",
                               "\r",
                               "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
@@ -1615,7 +1671,7 @@
                               "  pm.response.to.have.status(correctStatusCode);\r",
                               "});\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
+                              "pm.execution.setNextRequest(\"Delete a track (Get track by ID after deletion (failure))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -1626,6 +1682,56 @@
                       ],
                       "request": {
                         "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "{{baseUrl}}/tracks/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "tracks",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{track_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete a track (Get track by ID after deletion (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 404\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
                         "header": [],
                         "url": {
                           "raw": "{{baseUrl}}/tracks/:id",
@@ -1799,6 +1905,10 @@
     },
     {
       "key": "album_id",
+      "value": ""
+    },
+    {
+      "key": "created_track_name",
       "value": ""
     }
   ]
