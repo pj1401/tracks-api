@@ -3,7 +3,7 @@ The AlbumRepository class.
 module: src/repositories/album_repo.py
 """
 
-from typing import Any
+from typing import Any, Dict
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -49,3 +49,18 @@ class AlbumRepository(BaseRepository[Album, AlbumFilters]):
             .where(Album.id == id)
             .options(selectinload(Album.tracks), selectinload(Album.artists))
         )
+
+    def model_to_dict(self, model: Album) -> Dict[str, Any]:
+        data = model.to_dict()
+        data["href"] = f"{self.base_url}{self.collections_path}/albums/{model.id}"
+        data["tracks"] = (
+            f"{self.base_url}{self.collections_path}/tracks?album_id={model.id}"
+        )
+        data["artists"] = [
+            {
+                "id": a.id,
+                "href": f"{self.base_url}{self.collections_path}/artists/{a.id}",
+            }
+            for a in model.artists
+        ]
+        return data
