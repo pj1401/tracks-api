@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.12-alpine3.22
 
 ARG TRACKS_PORT=5010
 ENV TRACKS_PORT=${TRACKS_PORT}
@@ -12,7 +12,7 @@ WORKDIR /app
 COPY tracks-api/uv.lock tracks-api/pyproject.toml tracks-api/README.md ./
 COPY models /models
 
-RUN apt-get -y update && apt-get -y install curl --no-install-recommends
+RUN apk add --no-cache curl
 
 RUN uv sync --frozen --no-dev
 
