@@ -5,12 +5,13 @@ module: src/routers/api/v1/v1_router.py
 
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from ..collections import track_router
+from ..collections import artist_router, track_router
 from src.config import Settings
 from src.dependencies import get_settings, get_user_id
 
 v1_router = APIRouter()
 v1_router.include_router(track_router, prefix="/tracks")
+v1_router.include_router(artist_router, prefix="/artists")
 
 
 @v1_router.get("/")
