@@ -66,8 +66,6 @@ class WritableService(
         :type id: int
         """
         try:
-            # resource = self.repository.get_by_id(id)
-            # self.authorize(resource["user"]["id"], int(get_jwt_identity()))
             await self.repository.delete(id)
         except Exception as err:
             raise err
