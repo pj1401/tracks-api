@@ -52,8 +52,6 @@ class WritableService(
         :type arguments: TArgs
         """
         try:
-            # resource = self.repository.get_by_id(id)
-            # self.authorize(resource["user"]["id"], int(get_jwt_identity()))
             await self.repository.update(id, arguments)
         except Exception as err:
             raise err

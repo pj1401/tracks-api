@@ -59,6 +59,17 @@ async def get_track_by_id(
     return await controller.get_by_id(id, response)
 
 
+@track_router.put("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def update(
+    controller: Annotated[TrackController, Depends(get_controller)],
+    user_id: Annotated[int, Depends(get_user_id)],
+    id: int,
+    track: TrackParams,
+    response: Response,
+):
+    return await controller.update(id, track, response)
+
+
 @track_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete(
     controller: Annotated[TrackController, Depends(get_controller)],
