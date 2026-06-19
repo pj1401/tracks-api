@@ -8,7 +8,7 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.repositories.writable_repo import WritableRepository
-from src.util.error import ValidationError
+from src.util.error import NotFoundError, ValidationError
 from models import Album, Artist, Track
 from models.filters import TrackFilters
 from models.schemas.tracks import TrackParams
@@ -124,18 +124,7 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
         albums = await self._get_albums_by_ids(arguments.album_ids)
 
         return Track(
-            name=arguments.name,
-            total_playcount=arguments.total_playcount,
-            spotify_id=arguments.spotify_id,
-            tags=None if arguments.tags is None else ", ".join(arguments.tags),
-            genre=arguments.genre,
-            year=arguments.year,
-            duration_ms=arguments.duration_ms,
-            danceability=arguments.danceability,
-            mode=arguments.mode,
-            valence=arguments.valence,
-            artists=artists,
-            albums=albums,
+            **self._build_scalar_fields(arguments), artists=artists, albums=albums
         )
 
     async def _get_artists_by_ids(self, ids: list[int]) -> list[Artist]:
@@ -153,6 +142,44 @@ class TrackRepository(WritableRepository[Track, TrackFilters, TrackParams]):
         if len(albums) != len(unique_ids):
             raise ValidationError()
         return albums
+
+    def _build_scalar_fields(self, arguments: TrackParams) -> Dict[str, Any]:
+        """
+        Map TrackParams to Track's scalar (non-relationship) fields.
+        """
+        return {
+            "name": arguments.name,
+            "total_playcount": arguments.total_playcount,
+            "spotify_id": arguments.spotify_id,
+            "tags": None if arguments.tags is None else ", ".join(arguments.tags),
+            "genre": arguments.genre,
+            "year": arguments.year,
+            "duration_ms": arguments.duration_ms,
+            "danceability": arguments.danceability,
+            "mode": arguments.mode,
+            "valence": arguments.valence,
+        }
+
+    async def update(self, id: int, arguments: TrackParams) -> None:
+        """
+        Update a track, including its artist and album relationships.
+        """
+        try:
+            stmt = self._get_by_id_stmt(id)
+            track = (await self.session.scalars(stmt)).first()
+            if track is None:
+                raise NotFoundError()
+
+            for field, value in self._build_scalar_fields(arguments).items():
+                setattr(track, field, value)
+
+            track.artists = await self._get_artists_by_ids(arguments.artist_ids)
+            track.albums = await self._get_albums_by_ids(arguments.album_ids)
+
+            await self.session.commit()
+        except Exception:
+            await self.session.rollback()
+            raise
 
     def model_to_dict(self, model: Track) -> Dict[str, Any]:
         data = model.to_dict()

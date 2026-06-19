@@ -36,6 +36,18 @@ class WritableController(BaseController[TService]):
         except Exception as err:
             return self._error_response(err, response)
 
+    async def update(self, id: int, body_params: BaseModel, response: Response):
+        """
+        Update by using the PUT method.
+
+        :return: Only the status code if the operation was successful. Returns the error response otherwise.
+        :rtype: Response | tuple[Response, int]
+        """
+        try:
+            await self.service.update(id, body_params)
+        except Exception as err:
+            return self._error_response(err, response)
+
     async def delete(self, id: int, response: Response):
         """
         Delete a resource.
