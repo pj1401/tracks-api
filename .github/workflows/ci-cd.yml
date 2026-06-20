@@ -261,4 +261,5 @@ jobs:
         run: npm install -g newman
 
       - name: Run API health check collection
-        run: newman run ./tests/tracks-api-health-check.postman_collection.json -e ./tests/prod-env.postman_environment.json
+        working-directory: tests
+        run: newman run tracks-api-health-check.postman_collection.json -e prod-env.postman_environment.json
