@@ -259,6 +259,9 @@ jobs:
 
       - name: Install newman
         run: npm install -g newman
+      
+      - name: Wait for API to restart
+        run: sleep 10s
 
       - name: Run API health check collection
         working-directory: tests
