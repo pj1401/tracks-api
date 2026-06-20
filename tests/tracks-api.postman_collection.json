@@ -81,9 +81,9 @@
                           "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/register",
+                          "raw": "{{auth_url}}/register",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "register"
@@ -135,9 +135,9 @@
                           "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/register",
+                          "raw": "{{auth_url}}/register",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "register"
@@ -189,9 +189,9 @@
                           "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/register",
+                          "raw": "{{auth_url}}/register",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "register"
@@ -262,9 +262,9 @@
                           "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/register",
+                          "raw": "{{auth_url}}/register",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "register"
@@ -325,9 +325,9 @@
                           "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/login",
+                          "raw": "{{auth_url}}/login",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "login"
@@ -390,9 +390,9 @@
                           "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/login",
+                          "raw": "{{auth_url}}/login",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "login"
@@ -455,9 +455,9 @@
                           "raw": "{\r\n    \"username\": \"{{user2_username}}\",\r\n    \"password\": \"{{user2_password}}\"\r\n}\r\n"
                         },
                         "url": {
-                          "raw": "{{authUrl}}/login",
+                          "raw": "{{auth_url}}/login",
                           "host": [
-                            "{{authUrl}}"
+                            "{{auth_url}}"
                           ],
                           "path": [
                             "login"
@@ -499,9 +499,9 @@
                     "method": "DELETE",
                     "header": [],
                     "url": {
-                      "raw": "{{authUrl}}/users/:id",
+                      "raw": "{{auth_url}}/users/:id",
                       "host": [
-                        "{{authUrl}}"
+                        "{{auth_url}}"
                       ],
                       "path": [
                         "users",
@@ -564,9 +564,9 @@
                       "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}\r\n"
                     },
                     "url": {
-                      "raw": "{{authUrl}}/login",
+                      "raw": "{{auth_url}}/login",
                       "host": [
-                        "{{authUrl}}"
+                        "{{auth_url}}"
                       ],
                       "path": [
                         "login"
@@ -611,9 +611,9 @@
                     "method": "DELETE",
                     "header": [],
                     "url": {
-                      "raw": "{{authUrl}}/users/:id",
+                      "raw": "{{auth_url}}/users/:id",
                       "host": [
-                        "{{authUrl}}"
+                        "{{auth_url}}"
                       ],
                       "path": [
                         "users",
@@ -713,9 +713,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks?limit=999",
+                          "raw": "{{base_url}}/tracks?limit=999",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -801,9 +801,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks?limit=5&offset=1&tags=pop&tags=metal",
+                          "raw": "{{base_url}}/tracks?limit=5&offset=1&tags=pop&tags=metal",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -873,9 +873,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks?artist_id={{artist_id}}&limit=100&offset=100100",
+                          "raw": "{{base_url}}/tracks?artist_id={{artist_id}}&limit=100&offset=100100",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -955,9 +955,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks?artist_id={{artist_id}}&limit=5",
+                          "raw": "{{base_url}}/tracks?artist_id={{artist_id}}&limit=5",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -1018,9 +1018,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1072,9 +1072,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1150,9 +1150,9 @@
                           }
                         },
                         "url": {
-                          "raw": "{{baseUrl}}/tracks",
+                          "raw": "{{base_url}}/tracks",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -1213,9 +1213,9 @@
                           }
                         },
                         "url": {
-                          "raw": "{{baseUrl}}/tracks",
+                          "raw": "{{base_url}}/tracks",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -1299,9 +1299,9 @@
                           }
                         },
                         "url": {
-                          "raw": "{{baseUrl}}/tracks",
+                          "raw": "{{base_url}}/tracks",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks"
@@ -1414,9 +1414,9 @@
                           }
                         },
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1491,9 +1491,9 @@
                           }
                         },
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1548,9 +1548,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1640,9 +1640,9 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1684,9 +1684,9 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1721,7 +1721,7 @@
                               "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
                               "})\r",
                               "\r",
-                              "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
+                              "pm.execution.setNextRequest(\"Filter artists (Invalid limit value (failure))\");\r",
                               ""
                             ],
                             "type": "text/javascript",
@@ -1734,9 +1734,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "{{baseUrl}}/tracks/:id",
+                          "raw": "{{base_url}}/tracks/:id",
                           "host": [
-                            "{{baseUrl}}"
+                            "{{base_url}}"
                           ],
                           "path": [
                             "tracks",
@@ -1787,57 +1787,559 @@
                       }
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "name": "artists",
+              "item": [
+                {
+                  "name": "Filter artists",
+                  "item": [
+                    {
+                      "name": "Filter artists (Invalid limit value (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter artists (Filter by name (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/artists?limit=999",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "artists"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "999"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Filter artists (Filter by name (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'href', 'next', 'previous', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const artist_name = pm.collectionVariables.get('artist_name');\r",
+                              "const artists = responseJson.data;\r",
+                              "\r",
+                              "const containsArtistName = (artist) => {\r",
+                              "    return artist.name.toLowerCase().includes(artist_name.toLowerCase());\r",
+                              "}\r",
+                              "\r",
+                              "// every() also returns true if the array is empty.\r",
+                              "pm.test(`All returned artists contain artist name (${artist_name}) used in filter`, () => {\r",
+                              "    pm.expect(artists.every(containsArtistName)).to.be.true;\r",
+                              "})\r",
+                              "\r",
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "if (artists.length > 0) {\r",
+                              "    pm.collectionVariables.set('artist_id', artists[getRandomInt(0, artists.length)].id);\r",
+                              "}\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Get an artist by ID (Not Found (failure))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.collectionVariables.set('artist_name', pm.variables.replaceIn('{{$randomAlphaNumeric}}'));\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/artists?limit=5&name={{artist_name}}",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "artists"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "5"
+                            },
+                            {
+                              "key": "name",
+                              "value": "{{artist_name}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
                 },
                 {
-                  "name": "Auth test",
-                  "event": [
+                  "name": "Get an artist by ID",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "const responseJson = pm.response.json();\r",
-                          "\r",
-                          "const correctStatusCode = 200\r",
-                          "\r",
-                          "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
-                          "  pm.response.to.have.status(correctStatusCode);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test('Response has expected properties', () => {\r",
-                          "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
-                          "})\r",
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
+                      "name": "Get an artist by ID (Not Found (failure))",
+                      "event": [
                         {
-                          "key": "token",
-                          "value": "{{access_token}}",
-                          "type": "string"
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 404\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Get an artist by ID (Get (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
                         }
-                      ]
-                    },
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{baseUrl}}/auth-required",
-                      "host": [
-                        "{{baseUrl}}"
                       ],
-                      "path": [
-                        "auth-required"
-                      ]
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/artists/:id",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "artists",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get an artist by ID (Get (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('Artist has expected properties', () => {\r",
+                              "    pm.expect(responseJson.data).to.have.all.keys('id', 'href', 'created_at', 'updated_at', 'name', 'tracks', 'albums');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter albums (Invalid limit value (failure))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/artists/:id",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "artists",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{artist_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "albums",
+              "item": [
+                {
+                  "name": "Filter albums",
+                  "item": [
+                    {
+                      "name": "Filter albums (Invalid limit value (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 400\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Filter albums (Filter by name (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/albums?limit=999",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "albums"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "999"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Filter albums (Filter by name (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'href', 'next', 'previous', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "const album_name = pm.collectionVariables.get('album_name');\r",
+                              "const albums = responseJson.data;\r",
+                              "\r",
+                              "const containsAlbumName = (album) => {\r",
+                              "    return album.name.toLowerCase().includes(album_name.toLowerCase());\r",
+                              "}\r",
+                              "\r",
+                              "// every() also returns true if the array is empty.\r",
+                              "pm.test(`All returned albums contain album name (${album_name}) used in filter`, () => {\r",
+                              "    pm.expect(albums.every(containsAlbumName)).to.be.true;\r",
+                              "})\r",
+                              "\r",
+                              "/**\r",
+                              " * Get a random int.\r",
+                              " *\r",
+                              " * @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values\r",
+                              " */\r",
+                              "function getRandomInt(min, max) {\r",
+                              "  const minCeiled = Math.ceil(min);\r",
+                              "  const maxFloored = Math.floor(max);\r",
+                              "  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+                              "}\r",
+                              "\r",
+                              "if (albums.length > 0) {\r",
+                              "    pm.collectionVariables.set('album_id', albums[getRandomInt(0, albums.length)].id);\r",
+                              "}\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Get an album by ID (Not Found (failure))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "pm.collectionVariables.set('album_name', pm.variables.replaceIn('{{$randomAlphaNumeric}}'));\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/albums?limit=5&name={{album_name}}",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "albums"
+                          ],
+                          "query": [
+                            {
+                              "key": "limit",
+                              "value": "5"
+                            },
+                            {
+                              "key": "name",
+                              "value": "{{album_name}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Get an album by ID",
+                  "item": [
+                    {
+                      "name": "Get an album by ID (Not Found (failure))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 404\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Get an album by ID (Get (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/albums/:id",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "albums",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get an album by ID (Get (success))",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "const responseJson = pm.response.json();\r",
+                              "\r",
+                              "const correctStatusCode = 200\r",
+                              "\r",
+                              "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                              "  pm.response.to.have.status(correctStatusCode);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test('Response has expected properties', () => {\r",
+                              "    pm.expect(responseJson).to.have.all.keys('status', 'data');\r",
+                              "})\r",
+                              "\r",
+                              "pm.test('Album has expected properties', () => {\r",
+                              "    pm.expect(responseJson.data).to.have.all.keys('id', 'href', 'created_at', 'updated_at', 'name', 'tracks', 'artists');\r",
+                              "})\r",
+                              "\r",
+                              "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              ""
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{base_url}}/albums/:id",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "albums",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{album_id}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
                 }
               ]
             }
@@ -1909,6 +2411,14 @@
     },
     {
       "key": "created_track_name",
+      "value": ""
+    },
+    {
+      "key": "artist_name",
+      "value": ""
+    },
+    {
+      "key": "album_name",
       "value": ""
     }
   ]
