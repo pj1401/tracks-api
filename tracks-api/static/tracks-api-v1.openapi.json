@@ -31,7 +31,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -45,7 +44,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -58,7 +56,6 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "id",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -75,7 +72,6 @@
             "in": "query",
             "description": "The name of the track.",
             "required": false,
-            "example": "{{$music.songName}}",
             "schema": {
               "type": "string"
             }
@@ -85,7 +81,6 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "{{$music.artist}}",
             "schema": {
               "type": "string"
             }
@@ -95,7 +90,6 @@
             "in": "query",
             "description": "The name of the album.",
             "required": false,
-            "example": "{{$music.album}}",
             "schema": {
               "type": "string"
             }
@@ -105,7 +99,6 @@
             "in": "query",
             "description": "The genre.",
             "required": false,
-            "example": "{{$music.genre}}",
             "schema": {
               "type": "string"
             }
@@ -115,7 +108,6 @@
             "in": "query",
             "description": "The year the track was released.",
             "required": false,
-            "example": 2000,
             "schema": {
               "type": "integer"
             }
@@ -125,7 +117,6 @@
             "in": "query",
             "description": "Major or minor.",
             "required": false,
-            "example": "0",
             "schema": {
               "type": [
                 "integer",
@@ -143,7 +134,6 @@
             "in": "query",
             "description": "Specifies the minimum value for total play count.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -153,7 +143,6 @@
             "in": "query",
             "description": "Specifies the maximum value for total play count.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -163,7 +152,6 @@
             "in": "query",
             "description": "Tags describing the genres the track belongs to.",
             "required": false,
-            "example": "{{$music.genre}}",
             "schema": {
               "type": "string"
             }
@@ -173,7 +161,6 @@
             "in": "query",
             "description": "Specifies the artist ID.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -183,7 +170,6 @@
             "in": "query",
             "description": "Specifies the album ID.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -331,27 +317,45 @@
               "schema": {
                 "$ref": "#/components/schemas/TrackPayload"
               },
-              "example": {
-                "name": "Don't Stay",
-                "year": 2003,
-                "artist_ids": [
-                  12
-                ],
-                "album_ids": [
-                  29
-                ],
-                "total_playcount": 153000,
-                "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
-                "tags": [
-                  "metal",
-                  "nu_metal",
-                  "rock"
-                ],
-                "genre": "nu_metal",
-                "duration_ms": 188000,
-                "danceability": 0.453,
-                "mode": 0,
-                "valence": 0.243
+              "examples": {
+                "1": {
+                  "value": {
+                    "name": "Don't Stay",
+                    "year": 2003,
+                    "artist_ids": [
+                      12
+                    ],
+                    "album_ids": [
+                      29
+                    ],
+                    "total_playcount": 153000,
+                    "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
+                    "tags": [
+                      "metal",
+                      "nu_metal",
+                      "rock"
+                    ],
+                    "genre": "nu_metal",
+                    "duration_ms": 188000,
+                    "danceability": 0.453,
+                    "mode": 0,
+                    "valence": 0.243
+                  },
+                  "summary": "Example"
+                },
+                "2": {
+                  "value": {
+                    "name": "Don't Stay",
+                    "year": 2003,
+                    "artist_ids": [
+                      12
+                    ],
+                    "album_ids": [
+                      29
+                    ]
+                  },
+                  "summary": "Example with only required fields"
+                }
               }
             }
           },
@@ -381,6 +385,76 @@
                     "status",
                     "data"
                   ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Example",
+                    "value": {
+                      "status": 201,
+                      "data": {
+                        "id": 25002,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/tracks/25002",
+                        "created_at": "2026-06-15T10:42:23.946788+00:00",
+                        "updated_at": "2026-06-15T10:42:23.946788+00:00",
+                        "name": "Don't Stay",
+                        "total_playcount": 153000,
+                        "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
+                        "tags": "[metal,nu_metal rock]",
+                        "genre": "nu_metal",
+                        "year": 2003,
+                        "duration_ms": 188000,
+                        "danceability": 0.453,
+                        "mode": 0,
+                        "valence": 0.243,
+                        "artists": [
+                          {
+                            "id": 12,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/artists/12"
+                          }
+                        ],
+                        "albums": [
+                          {
+                            "id": 29,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/albums/29"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "Example when only sending required fields",
+                    "value": {
+                      "status": 200,
+                      "data": {
+                        "id": 25002,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/tracks/25002",
+                        "created_at": "2026-06-15T10:42:23.946788+00:00",
+                        "updated_at": "2026-06-15T10:42:23.946788+00:00",
+                        "name": "Don't Stay",
+                        "total_playcount": 0,
+                        "spotify_id": null,
+                        "tags": null,
+                        "genre": null,
+                        "year": 2003,
+                        "duration_ms": null,
+                        "danceability": null,
+                        "mode": null,
+                        "valence": null,
+                        "artists": [
+                          {
+                            "id": 12,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/artists/12"
+                          }
+                        ],
+                        "albums": [
+                          {
+                            "id": 29,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/albums/29"
+                          }
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -418,10 +492,12 @@
           {
             "name": "id",
             "in": "path",
-            "description": "The ID of the track.",
+            "description": "The track ID.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "description": "The ID of the resource.",
+              "minimum": 1
             }
           }
         ],
@@ -518,7 +594,29 @@
               "schema": {
                 "$ref": "#/components/schemas/TrackPayload"
               },
-              "examples": {}
+              "example": {
+                "name": "Irreplaceable",
+                "year": 2026,
+                "artist_ids": [
+                  250,
+                  3998
+                ],
+                "album_ids": [
+                  4484
+                ],
+                "total_playcount": 6572114805222890,
+                "spotify_id": "ZGqLzifOYwG33nVgRHw0F",
+                "tags": [
+                  "Alternative",
+                  "Southern Gospel",
+                  "Progressive House"
+                ],
+                "genre": "Alternative",
+                "duration_ms": 151043,
+                "danceability": 0.583,
+                "mode": 1,
+                "valence": 0.413
+              }
             }
           },
           "required": true
@@ -610,7 +708,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -624,7 +721,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -637,7 +733,6 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "id",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -654,7 +749,6 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "{{$music.artist}}",
             "schema": {
               "type": "string"
             }
@@ -707,6 +801,70 @@
                     "href",
                     "next",
                     "previous"
+                  ]
+                },
+                "example": {
+                  "status": 200,
+                  "href": "https://patriciaj.se/tracks-api/api/v1/artists?limit=4&offset=0&sort=id",
+                  "next": "https://patriciaj.se/tracks-api/api/v1/artists?limit=4&offset=4&sort=id",
+                  "previous": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/artists/1",
+                      "created_at": "2026-06-19T12:24:48.345168Z",
+                      "updated_at": "2026-06-19T12:24:48.345168Z",
+                      "name": "The Killers",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?artist_id=1",
+                      "albums": [
+                        {
+                          "id": 1,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/albums/1"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 2,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/artists/2",
+                      "created_at": "2026-06-19T12:24:48.345168Z",
+                      "updated_at": "2026-06-19T12:24:48.345168Z",
+                      "name": "Oasis",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?artist_id=2",
+                      "albums": [
+                        {
+                          "id": 2,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/albums/2"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 3,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/artists/3",
+                      "created_at": "2026-06-19T12:24:48.345168Z",
+                      "updated_at": "2026-06-19T12:24:48.345168Z",
+                      "name": "Nirvana",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?artist_id=3",
+                      "albums": [
+                        {
+                          "id": 2,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/albums/2"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 4,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/artists/4",
+                      "created_at": "2026-06-19T12:24:48.345168Z",
+                      "updated_at": "2026-06-19T12:24:48.345168Z",
+                      "name": "Franz Ferdinand",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?artist_id=4",
+                      "albums": [
+                        {
+                          "id": 4,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/albums/4"
+                        }
+                      ]
+                    }
                   ]
                 }
               }
@@ -769,6 +927,23 @@
                     "status",
                     "data"
                   ]
+                },
+                "example": {
+                  "status": 200,
+                  "data": {
+                    "id": 1,
+                    "href": "https://patriciaj.se/tracks-api/api/v1/artists/1",
+                    "created_at": "2026-06-19T12:24:48.345168Z",
+                    "updated_at": "2026-06-19T12:24:48.345168Z",
+                    "name": "The Killers",
+                    "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?artist_id=1",
+                    "albums": [
+                      {
+                        "id": 1,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/albums/1"
+                      }
+                    ]
+                  }
                 }
               }
             },
@@ -800,7 +975,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -814,7 +988,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -827,7 +1000,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "id",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -897,6 +1069,86 @@
                     "next",
                     "previous"
                   ]
+                },
+                "example": {
+                  "status": 200,
+                  "href": "https://patriciaj.se/tracks-api/api/v1/albums?limit=4&offset=0&sort=id",
+                  "next": "https://patriciaj.se/tracks-api/api/v1/albums?limit=4&offset=4&sort=id",
+                  "previous": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/albums/1",
+                      "created_at": "2026-06-19T12:24:50.355529Z",
+                      "updated_at": "2026-06-19T12:24:50.355529Z",
+                      "name": "Recovered Vol.1 - Slammin' Club Cover Versions",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?album_id=1",
+                      "artists": [
+                        {
+                          "id": 1,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/1"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 2,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/albums/2",
+                      "created_at": "2026-06-19T12:24:50.355529Z",
+                      "updated_at": "2026-06-19T12:24:50.355529Z",
+                      "name": "Punk Goes 90s",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?album_id=2",
+                      "artists": [
+                        {
+                          "id": 2,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/2"
+                        },
+                        {
+                          "id": 3,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/3"
+                        },
+                        {
+                          "id": 46,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/46"
+                        },
+                        {
+                          "id": 493,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/493"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 3,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/albums/3",
+                      "created_at": "2026-06-19T12:24:50.355529Z",
+                      "updated_at": "2026-06-19T12:24:50.355529Z",
+                      "name": "Afrodisiac",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?album_id=3",
+                      "artists": [
+                        {
+                          "id": 3,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/3"
+                        },
+                        {
+                          "id": 629,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/629"
+                        }
+                      ]
+                    },
+                    {
+                      "id": 4,
+                      "href": "https://patriciaj.se/tracks-api/api/v1/albums/4",
+                      "created_at": "2026-06-19T12:24:50.355529Z",
+                      "updated_at": "2026-06-19T12:24:50.355529Z",
+                      "name": "Annie_ Let's Not Wait",
+                      "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?album_id=4",
+                      "artists": [
+                        {
+                          "id": 4,
+                          "href": "https://patriciaj.se/tracks-api/api/v1/artists/4"
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -928,7 +1180,6 @@
             "in": "path",
             "description": "The album ID.",
             "required": true,
-            "example": 1,
             "schema": {
               "type": "integer",
               "description": "The ID of the resource.",
@@ -959,6 +1210,23 @@
                     "status",
                     "data"
                   ]
+                },
+                "example": {
+                  "status": 200,
+                  "data": {
+                    "id": 1,
+                    "href": "https://patriciaj.se/tracks-api/api/v1/albums/1",
+                    "created_at": "2026-06-19T12:24:50.355529Z",
+                    "updated_at": "2026-06-19T12:24:50.355529Z",
+                    "name": "Recovered Vol.1 - Slammin' Club Cover Versions",
+                    "tracks": "https://patriciaj.se/tracks-api/api/v1/tracks?album_id=1",
+                    "artists": [
+                      {
+                        "id": 1,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/artists/1"
+                      }
+                    ]
+                  }
                 }
               }
             },
@@ -1201,7 +1469,7 @@
               "minimum": 1
             },
             "minItems": 1,
-            "description": "An array containing the IDs of artists that worked on the track."
+            "description": "An array containing the IDs of artists that worked on the track. The artist must exist in the artist collection."
           },
           "album_ids": {
             "type": "array",
@@ -1210,7 +1478,7 @@
               "minimum": 1
             },
             "minItems": 1,
-            "description": "An array of IDs of albums where the track appears."
+            "description": "An array of IDs of albums where the track appears. The album must exist in the albums collection."
           },
           "total_playcount": {
             "type": "integer",
