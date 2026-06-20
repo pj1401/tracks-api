@@ -31,7 +31,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -45,7 +44,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -58,7 +56,6 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -75,7 +72,6 @@
             "in": "query",
             "description": "The name of the track.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -85,7 +81,6 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -95,7 +90,6 @@
             "in": "query",
             "description": "The name of the album.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -105,7 +99,6 @@
             "in": "query",
             "description": "The genre.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -115,7 +108,6 @@
             "in": "query",
             "description": "The year the track was released.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -125,7 +117,6 @@
             "in": "query",
             "description": "Major or minor.",
             "required": false,
-            "example": "",
             "schema": {
               "type": [
                 "integer",
@@ -143,7 +134,6 @@
             "in": "query",
             "description": "Specifies the minimum value for total play count.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -153,7 +143,6 @@
             "in": "query",
             "description": "Specifies the maximum value for total play count.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -163,7 +152,6 @@
             "in": "query",
             "description": "Tags describing the genres the track belongs to.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -173,7 +161,6 @@
             "in": "query",
             "description": "Specifies the artist ID.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -183,7 +170,6 @@
             "in": "query",
             "description": "Specifies the album ID.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -720,7 +706,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -734,7 +719,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -747,7 +731,6 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -764,7 +747,6 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string"
             }
@@ -991,7 +973,6 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -1005,7 +986,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -1018,7 +998,6 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -1199,7 +1178,6 @@
             "in": "path",
             "description": "The album ID.",
             "required": true,
-            "example": "",
             "schema": {
               "type": "integer",
               "description": "The ID of the resource.",
