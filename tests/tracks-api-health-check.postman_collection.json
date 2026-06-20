@@ -1,0 +1,606 @@
+{
+  "info": {
+    "_postman_id": "b77fa3db-c09c-47f0-bb18-52304f3ba341",
+    "name": "Tracks API health check",
+    "description": "Smoke test for the Tracks API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31357091",
+    "_collection_link": "https://go.postman.co/collection/31357091-b77fa3db-c09c-47f0-bb18-52304f3ba341?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Auth API v1",
+          "item": [
+            {
+              "name": "Auth v1 health check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "\r",
+                      "const correctStatusCode = 200\r",
+                      "const correctMessage = \"OK\"\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(`Message is: ${correctMessage}`, () => {\r",
+                      "  pm.expect(responseJson.message).to.equal(correctMessage);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Auth v1 docs\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{auth_url}}/health",
+                  "host": [
+                    "{{auth_url}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Auth v1 docs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const correctStatusCode = 200\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Tracks v1 health check\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{auth_url}}/docs",
+                  "host": [
+                    "{{auth_url}}"
+                  ],
+                  "path": [
+                    "docs"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Register a new account (Register (success))",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "const requestBody = pm.request.body.toJSON();\r",
+                      "const variables = JSON.parse(requestBody.raw);\r",
+                      "\r",
+                      "pm.collectionVariables.set('password', variables.password);\r",
+                      "const correctStatusCode = 201\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('email', 'username', 'id', 'status');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test('id is a number', () => {\r",
+                      "    pm.expect(responseJson.id).to.be.a('number');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test('Password is not returned', () => {\r",
+                      "    pm.expect(responseJson).to.not.have.any.keys('password');\r",
+                      "})\r",
+                      "\r",
+                      "// Set variables\r",
+                      "pm.collectionVariables.set('username', responseJson.username);\r",
+                      "pm.collectionVariables.set('user_id', responseJson.id);\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Log in a user (Login (success))\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "content-type": true
+                }
+              },
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}\r\n"
+                },
+                "url": {
+                  "raw": "{{auth_url}}/register",
+                  "host": [
+                    "{{auth_url}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Log in a user (Login (success))",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "\r",
+                      "const correctStatusCode = 200\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('status', 'access_token');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test('A token is returned', () => {\r",
+                      "    pm.expect(responseJson.access_token).to.not.be.undefined;\r",
+                      "})\r",
+                      "\r",
+                      "// Set variables\r",
+                      "pm.collectionVariables.set('access_token', responseJson.access_token);\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Auth test (success)\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "content-type": true
+                }
+              },
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}\r\n"
+                },
+                "url": {
+                  "raw": "{{auth_url}}/login",
+                  "host": [
+                    "{{auth_url}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete a user (Delete user (success))",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const correctStatusCode = 204\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(null);\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{auth_url}}/users/:id",
+                  "host": [
+                    "{{auth_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{user_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tracks",
+      "item": [
+        {
+          "name": "Tracks API v1",
+          "item": [
+            {
+              "name": "Tracks v1 health check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "\r",
+                      "const correctStatusCode = 200\r",
+                      "const correctMessage = \"OK\"\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(`Message is: ${correctMessage}`, () => {\r",
+                      "  pm.expect(responseJson.message).to.equal(correctMessage);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Tracks v1 docs\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/health",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Tracks v1 docs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const correctStatusCode = 200\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Tracks root health check\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/docs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "docs"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Auth test (failure)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "\r",
+                      "const correctStatusCode = 401\r",
+                      "const correctMessage = \"Credentials invalid or not provided.\"\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(`Message is: ${correctMessage}`, () => {\r",
+                      "  pm.expect(responseJson.message).to.equal(correctMessage);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Register a new account (Register (success))\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth-required",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth-required"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Auth test (success)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const responseJson = pm.response.json();\r",
+                      "\r",
+                      "const correctStatusCode = 200\r",
+                      "const correctMessage = \"JWT was decoded!\"\r",
+                      "\r",
+                      "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                      "  pm.response.to.have.status(correctStatusCode);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test('Response has expected properties', () => {\r",
+                      "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(`Message is: ${correctMessage}`, () => {\r",
+                      "  pm.expect(responseJson.message).to.equal(correctMessage);\r",
+                      "});\r",
+                      "\r",
+                      "pm.execution.setNextRequest(\"Delete a user (Delete user (success))\");\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth-required",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth-required"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Tracks root health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const responseJson = pm.response.json();\r",
+                  "\r",
+                  "const correctStatusCode = 200\r",
+                  "const correctMessage = \"OK\"\r",
+                  "\r",
+                  "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                  "  pm.response.to.have.status(correctStatusCode);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test('Response has expected properties', () => {\r",
+                  "    pm.expect(responseJson).to.have.all.keys('status', 'message');\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(`Message is: ${correctMessage}`, () => {\r",
+                  "  pm.expect(responseJson.message).to.equal(correctMessage);\r",
+                  "});\r",
+                  "\r",
+                  "pm.execution.setNextRequest(\"Tracks root docs\");\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{root_url}}/health",
+              "host": [
+                "{{root_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Tracks root docs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const correctStatusCode = 200\r",
+                  "\r",
+                  "pm.test(`Status code is ${correctStatusCode}`, () => {\r",
+                  "  pm.response.to.have.status(correctStatusCode);\r",
+                  "});\r",
+                  "\r",
+                  "pm.execution.setNextRequest(\"Auth test (failure)\");\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{root_url}}/docs",
+              "host": [
+                "{{root_url}}"
+              ],
+              "path": [
+                "docs"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    }
+  ]
+}
