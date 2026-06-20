@@ -239,3 +239,24 @@ jobs:
           docker compose -f docker-compose.prod.yml logs seed
           docker compose -f docker-compose.prod.yml logs auth-service
           docker compose -f docker-compose.prod.yml logs tracks-api
+
+  # --- API Health Check ---
+
+  health-check:
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install newman
+        run: npm install -g newman
+
+      - name: Run API health check collection
+        run: newman run ./tests/tracks-api-health-check.postman_collection.json -e ./tests/prod-env.postman_environment.json
