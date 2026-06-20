@@ -36,7 +36,9 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     settings = get_settings()
     tags = get_tags(settings)
-    app = FastAPI(title="Tracks API", lifespan=lifespan, openapi_tags=tags)
+    app = FastAPI(
+        title="Tracks API", lifespan=lifespan, openapi_tags=tags, version="1.0.0"
+    )
     include_routers(app)
     mount_versioned_apis(app)
     return app

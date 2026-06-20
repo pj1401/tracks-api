@@ -31,7 +31,7 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -45,7 +45,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -58,7 +58,7 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "id",
+            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -75,7 +75,7 @@
             "in": "query",
             "description": "The name of the track.",
             "required": false,
-            "example": "{{$music.songName}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -85,7 +85,7 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "{{$music.artist}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -95,7 +95,7 @@
             "in": "query",
             "description": "The name of the album.",
             "required": false,
-            "example": "{{$music.album}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -105,7 +105,7 @@
             "in": "query",
             "description": "The genre.",
             "required": false,
-            "example": "{{$music.genre}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -115,7 +115,7 @@
             "in": "query",
             "description": "The year the track was released.",
             "required": false,
-            "example": 2000,
+            "example": "",
             "schema": {
               "type": "integer"
             }
@@ -125,7 +125,7 @@
             "in": "query",
             "description": "Major or minor.",
             "required": false,
-            "example": "0",
+            "example": "",
             "schema": {
               "type": [
                 "integer",
@@ -163,7 +163,7 @@
             "in": "query",
             "description": "Tags describing the genres the track belongs to.",
             "required": false,
-            "example": "{{$music.genre}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -331,27 +331,45 @@
               "schema": {
                 "$ref": "#/components/schemas/TrackPayload"
               },
-              "example": {
-                "name": "Don't Stay",
-                "year": 2003,
-                "artist_ids": [
-                  12
-                ],
-                "album_ids": [
-                  29
-                ],
-                "total_playcount": 153000,
-                "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
-                "tags": [
-                  "metal",
-                  "nu_metal",
-                  "rock"
-                ],
-                "genre": "nu_metal",
-                "duration_ms": 188000,
-                "danceability": 0.453,
-                "mode": 0,
-                "valence": 0.243
+              "examples": {
+                "1": {
+                  "value": {
+                    "name": "Don't Stay",
+                    "year": 2003,
+                    "artist_ids": [
+                      12
+                    ],
+                    "album_ids": [
+                      29
+                    ],
+                    "total_playcount": 153000,
+                    "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
+                    "tags": [
+                      "metal",
+                      "nu_metal",
+                      "rock"
+                    ],
+                    "genre": "nu_metal",
+                    "duration_ms": 188000,
+                    "danceability": 0.453,
+                    "mode": 0,
+                    "valence": 0.243
+                  },
+                  "summary": "Example"
+                },
+                "2": {
+                  "value": {
+                    "name": "Don't Stay",
+                    "year": 2003,
+                    "artist_ids": [
+                      12
+                    ],
+                    "album_ids": [
+                      29
+                    ]
+                  },
+                  "summary": "Example with only required fields"
+                }
               }
             }
           },
@@ -381,6 +399,76 @@
                     "status",
                     "data"
                   ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Example",
+                    "value": {
+                      "status": 201,
+                      "data": {
+                        "id": 25002,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/tracks/25002",
+                        "created_at": "2026-06-15T10:42:23.946788+00:00",
+                        "updated_at": "2026-06-15T10:42:23.946788+00:00",
+                        "name": "Don't Stay",
+                        "total_playcount": 153000,
+                        "spotify_id": "v0aZ3KQxOQR63T5Zt506M",
+                        "tags": "[metal,nu_metal rock]",
+                        "genre": "nu_metal",
+                        "year": 2003,
+                        "duration_ms": 188000,
+                        "danceability": 0.453,
+                        "mode": 0,
+                        "valence": 0.243,
+                        "artists": [
+                          {
+                            "id": 12,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/artists/12"
+                          }
+                        ],
+                        "albums": [
+                          {
+                            "id": 29,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/albums/29"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "Example when only sending required fields",
+                    "value": {
+                      "status": 200,
+                      "data": {
+                        "id": 25002,
+                        "href": "https://patriciaj.se/tracks-api/api/v1/tracks/25002",
+                        "created_at": "2026-06-15T10:42:23.946788+00:00",
+                        "updated_at": "2026-06-15T10:42:23.946788+00:00",
+                        "name": "Don't Stay",
+                        "total_playcount": 0,
+                        "spotify_id": null,
+                        "tags": null,
+                        "genre": null,
+                        "year": 2003,
+                        "duration_ms": null,
+                        "danceability": null,
+                        "mode": null,
+                        "valence": null,
+                        "artists": [
+                          {
+                            "id": 12,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/artists/12"
+                          }
+                        ],
+                        "albums": [
+                          {
+                            "id": 29,
+                            "href": "https://patriciaj.se/tracks-api/api/v1/albums/29"
+                          }
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -518,7 +606,29 @@
               "schema": {
                 "$ref": "#/components/schemas/TrackPayload"
               },
-              "examples": {}
+              "example": {
+                "name": "Irreplaceable",
+                "year": 2026,
+                "artist_ids": [
+                  250,
+                  3998
+                ],
+                "album_ids": [
+                  4484
+                ],
+                "total_playcount": 6572114805222890,
+                "spotify_id": "ZGqLzifOYwG33nVgRHw0F",
+                "tags": [
+                  "Alternative",
+                  "Southern Gospel",
+                  "Progressive House"
+                ],
+                "genre": "Alternative",
+                "duration_ms": 151043,
+                "danceability": 0.583,
+                "mode": 1,
+                "valence": 0.413
+              }
             }
           },
           "required": true
@@ -610,7 +720,7 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -624,7 +734,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -637,7 +747,7 @@
             "in": "query",
             "description": "Specifies the column to sort by.",
             "required": false,
-            "example": "id",
+            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -654,7 +764,7 @@
             "in": "query",
             "description": "The name of the artist.",
             "required": false,
-            "example": "{{$music.artist}}",
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -800,7 +910,7 @@
             "in": "query",
             "description": "Specifies the maximum number of items to return.",
             "required": false,
-            "example": 20,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the maximum number of items to return.",
@@ -814,7 +924,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "Specifies the starting index of the data.",
@@ -827,7 +937,7 @@
             "in": "query",
             "description": "Specifies the starting index of the data.",
             "required": false,
-            "example": "id",
+            "example": "",
             "schema": {
               "type": "string",
               "description": "Specifies the column to sort by.",
@@ -928,7 +1038,7 @@
             "in": "path",
             "description": "The album ID.",
             "required": true,
-            "example": 1,
+            "example": "",
             "schema": {
               "type": "integer",
               "description": "The ID of the resource.",
@@ -1201,7 +1311,7 @@
               "minimum": 1
             },
             "minItems": 1,
-            "description": "An array containing the IDs of artists that worked on the track."
+            "description": "An array containing the IDs of artists that worked on the track. The artist must exist in the artist collection."
           },
           "album_ids": {
             "type": "array",
@@ -1210,7 +1320,7 @@
               "minimum": 1
             },
             "minItems": 1,
-            "description": "An array of IDs of albums where the track appears."
+            "description": "An array of IDs of albums where the track appears. The album must exist in the albums collection."
           },
           "total_playcount": {
             "type": "integer",
