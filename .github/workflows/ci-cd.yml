@@ -247,8 +247,10 @@ jobs:
     needs: [deploy]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - name: Checkout tests directory
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
