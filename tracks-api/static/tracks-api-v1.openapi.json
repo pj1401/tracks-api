@@ -492,10 +492,12 @@
           {
             "name": "id",
             "in": "path",
-            "description": "The ID of the track.",
+            "description": "The track ID.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "description": "The ID of the resource.",
+              "minimum": 1
             }
           }
         ],
