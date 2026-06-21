@@ -8,9 +8,17 @@ Tracks API is a REST API used for getting information about various music tracks
 
 **Secondary resource 2:** Albums (album_id, album_name, total_tracks, album_type, release_date, artists, tracks)
 
+## Usage
+
+| | URL |
+|---|---|
+| **Production API** | [patriciaj.se/tracks-api/](https://patriciaj.se/tracks-api/) |
+| **API Documentation** | [patriciaj.se/tracks-api/docs](https://patriciaj.se/tracks-api/docs) |
+| **Tracks v1 Docs** | [patriciaj.se/tracks-api/api/v1/docs](https://patriciaj.se/tracks-api/api/v1/docs) |
+| **Auth v1 Docs** | [patriciaj.se/tracks-api/auth/api/v1/docs](https://patriciaj.se/tracks-api/auth/api/v1/docs) |
+
 ## Acknowledgements
 
-API Design Assignment
-
-Dataset on Kaggle: [Million Song Dataset + Spotify + Last.fm](https://www.kaggle.com/datasets/undefinenull/million-song-dataset-spotify-lastfm)  
-Additional information (album names and IDs) is from the Million Song Dataset summary file: [millionsongdataset.com/pages/getting-dataset/, (Additional files, 7)](http://millionsongdataset.com/pages/getting-dataset/)
+- 1DV027 API Design Assignment
+- Dataset on Kaggle: [Million Song Dataset + Spotify + Last.fm](https://www.kaggle.com/datasets/undefinenull/million-song-dataset-spotify-lastfm)  
+- Additional information (album names and IDs) is from the Million Song Dataset summary file: [millionsongdataset.com/pages/getting-dataset/, (Additional files, 7)](http://millionsongdataset.com/pages/getting-dataset/)
