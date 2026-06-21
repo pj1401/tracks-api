@@ -6,6 +6,7 @@
   - [Prerequisites](#prerequisites)
   - [Development Environment](#development-environment)
   - [Seed database](#seed-database)
+  - [Run the APIs](#run-the-apis)
 
 ## Getting started
 
@@ -41,8 +42,6 @@ cp tracks-api/.example.env tracks-api/.env
 
 **Set up docker secrets:**
 
-*Instructions for docker secrets*
-
 Create the secrets directory and write the secret files:
 
 ```powershell
@@ -52,7 +51,7 @@ echo "admin@example.com" > secrets/admin_email.txt
 echo "very_secure_admin_password" > secrets/admin_password.txt
 
 # Don't add trailing newlines in the POSTGRES secret files
-echo -n "library-postgres" > secrets/db_name.txt
+echo -n "tracks-api-postgres" > secrets/db_name.txt
 echo -n "db_user" > secrets/db_user.txt
 echo -n "db_pass" > secrets/db_password.txt
 ```
@@ -80,9 +79,21 @@ openssl ec -in secrets/tracks-api-jwt-key -pubout -out secrets/tracks-api-jwt-ke
 
 **Set up .env files:**
 
-*Instructions for .env files*
+Copy the contents of the generated keys the `.env` files in `auth-service` and `tracks-api`.
 
-Copy the contents of the key pair files to the `.env` file.
+Replace these in `auth-service/.env`:
+
+```
+FLASK_SECRET_KEY={ Random string }
+JWT_PRIVATE_KEY={ An EC private key. }
+JWT_PUBLIC_KEY={ An EC public key. }
+```
+
+Replace `JWT_PUBLIC_KEY` in `tracks-api/.env`:
+
+```
+JWT_PUBLIC_KEY={ An EC public key. }
+```
 
 ### Seed database
 
@@ -107,8 +118,83 @@ CSV_LISTENING_HISTORY_PATH=data/User Listening History.csv
 HDF5_PATH=data/msd_summary_file.h5
 ```
 
-**Run the seed script:**
+### Run the APIs
 
-### Instructions
+**Using docker:**
 
+```powershell
+# Start the services in detached mode
+docker compose -f docker-compose.subset.yml up -d
 
+# Remove '-f docker-compose.subset.yml' if the full dataset is used:
+docker compose up -d
+```
+tracks-api and auth-service should start once the seed service exits.  
+To check the logs:
+
+```powershell
+docker compose logs tracks-api
+```
+
+If the logs contain `"GET /api/v1/health HTTP/1.1" 200 OK`, that means the tracks-api is running.
+
+```powershell
+docker compose logs auth-service
+```
+
+The logs should contain:
+
+```
+Request: GET /api/v1/health 127.0.0.1
+Response: 200 GET /api/v1/health
+```
+
+The Tracks API can be reached at [http://localhost:5000](http://127.0.0.1:5000)
+The Auth API can be reached at [http://localhost:5010](http://127.0.0.1:5010)
+
+**Using uv:**
+
+Run the seed script first:
+
+```powershell
+# change to the seed directory
+cd seed
+
+# Set .venv and install dependencies
+uv sync --group dev
+
+# Run the script
+uv run src/main.py
+```
+
+The APIs can be started after the seed script finishes.
+
+To start the tracks-api:
+
+```powershell
+# from the root directory change to the tracks-api directory
+cd tracks-api
+
+# Set .venv and install dependencies
+uv sync --group dev
+
+# Start the API in dev mode
+uv run fastapi dev
+```
+
+The Tracks API can be reached at [http://localhost:8000](http://127.0.0.1:8000)
+
+Start the auth-service in a separate terminal:
+
+```powershell
+# from the root directory change to the auth-service directory
+cd auth-service
+
+# Set .venv and install dependencies
+uv sync --group dev
+
+# Start the API in dev mode
+uv run -- flask --app src/main run --debug
+```
+
+The Auth API can be reached at [http://localhost:5000](http://127.0.0.1:5000)
