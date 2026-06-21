@@ -19,6 +19,8 @@ Tools used in development:
 
 ### Development Environment
 
+Start by cloning the repository:
+
 ```bash
 # clone the repository using ssh
 git clone git@github.com:pj1401/tracks-api.git
@@ -34,12 +36,24 @@ cp tracks-api/.example.env tracks-api/.env
 
 **Environment variables in seed directory:**
 
+*List the environment variables*
+
+**Set up docker secrets:**
+
+*Instructions for docker secrets*
+
+**Set up .env files:**
+
+*Instructions for .env files*
+
+### Seed database
+
+*How to seed the database with either the subset or the complete dataset*
+
 Dataset: [Million Song Dataset + Spotify + Last.fm](https://www.kaggle.com/datasets/undefinenull/million-song-dataset-spotify-lastfm)  
 Additional information (album names and IDs) is from the Million Song Dataset summary file: [millionsongdataset.com/pages/getting-dataset/, (Additional files, 7)](http://millionsongdataset.com/pages/getting-dataset/)
 
-## Seed database
-
-### Files
+**Files**
 
 Small subsets of the datasets are included in `seed/data-subset/` to allow faster testing.
 
