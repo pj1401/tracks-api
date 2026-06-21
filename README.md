@@ -1,4 +1,4 @@
-# Tracks REST API
+# Tracks API
 
 Tracks API is a REST API used for getting information about various music tracks.
 

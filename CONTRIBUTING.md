@@ -1,5 +1,39 @@
 # Contributing to Tracks API
 
+## Contents
+
+- [Getting started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Development Environment](#development-environment)
+
+## Getting started
+
+### Prerequisites
+
+Tools used in development:
+
+- docker compose
+- uv package manager
+- Apidog for documenting the API
+- Postman / Newman for running API tests
+
+### Development Environment
+
+```bash
+# clone the repository using ssh
+git clone git@github.com:pj1401/tracks-api.git
+
+# change directory
+cd tracks-api
+
+# Copy from .example.env to .env
+cp auth-service/.example.env auth-service/.env
+cp seed/.example.env seed/.env
+cp tracks-api/.example.env tracks-api/.env
+```
+
+**Environment variables in seed directory:**
+
 Dataset: [Million Song Dataset + Spotify + Last.fm](https://www.kaggle.com/datasets/undefinenull/million-song-dataset-spotify-lastfm)  
 Additional information (album names and IDs) is from the Million Song Dataset summary file: [millionsongdataset.com/pages/getting-dataset/, (Additional files, 7)](http://millionsongdataset.com/pages/getting-dataset/)
 
