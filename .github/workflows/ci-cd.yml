@@ -30,7 +30,7 @@ jobs:
 
       - name: Install uv
         run: pip install uv
-      
+
       - name: Install models dependencies
         working-directory: models
         run: uv sync --group dev
@@ -44,7 +44,7 @@ jobs:
         run: |
           uv run ruff check src
           uv run ruff format --diff
-      
+
       - name: Install auth-service dependencies
         working-directory: auth-service
         run: uv sync --group dev
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install uv
         run: pip install uv
-      
+
       - name: Install dependencies for tracks-api service
         working-directory: tracks-api
         run: uv sync --group dev
@@ -259,9 +259,9 @@ jobs:
 
       - name: Install newman
         run: npm install -g newman
-      
+
       - name: Wait for API to restart
-        run: sleep 10s
+        run: sleep 20s
 
       - name: Run API health check collection
         working-directory: tests

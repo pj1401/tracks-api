@@ -1,0 +1,160 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_user) -d $$(cat /run/secrets/db_name)"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seed:
+    deploy:
+      resources:
+        limits:
+          memory: 1800m
+    build:
+      context: .
+      dockerfile: seed/dockerfile
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      ADMIN_USERNAME_FILE: /run/secrets/admin_username
+      ADMIN_EMAIL_FILE: /run/secrets/admin_email
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      CSV_PATH: data/music-info-subset.csv
+      CSV_LISTENING_HISTORY_PATH: data/listening-history-subset.csv
+      HDF5_PATH: data/msd-summary-subset.h5
+      CHUNK_SIZE: 20
+      NO_OF_CHUNKS: 3
+      PYTHONDONTWRITEBYTECODE: 1
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - admin_username
+      - admin_email
+      - admin_password
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./models:/models
+      - ./seed/data-subset:/app/data
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/dockerfile
+      args:
+        AUTH_PORT: 5010
+    environment:
+      FLASK_HOST: 0.0.0.0
+      FLASK_DEBUG: True
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      BASE_URL: http://localhost:5010
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      FLASK_SECRET_KEY_FILE: /run/secrets/flask_secret_key
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+      PYTHONDONTWRITEBYTECODE: 1
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - flask_secret_key
+      - jwt_private_key
+      - jwt_public_key
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "5010:5010"
+    volumes:
+      - ./models:/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  tracks-api:
+    build:
+      context: .
+      dockerfile: tracks-api/dockerfile
+      args:
+        TRACKS_PORT: 5000
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      BASE_URL: http://localhost:5000
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+      PYTHONDONTWRITEBYTECODE: 1
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - jwt_public_key
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./models:/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+secrets:
+  admin_username:
+    file: ./secrets/admin_username.txt
+  admin_email:
+    file: ./secrets/admin_email.txt
+  admin_password:
+    file: ./secrets/admin_password.txt
+  db_name:
+    file: ./secrets/db_name.txt
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  flask_secret_key:
+    file: ./secrets/flask_secret_key.txt
+  jwt_private_key:
+    file: ./secrets/tracks-api-jwt-key
+  jwt_public_key:
+    file: ./secrets/tracks-api-jwt-key.pub
+
+volumes:
+  postgres_data:
