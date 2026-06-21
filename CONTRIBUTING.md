@@ -36,9 +36,44 @@ cp seed/.example.env seed/.env
 cp tracks-api/.example.env tracks-api/.env
 ```
 
-**Environment variables in seed directory:**
+**Commomn environment variables used in multiple services:**
 
-*List the environment variables*
+| Variable | Description |
+|---|---|
+| `POSTGRES_HOST` | The PostgreSQL host. |
+| `POSTGRES_PORT` | The port to the PostgreSQL container. Defaults to 5432. |
+| `POSTGRES_DB` | The database name. |
+| `POSTGRES_USER` | The database username. |
+| `POSTGRES_PASSWORD` | The password for the database user. |
+
+**Env variables in seed:**
+
+| Variable | Description |
+|---|---|
+| `CSV_PATH` | The path to the Music Info CSV file. |
+| `CSV_LISTENING_HISTORY_PATH` | The path to the User Listening History CSV file. |
+| `HDF5_PATH` | The path to the HDF5 file. |
+| `CHUNK_SIZE` | Specifies how many rows are loaded from the CSV file at a time. |
+| `ADMIN_USERNAME` | The admin username. (The admin user is currently not used for anything.) |
+| `ADMIN_EMAIL` | The admin email address. |
+| `ADMIN_PASSWORD` | The admin password. |
+
+**Env variables in auth-service:**
+
+| Variable | Description |
+|---|---|
+| `BASE_URL` | The base URL of the application. Example: 'http://localhost:5000' for flask develop mode. |
+| `FLASK_DEBUG` | Whether debug mode is enabled. Defaults to 'False'. |
+| `FLASK_SECRET_KEY` | A secret key used for signing session cookies. |
+| `JWT_PRIVATE_KEY` | An EC private key used for signing JWTs. |
+| `JWT_PUBLIC_KEY` | An EC public key. |
+
+**Env variables in tracks-api:**
+
+| Variable | Description |
+|---|---|
+| `BASE_URL` | The base URL of the application. Example: 'http://localhost:8000' for fastapi develop mode. |
+| `JWT_PUBLIC_KEY` | An EC public key. |
 
 **Set up docker secrets:**
 
