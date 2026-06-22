@@ -2,11 +2,13 @@
 
 Tracks API is a REST API used for getting information about various music tracks.
 
-**Primary resource:** Tracks (track_id, track_name, duration_ms, genre, year, tags, total_playcount, danceability, mode, valence)
+**Main resources:**
 
-**Secondary resource 1:** Artists (artist_id, artist_name, albums)
+**Primary resource (CRUD):** Tracks (id, name, duration_ms, genre, year, tags, total_playcount, danceability, mode, valence)
 
-**Secondary resource 2:** Albums (album_id, album_name, total_tracks, album_type, release_date, artists, tracks)
+**Secondary resource 1 (read-only):** Artists (id, name, albums, tracks)
+
+**Secondary resource 2 (read-only):** Albums (id, name, year (not implemented), artists, tracks)
 
 ## Usage
 
@@ -16,6 +18,30 @@ Tracks API is a REST API used for getting information about various music tracks
 | **API Documentation** | [patriciaj.se/tracks-api/docs](https://patriciaj.se/tracks-api/docs) |
 | **Tracks v1 Docs** | [patriciaj.se/tracks-api/api/v1/docs](https://patriciaj.se/tracks-api/api/v1/docs) |
 | **Auth v1 Docs** | [patriciaj.se/tracks-api/auth/api/v1/docs](https://patriciaj.se/tracks-api/auth/api/v1/docs) |
+
+**HTTP methods**
+
+Tracks API:
+
+| Resource | POST | GET | PUT | DELETE |
+|----------|------|-----|-----|--------|
+| /tracks | Create a new track | Retrieve all tracks | ❌ (Error) | ❌ |
+| /tracks/1 | ❌ | Retrieve details of track 1 | Update details of track 1 if it exists | Delete track 1 |
+| /artists | ❌ | Retrieve all artists | ❌ | ❌ |
+| /artists/1 | ❌ | Retrieve details of artist 1 | ❌ | ❌ |
+| /albums | ❌ | Retrieve all albums | ❌ | ❌ |
+| /albums/1 | ❌ | Retrieve details of album 1 | ❌ | ❌ |
+
+A Method Not Allowed error (405) is returned for undefined methods. But currently my error module incorrectly maps the status code in the response body to 500.
+
+Auth API:
+
+| Action / Resource | POST | GET | PUT | DELETE |
+|----------|------|-----|-----|--------|
+| /register | Register a new user | ❌ | ❌ | ❌ |
+| /login | Log in a user | ❌ | ❌ | ❌ |
+| /users/1 | ❌ | ❌ | ❌ | Delete user 1 |
+
 
 ## Acknowledgements
 
