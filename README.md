@@ -19,9 +19,9 @@ Tracks API is a REST API used for getting information about various music tracks
 | **Tracks v1 Docs** | [patriciaj.se/tracks-api/api/v1/docs](https://patriciaj.se/tracks-api/api/v1/docs) |
 | **Auth v1 Docs** | [patriciaj.se/tracks-api/auth/api/v1/docs](https://patriciaj.se/tracks-api/auth/api/v1/docs) |
 
-**HTTP methods**
+### HTTP methods
 
-Tracks API:
+**Tracks API:**
 
 | Resource | POST | GET | PUT | DELETE |
 |----------|------|-----|-----|--------|
@@ -34,7 +34,7 @@ Tracks API:
 
 A Method Not Allowed error (405) is returned for undefined methods. But currently my error module incorrectly maps the status code in the response body to 500.
 
-Auth API:
+**Auth API:**
 
 | Action / Resource | POST | GET | PUT | DELETE |
 |----------|------|-----|-----|--------|
@@ -42,9 +42,14 @@ Auth API:
 | /login | Log in a user | ❌ | ❌ | ❌ |
 | /users/1 | ❌ | ❌ | ❌ | Delete user 1 |
 
+## Development
+
+See [Contributing](CONTRIBUTING.md) for instructions on how to set up a development environment.
+
+Instructions on running API tests with newman: [Testing](tests/README.md)
 
 ## Acknowledgements
 
-- 1DV027 API Design Assignment
+- 1DV027 API Design Assignment at LNU
 - Dataset on Kaggle: [Million Song Dataset + Spotify + Last.fm](https://www.kaggle.com/datasets/undefinenull/million-song-dataset-spotify-lastfm)  
 - Additional information (album names and IDs) is from the Million Song Dataset summary file: [millionsongdataset.com/pages/getting-dataset/, (Additional files, 7)](http://millionsongdataset.com/pages/getting-dataset/)
